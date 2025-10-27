@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-//    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
     private PanelPrincipal panelPrincipal;
     private PanelPreferencias panelPreferencias;
 
@@ -17,20 +17,21 @@ public class MainFrame extends javax.swing.JFrame {
         setResizable(false);
         this.setSize(800, 900);
         setLocationRelativeTo(null);
-        mostrarPanelPrincipal();
+        panelPreferencias = new PanelPreferencias(this);
+        panelPrincipal = new PanelPrincipal(this,panelPreferencias); // pasamos referencia de preferencias
+        setContentPane(panelPrincipal);  // por defecto mostramos el panel principal
+        
     }
 
     //Paneles
-    private void mostrarPanelPrincipal() {
-        panelPrincipal = new PanelPrincipal();
-        getContentPane().add(panelPrincipal);
+    void mostrarPanelPrincipal() {
+        setContentPane(panelPrincipal);
         revalidate();
         repaint();
     }
 
     private void mostrarPanelPreferencias() {
-        getContentPane().removeAll(); // Elimina todo lo anterior
-        getContentPane().add(new PanelPreferencias());
+        setContentPane(panelPreferencias);
         revalidate();
         repaint();
     }
@@ -48,8 +49,6 @@ public class MainFrame extends javax.swing.JFrame {
         jmnFile = new javax.swing.JMenu();
         jmnExit = new javax.swing.JMenuItem();
         jmnEdit = new javax.swing.JMenu();
-        jmnSelectPath = new javax.swing.JMenuItem();
-        jmnLimit = new javax.swing.JMenuItem();
         jmnPreferences = new javax.swing.JMenuItem();
         jmnHelp = new javax.swing.JMenu();
         jmnAbout = new javax.swing.JMenuItem();
@@ -79,24 +78,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         jmnEdit.setText("Edit");
         jmnEdit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-
-        jmnSelectPath.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        jmnSelectPath.setText("Select yt-dlp Path");
-        jmnSelectPath.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmnSelectPathActionPerformed(evt);
-            }
-        });
-        jmnEdit.add(jmnSelectPath);
-
-        jmnLimit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        jmnLimit.setText("Limit Download");
-        jmnLimit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmnLimitActionPerformed(evt);
-            }
-        });
-        jmnEdit.add(jmnLimit);
 
         jmnPreferences.setFont(new java.awt.Font("Segoe UI Light", 1, 12)); // NOI18N
         jmnPreferences.setText("Preferences");
@@ -128,12 +109,12 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jmnLimitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmnLimitActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jmnLimitActionPerformed
-
     private void jmnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmnExitActionPerformed
-        System.exit(0);
+
+        if (JOptionPane.showConfirmDialog(this, "¿Seguro que quieres salir?",
+                "Confirmar salida", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
     }//GEN-LAST:event_jmnExitActionPerformed
 
     private void jmnAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmnAboutActionPerformed
@@ -144,11 +125,8 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jmnPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmnPreferencesActionPerformed
         mostrarPanelPreferencias();
-    }//GEN-LAST:event_jmnPreferencesActionPerformed
 
-    private void jmnSelectPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmnSelectPathActionPerformed
-        mostrarPanelPrincipal();
-    }//GEN-LAST:event_jmnSelectPathActionPerformed
+    }//GEN-LAST:event_jmnPreferencesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -162,7 +140,7 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            //  logger.log(java.util.logging.Level.SEVERE, null, ex);
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -176,9 +154,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jmnExit;
     private javax.swing.JMenu jmnFile;
     private javax.swing.JMenu jmnHelp;
-    private javax.swing.JMenuItem jmnLimit;
     private javax.swing.JMenuBar jmnMenu;
     private javax.swing.JMenuItem jmnPreferences;
-    private javax.swing.JMenuItem jmnSelectPath;
     // End of variables declaration//GEN-END:variables
 }

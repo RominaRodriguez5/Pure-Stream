@@ -27,13 +27,13 @@ public class AboutDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lblNameDeveloped = new javax.swing.JLabel();
-        lblCurso = new javax.swing.JLabel();
-        lblRecursos = new javax.swing.JLabel();
-        btnCloseAbout = new javax.swing.JButton();
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jSeparator1 = new javax.swing.JSeparator();
         lblTitleAbout = new javax.swing.JLabel();
+        btnCloseAbout = new javax.swing.JButton();
+        lblRecursos = new javax.swing.JLabel();
+        lblCurso = new javax.swing.JLabel();
+        lblNameDeveloped = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Abaut Dialog");
@@ -46,23 +46,14 @@ public class AboutDialog extends javax.swing.JDialog {
         setSize(new java.awt.Dimension(400, 250));
         getContentPane().setLayout(null);
 
-        lblNameDeveloped.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        lblNameDeveloped.setForeground(new java.awt.Color(255, 255, 255));
-        lblNameDeveloped.setText("Developed By Romina Marlene Mosqueira Rodriguez");
-        getContentPane().add(lblNameDeveloped);
-        lblNameDeveloped.setBounds(50, 100, 280, 20);
+        jDesktopPane1.add(jSeparator1);
+        jSeparator1.setBounds(0, 70, 380, 10);
 
-        lblCurso.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        lblCurso.setForeground(new java.awt.Color(255, 255, 255));
-        lblCurso.setText("Curso: Desarrollo de interfaces ");
-        getContentPane().add(lblCurso);
-        lblCurso.setBounds(50, 140, 200, 20);
-
-        lblRecursos.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        lblRecursos.setForeground(new java.awt.Color(255, 255, 255));
-        lblRecursos.setText("Recursos: yt-dlp, ffmpeg, icons8, etc.");
-        getContentPane().add(lblRecursos);
-        lblRecursos.setBounds(50, 180, 210, 20);
+        lblTitleAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        lblTitleAbout.setForeground(new java.awt.Color(255, 255, 255));
+        lblTitleAbout.setText("Pure Stream Downloader");
+        jDesktopPane1.add(lblTitleAbout);
+        lblTitleAbout.setBounds(120, 30, 170, 20);
 
         btnCloseAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnCloseAbout.setForeground(new java.awt.Color(0, 0, 153));
@@ -73,20 +64,29 @@ public class AboutDialog extends javax.swing.JDialog {
                 btnCloseAboutActionPerformed(evt);
             }
         });
-        getContentPane().add(btnCloseAbout);
-        btnCloseAbout.setBounds(140, 220, 90, 24);
+        jDesktopPane1.add(btnCloseAbout);
+        btnCloseAbout.setBounds(130, 290, 90, 24);
 
-        jDesktopPane1.add(jSeparator1);
-        jSeparator1.setBounds(0, 70, 380, 10);
+        lblRecursos.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        lblRecursos.setForeground(new java.awt.Color(255, 255, 255));
+        lblRecursos.setText("Recursos: yt-dlp, ffmpeg, videos del profesor y chatgpt etc.");
+        jDesktopPane1.add(lblRecursos);
+        lblRecursos.setBounds(10, 170, 430, 70);
 
-        lblTitleAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        lblTitleAbout.setForeground(new java.awt.Color(255, 255, 255));
-        lblTitleAbout.setText("Pure Stream Downloader");
-        jDesktopPane1.add(lblTitleAbout);
-        lblTitleAbout.setBounds(120, 30, 140, 20);
+        lblCurso.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        lblCurso.setForeground(new java.awt.Color(255, 255, 255));
+        lblCurso.setText("Curso: Desarrollo de interfaces ");
+        jDesktopPane1.add(lblCurso);
+        lblCurso.setBounds(10, 150, 200, 20);
+
+        lblNameDeveloped.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        lblNameDeveloped.setForeground(new java.awt.Color(255, 255, 255));
+        lblNameDeveloped.setText("Developed By Romina Marlene Mosqueira Rodriguez");
+        jDesktopPane1.add(lblNameDeveloped);
+        lblNameDeveloped.setBounds(10, 100, 280, 20);
 
         getContentPane().add(jDesktopPane1);
-        jDesktopPane1.setBounds(0, 0, 420, 400);
+        jDesktopPane1.setBounds(0, 0, 480, 400);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

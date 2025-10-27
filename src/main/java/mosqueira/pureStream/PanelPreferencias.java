@@ -1,20 +1,45 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package mosqueira.pureStream;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
- * @author Lulas
+ * @author Mosqueira
  */
+
 public class PanelPreferencias extends javax.swing.JPanel {
 
-    /**
-     * Creates new form PanelUrl
-     */
-    public PanelPreferencias() {
+    private boolean crearM3U;
+    private boolean limitarVelocidad;
+    private boolean selectPath;
+    private String rutaDescargas;
+    private MainFrame mainFrame;
+
+    public PanelPreferencias(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
         initComponents();
+    }
+
+    // getters para que otras clases puedan consultar los valores
+    public boolean isCrearM3U() {
+        return crearM3U;
+    }
+
+    public boolean isLimitarVelocidad() {
+        return limitarVelocidad;
+    }
+
+    public boolean isSelectPath() {
+        return selectPath;
+    }
+
+    public String getRutaDescargas() {
+        return rutaDescargas;
+    }
+
+    public void setRutaDescargas(String rutaDescargas) {
+        this.rutaDescargas = rutaDescargas;
     }
 
     /**
@@ -26,19 +51,132 @@ public class PanelPreferencias extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        jchM3U = new javax.swing.JCheckBox();
+        lblAds = new javax.swing.JLabel();
+        jchLimit = new javax.swing.JCheckBox();
+        lblSelectPath = new javax.swing.JLabel();
+        btnSearch = new javax.swing.JButton();
+        jtxtrutaDescargas = new javax.swing.JTextField();
+        btnSaveAndReturn = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JSeparator();
+
+        setLayout(null);
+
+        jchM3U.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        jchM3U.setForeground(new java.awt.Color(0, 0, 153));
+        jchM3U.setText("Crear archivo  .m3u");
+        jchM3U.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jchM3UActionPerformed(evt);
+            }
+        });
+        add(jchM3U);
+        jchM3U.setBounds(110, 170, 210, 40);
+
+        lblAds.setFont(new java.awt.Font("Segoe UI Light", 1, 24)); // NOI18N
+        lblAds.setForeground(new java.awt.Color(0, 0, 0));
+        lblAds.setText("Opciones adicionales");
+        add(lblAds);
+        lblAds.setBounds(240, 40, 240, 30);
+
+        jchLimit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        jchLimit.setForeground(new java.awt.Color(0, 0, 153));
+        jchLimit.setText("Limitar Velocidad de descarga");
+        jchLimit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jchLimitActionPerformed(evt);
+            }
+        });
+        add(jchLimit);
+        jchLimit.setBounds(410, 170, 250, 40);
+
+        lblSelectPath.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        lblSelectPath.setForeground(new java.awt.Color(0, 0, 153));
+        lblSelectPath.setText("Select yt-dlp Path");
+        add(lblSelectPath);
+        lblSelectPath.setBounds(20, 100, 120, 20);
+
+        btnSearch.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnSearch.setText("Search");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+        add(btnSearch);
+        btnSearch.setBounds(530, 100, 95, 30);
+
+        jtxtrutaDescargas.setText("Elige una ruta");
+        jtxtrutaDescargas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jtxtrutaDescargasActionPerformed(evt);
+            }
+        });
+        add(jtxtrutaDescargas);
+        jtxtrutaDescargas.setBounds(150, 100, 370, 30);
+
+        btnSaveAndReturn.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnSaveAndReturn.setText("Save and Return");
+        btnSaveAndReturn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveAndReturnActionPerformed(evt);
+            }
+        });
+        add(btnSaveAndReturn);
+        btnSaveAndReturn.setBounds(260, 290, 160, 30);
+        add(jSeparator1);
+        jSeparator1.setBounds(0, 250, 680, 3);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jchM3UActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jchM3UActionPerformed
+        crearM3U = jchM3U.isSelected();
+    }//GEN-LAST:event_jchM3UActionPerformed
+
+    private void jchLimitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jchLimitActionPerformed
+        limitarVelocidad = jchLimit.isSelected();
+    }//GEN-LAST:event_jchLimitActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int option = chooser.showOpenDialog(this);
+        if (option == JFileChooser.APPROVE_OPTION) {
+            rutaDescargas = chooser.getSelectedFile().getAbsolutePath();
+            jtxtrutaDescargas.setText(rutaDescargas);
+        }
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnSaveAndReturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveAndReturnActionPerformed
+        
+        crearM3U = jchM3U.isSelected();
+        limitarVelocidad = jchLimit.isSelected();
+
+        // Comprobamos que la ruta sea válida
+        if (rutaDescargas == null || rutaDescargas.isEmpty() || rutaDescargas.equals("Elige una ruta")) {
+            JOptionPane.showMessageDialog(this, "Debes seleccionar una ruta válida de descarga.",
+                    "Ruta inválida", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Volvemos al panel principal
+        mainFrame.mostrarPanelPrincipal();
+    
+
+    }//GEN-LAST:event_btnSaveAndReturnActionPerformed
+
+    private void jtxtrutaDescargasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtrutaDescargasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jtxtrutaDescargasActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnSaveAndReturn;
+    private javax.swing.JButton btnSearch;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JCheckBox jchLimit;
+    private javax.swing.JCheckBox jchM3U;
+    private javax.swing.JTextField jtxtrutaDescargas;
+    private javax.swing.JLabel lblAds;
+    private javax.swing.JLabel lblSelectPath;
     // End of variables declaration//GEN-END:variables
 }
