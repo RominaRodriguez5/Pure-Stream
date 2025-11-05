@@ -1,6 +1,8 @@
 package mosqueira.pureStream;
-
 import javax.swing.JOptionPane;
+import mosqueira.pureStream.Dialogs.AboutDialog;
+import mosqueira.pureStream.Paneles.PanelPrincipal;
+import mosqueira.pureStream.Paneles.PreferencesPanel;
 
 /**
  *
@@ -10,21 +12,23 @@ public class MainFrame extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
     private PanelPrincipal panelPrincipal;
-    private PanelPreferencias panelPreferencias;
+    private PreferencesPanel panelPreferencias;
 
     public MainFrame() {
         initComponents();
-        setResizable(false);
-        this.setSize(800, 900);
-        setLocationRelativeTo(null);
-        panelPreferencias = new PanelPreferencias(this);
-        panelPrincipal = new PanelPrincipal(this,panelPreferencias); // pasamos referencia de preferencias
+        setTitle("YT Donwloader");
+        setResizable(false);//No se puede redimensionar
+        setSize(800, 800);
+        setLocationRelativeTo(null);//Centrar ventana
+         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        panelPreferencias = new PreferencesPanel(this);
+        panelPrincipal = new PanelPrincipal(panelPreferencias); // pasamos referencia de preferencias
         setContentPane(panelPrincipal);  // por defecto mostramos el panel principal
         
     }
 
     //Paneles
-    void mostrarPanelPrincipal() {
+    public  void mostrarPanelPrincipal() {
         setContentPane(panelPrincipal);
         revalidate();
         repaint();
@@ -46,12 +50,12 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jmnMenu = new javax.swing.JMenuBar();
-        jmnFile = new javax.swing.JMenu();
-        jmnExit = new javax.swing.JMenuItem();
-        jmnEdit = new javax.swing.JMenu();
-        jmnPreferences = new javax.swing.JMenuItem();
-        jmnHelp = new javax.swing.JMenu();
-        jmnAbout = new javax.swing.JMenuItem();
+        menuFile = new javax.swing.JMenu();
+        itemExit = new javax.swing.JMenuItem();
+        menuEdit = new javax.swing.JMenu();
+        itemPreferences = new javax.swing.JMenuItem();
+        menuHelp = new javax.swing.JMenu();
+        itemAbout = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PureStream");
@@ -62,71 +66,71 @@ public class MainFrame extends javax.swing.JFrame {
         jmnMenu.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jmnMenu.setForeground(new java.awt.Color(0, 102, 153));
 
-        jmnFile.setText("File");
-        jmnFile.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        menuFile.setText("File");
+        menuFile.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
 
-        jmnExit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        jmnExit.setText("Exit");
-        jmnExit.addActionListener(new java.awt.event.ActionListener() {
+        itemExit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        itemExit.setText("Exit");
+        itemExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmnExitActionPerformed(evt);
+                itemExitActionPerformed(evt);
             }
         });
-        jmnFile.add(jmnExit);
+        menuFile.add(itemExit);
 
-        jmnMenu.add(jmnFile);
+        jmnMenu.add(menuFile);
 
-        jmnEdit.setText("Edit");
-        jmnEdit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        menuEdit.setText("Edit");
+        menuEdit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
 
-        jmnPreferences.setFont(new java.awt.Font("Segoe UI Light", 1, 12)); // NOI18N
-        jmnPreferences.setText("Preferences");
-        jmnPreferences.addActionListener(new java.awt.event.ActionListener() {
+        itemPreferences.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        itemPreferences.setText("Preferences");
+        itemPreferences.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmnPreferencesActionPerformed(evt);
+                itemPreferencesActionPerformed(evt);
             }
         });
-        jmnEdit.add(jmnPreferences);
+        menuEdit.add(itemPreferences);
 
-        jmnMenu.add(jmnEdit);
+        jmnMenu.add(menuEdit);
 
-        jmnHelp.setText("Help");
-        jmnHelp.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        menuHelp.setText("Help");
+        menuHelp.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
 
-        jmnAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 12)); // NOI18N
-        jmnAbout.setText("About");
-        jmnAbout.addActionListener(new java.awt.event.ActionListener() {
+        itemAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 12)); // NOI18N
+        itemAbout.setText("About");
+        itemAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmnAboutActionPerformed(evt);
+                itemAboutActionPerformed(evt);
             }
         });
-        jmnHelp.add(jmnAbout);
+        menuHelp.add(itemAbout);
 
-        jmnMenu.add(jmnHelp);
+        jmnMenu.add(menuHelp);
 
         setJMenuBar(jmnMenu);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jmnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmnExitActionPerformed
+    private void itemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemExitActionPerformed
 
         if (JOptionPane.showConfirmDialog(this, "¿Seguro que quieres salir?",
                 "Confirmar salida", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             System.exit(0);
         }
-    }//GEN-LAST:event_jmnExitActionPerformed
+    }//GEN-LAST:event_itemExitActionPerformed
 
-    private void jmnAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmnAboutActionPerformed
+    private void itemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemAboutActionPerformed
         AboutDialog aboutD = new AboutDialog(this, true);
         aboutD.setLocationRelativeTo(this);
         aboutD.setVisible(true);
-    }//GEN-LAST:event_jmnAboutActionPerformed
+    }//GEN-LAST:event_itemAboutActionPerformed
 
-    private void jmnPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmnPreferencesActionPerformed
+    private void itemPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemPreferencesActionPerformed
         mostrarPanelPreferencias();
 
-    }//GEN-LAST:event_jmnPreferencesActionPerformed
+    }//GEN-LAST:event_itemPreferencesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -149,12 +153,12 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem jmnAbout;
-    private javax.swing.JMenu jmnEdit;
-    private javax.swing.JMenuItem jmnExit;
-    private javax.swing.JMenu jmnFile;
-    private javax.swing.JMenu jmnHelp;
+    private javax.swing.JMenuItem itemAbout;
+    private javax.swing.JMenuItem itemExit;
+    private javax.swing.JMenuItem itemPreferences;
     private javax.swing.JMenuBar jmnMenu;
-    private javax.swing.JMenuItem jmnPreferences;
+    private javax.swing.JMenu menuEdit;
+    private javax.swing.JMenu menuFile;
+    private javax.swing.JMenu menuHelp;
     // End of variables declaration//GEN-END:variables
 }

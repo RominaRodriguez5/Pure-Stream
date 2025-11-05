@@ -1,14 +1,15 @@
-package mosqueira.pureStream;
-
+package mosqueira.pureStream.Paneles;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import mosqueira.pureStream.MainFrame;
+
 
 /**
  *
  * @author Mosqueira
  */
 
-public class PanelPreferencias extends javax.swing.JPanel {
+public class PreferencesPanel extends javax.swing.JPanel {
 
     private boolean crearM3U;
     private boolean limitarVelocidad;
@@ -16,7 +17,7 @@ public class PanelPreferencias extends javax.swing.JPanel {
     private String rutaDescargas;
     private MainFrame mainFrame;
 
-    public PanelPreferencias(MainFrame mainFrame) {
+    public PreferencesPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         initComponents();
     }
@@ -35,7 +36,7 @@ public class PanelPreferencias extends javax.swing.JPanel {
     }
 
     public String getRutaDescargas() {
-        return rutaDescargas;
+         return jtxtrutaDescargas.getText().trim();
     }
 
     public void setRutaDescargas(String rutaDescargas) {
@@ -159,8 +160,7 @@ public class PanelPreferencias extends javax.swing.JPanel {
         }
 
         // Volvemos al panel principal
-        mainFrame.mostrarPanelPrincipal();
-    
+      mainFrame.mostrarPanelPrincipal();
 
     }//GEN-LAST:event_btnSaveAndReturnActionPerformed
 

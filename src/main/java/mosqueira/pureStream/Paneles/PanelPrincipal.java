@@ -1,12 +1,6 @@
-package mosqueira.pureStream;
+package mosqueira.pureStream.Paneles;
 
-import java.io.File;
-import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import mosqueira.pureStream.ControladorInterno.DownloadTask;
 
 /**
  *
@@ -14,131 +8,27 @@ import java.util.List;
  */
 public class PanelPrincipal extends javax.swing.JPanel {
 
-    private MainFrame mainFrame;
-    private PanelPreferencias panelPreferencias;
+    private PreferencesPanel panelPreferencias;
     private String url;
     private String lastDownloadedFile;
+    
 
-    public PanelPrincipal(MainFrame mainFrame, PanelPreferencias panelPref) {
-        this.mainFrame = mainFrame;
-        this.panelPreferencias = panelPref;
+    public PanelPrincipal(PreferencesPanel panelPref) {
         initComponents();
         setSize(800, 900);
+        this.panelPreferencias = panelPref;
         buttonGroupFormato.add(jrbSelectionMp3);
         buttonGroupFormato.add(jrbSelectionMp4);
 
     }
 
-    private void exetDOnwloadSecondPlane(String url) {
-        jTxtLog.append("Iniciando descarga...\n");
-
-        SwingWorker<Void, String> worker = new SwingWorker<>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                List<String> comando = construirComando(url);
-
-                ProcessBuilder pb = new ProcessBuilder(comando);
-                pb.redirectErrorStream(true);  // mezcla salida estándar y errores
-                Process proceso = pb.start();
-
-                try (BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(proceso.getInputStream(), StandardCharsets.UTF_8))) {
-
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        publish(line + "\n");
-                    }
-                }
-
-                int exitCode = proceso.waitFor();
-                publish("\nProceso finalizado con código: " + exitCode + "\n");
-                return null;
-            }
-
-            @Override
-            protected void process(List<String> chunks) {
-                for (String line : chunks) {
-                    jTxtLog.append(line);
-
-                    line = line.trim();
-
-                    // Detectamos la línea que indica el archivo final fusionado
-                    if (line.startsWith("[Merger] Merging formats into") || line.contains("has already been downloaded")) {
-                        int start = line.indexOf("\"");
-                        int end = line.lastIndexOf("\"");
-                        if (start != -1 && end != -1 && end > start) {
-                            lastDownloadedFile = line.substring(start + 1, end);
-                            jTxtLog.append("Archivo final detectado: " + lastDownloadedFile + "\n");
-                        }
-                    }
-                }
-            }
-
-            @Override
-            protected void done() {
-                jTxtLog.append("\nDescarga terminada\n");
-
-                if (lastDownloadedFile != null) {
-                    File f = new File(lastDownloadedFile);
-                    if (f.exists()) {
-                        jTxtLog.append("Archivo final listo para reproducir: " + f.getAbsolutePath() + "\n");
-                    } else {
-                        jTxtLog.append("No se encontró el archivo final.\n");
-                    }
-                } else {
-                    jTxtLog.append("No se pudo determinar el archivo final.\n");
-                }
-            }
-        };
-
-        worker.execute();
-    }
-
-    private List<String> construirComando(String url) {
-        List<String> cmd = new ArrayList<>();
-        String ytDlpPath = "C:\\Program Files\\yt-dlp\\yt-dlp.exe";
-
-        if (!jrbSelectionMp3.isSelected() && !jrbSelectionMp4.isSelected()) {
-            jTxtLog.append(" Debes seleccionar un formato (MP3 o MP4).\n");
-            return null;
-        }
-
-        cmd.add(ytDlpPath);
-
-        if (jrbSelectionMp4.isSelected()) {
-            cmd.add("-f");
-            cmd.add("bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4");
-        } else {
-            cmd.add("--extract-audio");
-            cmd.add("--audio-format");
-            cmd.add("mp3");
-        }
-
-        // Definir carpeta de destino con -o
-        if (panelPreferencias.getRutaDescargas() != null && !panelPreferencias.getRutaDescargas().isEmpty()) {
-            String outputPath = panelPreferencias.getRutaDescargas() + File.separator + "%(title)s.%(ext)s";
-            cmd.add("-o");
-            cmd.add(outputPath);
-            jTxtLog.append("Los archivos se guardarán en: " + outputPath + "\n");
-        }
-
-        // Crear archivo M3U
-        if (panelPreferencias.isCrearM3U()) {
-            cmd.add("--write-playlist-metafiles");
-        }
-
-        // Limitar velocidad
-        if (panelPreferencias.isLimitarVelocidad()) {
-            cmd.add("--limit-rate");
-            cmd.add("1M"); 
-        }
-
-        cmd.add(url);
-        return cmd;
-    }
-
-    public void setPanelPreferencias(PanelPreferencias panelPreferencias) {
+    public void setPanelPreferencias(PreferencesPanel panelPreferencias) {
         this.panelPreferencias = panelPreferencias;
+    }
+
+    public void setLastDownloadedFile(String path) {
+        this.lastDownloadedFile = path;
+        jTxtLog.append("Archivo descargado: " + path + "\n");
     }
 
     /**
@@ -183,7 +73,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
 
         btnDonwload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnDonwload.setForeground(new java.awt.Color(0, 0, 153));
-        btnDonwload.setText("Donwload");
+        btnDonwload.setText("Download");
         btnDonwload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDonwloadActionPerformed(evt);
@@ -255,7 +145,9 @@ public class PanelPrincipal extends javax.swing.JPanel {
             jTxtLog.append("Por favor, introduce una URL válida.\n");
             return;
         }
-        exetDOnwloadSecondPlane(url);
+        jTxtLog.append("Iniciando descarga...\n");
+       DownloadTask task = new DownloadTask(url, panelPreferencias, jTxtLog, jrbSelectionMp3, jrbSelectionMp4, this);
+        task.execute();
     }//GEN-LAST:event_btnDonwloadActionPerformed
 
     private void jrbSelectionMp4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbSelectionMp4ActionPerformed
