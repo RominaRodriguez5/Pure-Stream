@@ -21,6 +21,7 @@ import mosqueira.pureStream.Modelo.MediaTableModel;
  * user to search, filter, and delete them from the library.
  *
  * @author Romina
+ * 
  */
 public class LibraryPanel extends javax.swing.JPanel {
 
