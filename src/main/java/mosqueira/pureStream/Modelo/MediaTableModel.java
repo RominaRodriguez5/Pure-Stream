@@ -10,6 +10,7 @@ import java.util.List;
  * in a JTable, showing details like name, MIME type, size and date.
  *
  * @author Romina
+ * 
  */
 public class MediaTableModel extends AbstractTableModel {
 
