@@ -19,7 +19,7 @@ It features a user-friendly GUI built with NetBeans Designer and allows managing
   - Download folder.  
   - Creation of .m3u playlists.  
   - Download speed limit.  
-  - Paths for binaries (yt-dlp, FFmpeg, ffprobe).  
+  - Paths for binaries (yt-dlp).  
 - Asynchronous download using `SwingWorker`.  
 - Progress and error logging in the interface.  
 
@@ -36,7 +36,6 @@ It features a user-friendly GUI built with NetBeans Designer and allows managing
 
 During the development of **PureStream**, the following videos and resources were used:
 
-### Week 1
 - [Course Material](https://fpadistancia.caib.es/pluginfile.php/93626/mod_resource/content/2/index.html)  
 - GUI overview: [Graphical User Interface](https://en.wikipedia.org/wiki/Graphical_user_interface)  
 - Maven Swing project creation:
@@ -47,21 +46,14 @@ During the development of **PureStream**, the following videos and resources wer
 - Dialogs (modal and non-modal): [Playlist videos 1–8](https://www.youtube.com/playlist?list=PLIfP1vJ2qakli4Z_-yVZV-rq_hQeHQzUb)  
 - JOptionPane: Video 11 from the same playlist  
 
-### Week 2
+
 - JDBC Swing tutorial: [UBC Article](https://www.cs.ubc.ca/~laks/cpsc304/Swing/jdbc_swing.html)  
 - Practiced components: JFrame, JLabel, JButton, JTextField, JTextArea, JCheckBox, JRadioButton, ButtonGroup, JSlider, JProgressBar, JSpinner, JOptionPane, JFileChooser, JMenuBar, JMenu, JMenuItem  
 
-### Week 3
+
 - JList and JComboBox of objects: Tutoria 2022-11-11  
 - JTable: [Playlist videos 9–20 (exclude 13 & 17)](https://www.youtube.com/playlist?list=PLIfP1vJ2qakli4Z_-yVZV-rq_hQeHQzUb)  
 
-### Week 4
-- Finish DI01 tasks.  
-- GUI concepts, NetBeans IDE, layout types (null layout used for this project).  
-
-### Additional Resources
-- OOP concepts: inheritance, composition, abstract classes & interfaces: [Video](https://www.youtube.com/watch?v=HvPlEJ3LHgE)  
-- Adding images/icons in Java Swing Maven applications  
 
 ## 📝 Prompts to LLM
 - “Explain how to create a Swing GUI in Java with NetBeans for video download application.”  
