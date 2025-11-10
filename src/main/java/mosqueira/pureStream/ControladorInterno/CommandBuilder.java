@@ -1,62 +1,93 @@
 package mosqueira.pureStream.ControladorInterno;
 
-import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import mosqueira.pureStream.Paneles.PreferencesPanel;
 
 /**
- * Clase encargada de construir el comando yt-dlp según las preferencias del usuario.
+ * Builds yt-dlp commands based on user preferences and manages .m3u playlist.
+ * @author Romina
  */
 public class CommandBuilder {
 
-    public static List<String> construirComando(String url, PreferencesPanel panelPreferencias,
-         JTextArea jTxtLog, JRadioButton jrbSelectionMp3, JRadioButton jrbSelectionMp4) {
+    /**
+     * Constructs the yt-dlp command for downloading media.
+     *
+     * @param url               Video/Audio URL
+     * @param preferencesPanel  User preferences (path, format, quality, speed)
+     * @param format            Output format ("mp4" or "mp3")
+     * @param quality           Desired quality ("1080p", "720p", etc.)
+     * @return List of command arguments
+     */
+    public static List<String> buildCommand(String url, PreferencesPanel preferencesPanel, String format, String quality) {
 
-        List<String> cmd = new ArrayList<>();
-        String ytDlpPath = "C:\\Program Files\\yt-dlp\\yt-dlp.exe";
+        List<String> command = new ArrayList<>();
+        String ytDlpPath = ConfigProperties.get("yt-dlp.path");
+        command.add(ytDlpPath);
 
-        if (!jrbSelectionMp3.isSelected() && !jrbSelectionMp4.isSelected()) {
-            jTxtLog.append("Debes seleccionar un formato (MP3 o MP4).\n");
-            return null;
+        // Download folder
+        String downloadPath = preferencesPanel.getRutaDescargas();
+        if (downloadPath == null || downloadPath.isEmpty()) {
+            downloadPath = ConfigProperties.get("downloads.path");
         }
 
-        cmd.add(ytDlpPath);
-
-        // Selección del formato
-        if (jrbSelectionMp4.isSelected()) {
-            cmd.add("-f");
-            cmd.add("bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4");
+        // Format and quality
+        if (format.equalsIgnoreCase("mp4")) {
+            command.add("-f");
+            if (quality != null && !quality.isEmpty()) {
+                String height = quality.replaceAll("[^0-9]", "");
+                command.add("bestvideo[height<=" + height + "]+bestaudio/best[height<=" + height + "]");
+            } else {
+                command.add("bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4");
+            }
         } else {
-            cmd.add("--extract-audio");
-            cmd.add("--audio-format");
-            cmd.add("mp3");
+            command.add("--extract-audio");
+            command.add("--audio-format");
+            command.add("mp3");
         }
 
-        // Carpeta destino con nombre del vídeo (limpio)
-        if (panelPreferencias.getRutaDescargas() != null && !panelPreferencias.getRutaDescargas().isEmpty()) {
-            String outputPath = panelPreferencias.getRutaDescargas() + File.separator + "%(title)s.%(ext)s";
-            cmd.add("-o");
-            cmd.add(outputPath);
+        // Output path
+        String outputPath = downloadPath + File.separator + "%(title)s.%(ext)s";
+        command.add("-o");
+        command.add(outputPath);
+        command.add("--restrict-filenames");
 
-            // Evita símbolos raros en el nombre del archivo
-            cmd.add("--restrict-filenames");
-
-            jTxtLog.append("Los archivos se guardarán en: " + panelPreferencias.getRutaDescargas() + "\n");
+        // Speed limit
+        if (preferencesPanel.isLimitarVelocidad()) {
+            int limiteKBs = preferencesPanel.getLimiteVelocidad();
+            if (limiteKBs > 0) {
+                command.add("--limit-rate");
+                command.add(limiteKBs + "K");
+            }
         }
 
-        // Opciones adicionales según preferencias del usuario
-        if (panelPreferencias.isCrearM3U()) {
-            cmd.add("--write-playlist-metafiles");
-        }
+        // Final URL
+        command.add(url);
 
-        if (panelPreferencias.isLimitarVelocidad()) {
-            cmd.add("--limit-rate");
-            cmd.add("1M");
-        }
+        return command;
+    }
 
-        cmd.add(url);
-        return cmd;
+    /**
+     * Checks if the playlist (.m3u) exists, creates it if missing.
+     */
+    public static void verificarM3U(String rutaDescargas) {
+        if (rutaDescargas == null || rutaDescargas.isEmpty()) return;
+
+        File carpeta = new File(rutaDescargas);
+        if (!carpeta.exists() || !carpeta.isDirectory()) return;
+
+        File m3uFile = new File(carpeta, "playlist.m3u");
+
+        if (!m3uFile.exists()) {
+            try {
+                m3uFile.createNewFile();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null,
+                        "Error creating .m3u file: " + e.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }

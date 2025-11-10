@@ -1,16 +1,28 @@
 package mosqueira.pureStream.Dialogs;
 
 /**
- *
- * @author Lulas
+ * This class represents the "About" dialog of the Pure Stream Downloader application.
+ * It provides basic information about the developer, course, and resources used.
+ * 
+ * The dialog is modal and can be opened from the main interface.
+ * It includes labels for author information, project title, and resources used,
+ * as well as a close button to dismiss the dialog.
+ * 
+ * @author
+ * Romina Marlene Mosqueira Rodríguez
  */
 public class AboutDialog extends javax.swing.JDialog {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AboutDialog.class.getName());
 
     /**
-     * Creates new form Abouts
+     * Constructor for the AboutDialog.
+     * Initializes the dialog, sets its title, size, and layout.
+     *
+     * @param parent The parent frame that owns this dialog.
+     * @param modal  Specifies whether the dialog blocks user input to other windows.
      */
+    
     public AboutDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -82,13 +94,20 @@ public class AboutDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+     /**
+     * Event handler for the "Close" button.
+     * Closes the dialog when the button is clicked.
+     *
+     * @param evt The ActionEvent triggered by the button.
+     */
     private void btnCloseAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseAboutActionPerformed
         dispose(); 
-        // btnCloseAbout.setVisible(false);
+        
     }//GEN-LAST:event_btnCloseAboutActionPerformed
 
-    /**
-     * @param args the command line arguments
+     /**
+     * Main method to test the dialog independently.
+     * Launches the AboutDialog as a standalone window.
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

@@ -7,101 +7,112 @@ import java.util.List;
 import mosqueira.pureStream.Paneles.PreferencesPanel;
 import mosqueira.pureStream.Paneles.PanelPrincipal;
 
+/**
+ * SwingWorker to handle yt-dlp downloads in background.
+ * @author Romina
+ */
 public class DownloadTask extends SwingWorker<Void, String> {
 
     private final String url;
-    private final PreferencesPanel panelPreferencias;
-    private final JTextArea jTxtLog;
-    private final JRadioButton jrbSelectionMp3;
-    private final JRadioButton jrbSelectionMp4;
+    private final PreferencesPanel preferencesPanel;
+    private final JTextArea logArea;
+    private final JComboBox<String> format;
+    private final JComboBox<String> quality;
     private final PanelPrincipal parentPanel;
 
     private String lastDownloadedFile;
 
     public DownloadTask(String url, PreferencesPanel panelPref, JTextArea logArea,
-            JRadioButton mp3, JRadioButton mp4, PanelPrincipal parentPanel) {
+                        JComboBox<String> format, JComboBox<String> quality, PanelPrincipal parentPanel) {
         this.url = url;
-        this.panelPreferencias = panelPref;
-        this.jTxtLog = logArea;
-        this.jrbSelectionMp3 = mp3;
-        this.jrbSelectionMp4 = mp4;
+        this.preferencesPanel = panelPref;
+        this.logArea = logArea;
+        this.format = format;
+        this.quality = quality;
         this.parentPanel = parentPanel;
     }
 
     @Override
     protected Void doInBackground() throws Exception {
-        List<String> comando = CommandBuilder.construirComando(url, panelPreferencias, jTxtLog, jrbSelectionMp3, jrbSelectionMp4);
-        if (comando == null) {
-            publish("No se construyó el comando correctamente.\n");
+        // Get selected format and quality
+        String selectedFormat = format.getSelectedItem() != null ? format.getSelectedItem().toString() : "mp4";
+        String selectedQuality = quality.getSelectedItem() != null ? quality.getSelectedItem().toString() : "";
+
+        // Build the command using CommandBuilder
+        List<String> command = CommandBuilder.buildCommand(url, preferencesPanel, selectedFormat, selectedQuality);
+        if (command == null) {
+            publish("Error: Could not build download command.\n");
             return null;
         }
 
-        ProcessBuilder pb = new ProcessBuilder(comando);
-        pb.redirectErrorStream(true);
-        Process proceso = pb.start();
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
 
         try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(proceso.getInputStream(), StandardCharsets.UTF_8))) {
+                new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
 
             String line;
             while ((line = reader.readLine()) != null) {
                 publish(line + "\n");
 
-                // Detectar archivo descargado
+                // Detect downloaded file path
                 if (line.contains("has already been downloaded") || line.contains("[Merger] Merging formats into")) {
-                    // Extraer la ruta del archivo si aparece entre comillas
-                    int start = line.indexOf("\"");
-                    int end = line.lastIndexOf("\"");
-                    if (start != -1 && end != -1 && end > start) {
-                        lastDownloadedFile = line.substring(start + 1, end);
-                        publish("Archivo detectado: " + lastDownloadedFile + "\n");
+                    String regex = "[A-Z]:\\\\[^\\s]+\\.(mp4|webm|mkv|mp3)";
+                    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
+                    java.util.regex.Matcher matcher = pattern.matcher(line);
+                    if (matcher.find()) {
+                        lastDownloadedFile = matcher.group();
+                        publish("Detected file: " + lastDownloadedFile + "\n");
+                        if (parentPanel != null) {
+                            parentPanel.setLastDownloadedFile(lastDownloadedFile);
+                        }
                     }
                 }
             }
         }
 
-        int exitCode = proceso.waitFor();
-        publish("\nProceso finalizado con código: " + exitCode + "\n");
+        int exitCode = process.waitFor();
+        publish("\nProcess finished with exit code: " + exitCode + "\n");
         return null;
     }
 
     @Override
     protected void process(List<String> chunks) {
         for (String line : chunks) {
-            jTxtLog.append(line);
+            logArea.append(line);
         }
     }
 
     @Override
     protected void done() {
-        jTxtLog.append("\nDescarga terminada\n");
+        logArea.append("\nDownload completed.\n");
 
-        // Intentar detectar automáticamente el archivo en la carpeta destino
-        if (parentPanel != null) {
-            // Obtener la carpeta de destino desde las preferencias
-            String carpetaDestino = panelPreferencias.getRutaDescargas(); // <-- asegúrate de que exista este método
-            if (carpetaDestino != null) {
-                File dir = new File(carpetaDestino);
+        // If file was not detected in output, get the latest file in the download folder
+        if (lastDownloadedFile == null && parentPanel != null) {
+            String downloadFolder = preferencesPanel.getRutaDescargas();
+            if (downloadFolder != null) {
+                File dir = new File(downloadFolder);
                 if (dir.exists() && dir.isDirectory()) {
-                    // Buscar el archivo más reciente en la carpeta
                     File[] files = dir.listFiles();
                     if (files != null && files.length > 0) {
-                        File ultimoArchivo = files[0];
+                        File latestFile = files[0];
                         for (File f : files) {
-                            if (f.lastModified() > ultimoArchivo.lastModified()) {
-                                ultimoArchivo = f;
+                            if (f.lastModified() > latestFile.lastModified()) {
+                                latestFile = f;
                             }
                         }
-                        lastDownloadedFile = ultimoArchivo.getAbsolutePath();
+                        lastDownloadedFile = latestFile.getAbsolutePath();
                         parentPanel.setLastDownloadedFile(lastDownloadedFile);
-                        jTxtLog.append("Archivo final listo para reproducir: " + lastDownloadedFile + "\n");
+                        logArea.append("File ready to play: " + lastDownloadedFile + "\n");
                         return;
                     }
                 }
             }
         }
 
-        jTxtLog.append("No se pudo determinar el archivo final.\n");
+        if (lastDownloadedFile == null) {
+            logArea.append("Could not determine the downloaded file.\n");
+        }
     }
-
 }

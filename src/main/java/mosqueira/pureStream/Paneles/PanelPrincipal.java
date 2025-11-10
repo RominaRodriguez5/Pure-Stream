@@ -1,34 +1,107 @@
 package mosqueira.pureStream.Paneles;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
+import mosqueira.pureStream.ControladorInterno.CommandBuilder;
 import mosqueira.pureStream.ControladorInterno.DownloadTask;
+import mosqueira.pureStream.MainFrame;
+import mosqueira.pureStream.Modelo.MediaFile;
+import mosqueira.pureStream.Modelo.MediaTableModel;
 
 /**
+ * Main panel that handles URL input, download actions, and interaction with
+ * Preferences and Library panels.
  *
- * @author Mosqueira
+ * @author Romina
  */
 public class PanelPrincipal extends javax.swing.JPanel {
 
-    private PreferencesPanel panelPreferencias;
+    // Reference to the preferences panel where the user sets the download folder
+    private PreferencesPanel preferencesPanel;
+
+    // Stores the last entered URL
     private String url;
+
+    // Stores the path of the last downloaded file
     private String lastDownloadedFile;
+
+    // Reference to the main frame to switch between panels
+    private MainFrame mainFrame;
+
+    // Table model shared with LibraryPanel to display downloaded files
+    private MediaTableModel tableModel;
+
+    // Local list of downloaded media files
+    private List<MediaFile> archivosDescargados = new ArrayList<>();
+
     
-
-    public PanelPrincipal(PreferencesPanel panelPref) {
+    /**
+     * Constructs the main download panel.
+     * Initializes references to the PreferencesPanel, MainFrame, and shared MediaTableModel.
+     *
+     * @param panelPref  Reference to the preferences configuration panel
+     * @param mainFrame  Reference to the main window for switching panels
+     * @param tableModel Shared model containing downloaded media
+     */
+    public PanelPrincipal(PreferencesPanel panelPref, MainFrame mainFrame, MediaTableModel tableModel) {
         initComponents();
-        setSize(800, 900);
-        this.panelPreferencias = panelPref;
-        buttonGroupFormato.add(jrbSelectionMp3);
-        buttonGroupFormato.add(jrbSelectionMp4);
+        setSize(800, 800);
+        this.preferencesPanel = panelPref;
+        this.mainFrame = mainFrame;
+        this.tableModel = tableModel;
 
     }
 
+   /**
+     * Returns the list of downloaded media files.
+     *
+     * @return List of MediaFile objects
+     */
+    public List<MediaFile> getArchivosDescargados() {
+        return archivosDescargados;
+    }
+
+    /**
+     * Sets a reference to the PreferencesPanel instance.
+     *
+     * @param panelPreferencias new PreferencesPanel reference
+     */
     public void setPanelPreferencias(PreferencesPanel panelPreferencias) {
-        this.panelPreferencias = panelPreferencias;
+        this.preferencesPanel = panelPreferencias;
     }
 
+      /**
+     * Updates the last downloaded file reference and logs it in the text area.
+     * Also creates a MediaFile object, adds it to the shared model,
+     * and updates the LibraryPanel and M3U playlist if enabled.
+     *
+     * @param path Absolute path of the downloaded file
+     */
     public void setLastDownloadedFile(String path) {
-        this.lastDownloadedFile = path;
+        lastDownloadedFile = path;
         jTxtLog.append("Archivo descargado: " + path + "\n");
+        File file = new File(path);
+        if (file.exists()) {
+            MediaFile media = new MediaFile(file);
+            archivosDescargados.add(media);
+            tableModel.addMediaFile(media);
+
+           // Update LibraryPanel with the new file
+            mainFrame.getLibraryPanel().addMediaFile(media);
+
+            // Update M3U playlist
+            CommandBuilder.verificarM3U(preferencesPanel.getRutaDescargas());
+            File m3uFile = new File(preferencesPanel.getRutaDescargas(), "playlist.m3u");
+            try (FileWriter writer = new FileWriter(m3uFile, true)) {
+                writer.write(path + System.lineSeparator());
+            } catch (IOException e) {
+                jTxtLog.append("Error al actualizar M3U: " + e.getMessage() + "\n");
+            }
+        }
     }
 
     /**
@@ -40,18 +113,19 @@ public class PanelPrincipal extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroupFormato = new javax.swing.ButtonGroup();
         lblUrl = new javax.swing.JLabel();
-        jtfEntrada = new java.awt.TextField();
-        btnDonwload = new javax.swing.JButton();
-        jrbSelectionMp4 = new javax.swing.JRadioButton();
-        jrbSelectionMp3 = new javax.swing.JRadioButton();
-        lblFormatoSalida = new javax.swing.JLabel();
+        jtxtUrl = new java.awt.TextField();
+        btnDownload = new javax.swing.JButton();
+        lblCalidad = new javax.swing.JLabel();
         jslFormato = new javax.swing.JSeparator();
         jslOptionA = new javax.swing.JSeparator();
         btnReproducir = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTxtLog = new javax.swing.JTextArea();
+        btnOpenLibrary = new javax.swing.JButton();
+        comboFormat = new javax.swing.JComboBox<>();
+        comboQuality = new javax.swing.JComboBox<>();
+        lblFormatoSalida1 = new javax.swing.JLabel();
 
         setLayout(null);
 
@@ -59,60 +133,39 @@ public class PanelPrincipal extends javax.swing.JPanel {
         lblUrl.setForeground(new java.awt.Color(0, 0, 0));
         lblUrl.setText("Url");
         add(lblUrl);
-        lblUrl.setBounds(100, 70, 50, 20);
+        lblUrl.setBounds(110, 50, 50, 20);
 
-        jtfEntrada.setBackground(new java.awt.Color(204, 204, 204));
-        jtfEntrada.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
-        jtfEntrada.addActionListener(new java.awt.event.ActionListener() {
+        jtxtUrl.setBackground(new java.awt.Color(204, 204, 204));
+        jtxtUrl.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        jtxtUrl.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
+        jtxtUrl.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jtfEntradaActionPerformed(evt);
+                jtxtUrlActionPerformed(evt);
             }
         });
-        add(jtfEntrada);
-        jtfEntrada.setBounds(160, 70, 380, 30);
+        add(jtxtUrl);
+        jtxtUrl.setBounds(170, 50, 380, 30);
 
-        btnDonwload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        btnDonwload.setForeground(new java.awt.Color(0, 0, 153));
-        btnDonwload.setText("Download");
-        btnDonwload.addActionListener(new java.awt.event.ActionListener() {
+        btnDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnDownload.setForeground(new java.awt.Color(0, 0, 153));
+        btnDownload.setText("Download");
+        btnDownload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDonwloadActionPerformed(evt);
+                btnDownloadActionPerformed(evt);
             }
         });
-        add(btnDonwload);
-        btnDonwload.setBounds(560, 70, 100, 24);
+        add(btnDownload);
+        btnDownload.setBounds(570, 50, 100, 24);
 
-        jrbSelectionMp4.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        jrbSelectionMp4.setForeground(new java.awt.Color(0, 0, 153));
-        jrbSelectionMp4.setText("Video(Mp4)");
-        jrbSelectionMp4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jrbSelectionMp4ActionPerformed(evt);
-            }
-        });
-        add(jrbSelectionMp4);
-        jrbSelectionMp4.setBounds(150, 200, 120, 25);
-
-        jrbSelectionMp3.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        jrbSelectionMp3.setForeground(new java.awt.Color(0, 0, 153));
-        jrbSelectionMp3.setText("Audio(Mp3)");
-        jrbSelectionMp3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jrbSelectionMp3ActionPerformed(evt);
-            }
-        });
-        add(jrbSelectionMp3);
-        jrbSelectionMp3.setBounds(410, 200, 110, 25);
-
-        lblFormatoSalida.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        lblFormatoSalida.setForeground(new java.awt.Color(0, 0, 0));
-        lblFormatoSalida.setText("Formato de Salida ");
-        add(lblFormatoSalida);
-        lblFormatoSalida.setBounds(270, 160, 160, 20);
+        lblCalidad.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        lblCalidad.setForeground(new java.awt.Color(0, 0, 0));
+        lblCalidad.setText("Quality");
+        add(lblCalidad);
+        lblCalidad.setBounds(440, 150, 90, 20);
         add(jslFormato);
         jslFormato.setBounds(0, 130, 790, 10);
         add(jslOptionA);
-        jslOptionA.setBounds(10, 260, 780, 10);
+        jslOptionA.setBounds(10, 320, 780, 10);
 
         btnReproducir.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnReproducir.setForeground(new java.awt.Color(0, 0, 153));
@@ -123,7 +176,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(btnReproducir);
-        btnReproducir.setBounds(290, 610, 120, 27);
+        btnReproducir.setBounds(130, 670, 120, 27);
 
         jTxtLog.setBackground(new java.awt.Color(204, 204, 204));
         jTxtLog.setColumns(20);
@@ -132,64 +185,116 @@ public class PanelPrincipal extends javax.swing.JPanel {
         jScrollPane1.setViewportView(jTxtLog);
 
         add(jScrollPane1);
-        jScrollPane1.setBounds(0, 290, 790, 290);
+        jScrollPane1.setBounds(0, 350, 790, 290);
+
+        btnOpenLibrary.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnOpenLibrary.setForeground(new java.awt.Color(0, 0, 153));
+        btnOpenLibrary.setText("Details");
+        btnOpenLibrary.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpenLibraryActionPerformed(evt);
+            }
+        });
+        add(btnOpenLibrary);
+        btnOpenLibrary.setBounds(500, 670, 120, 30);
+
+        comboFormat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "mp4", "mp3" }));
+        add(comboFormat);
+        comboFormat.setBounds(140, 190, 72, 22);
+
+        comboQuality.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1080p", "720p", "480p", "360p" }));
+        comboQuality.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboQualityActionPerformed(evt);
+            }
+        });
+        add(comboQuality);
+        comboQuality.setBounds(440, 190, 72, 22);
+
+        lblFormatoSalida1.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        lblFormatoSalida1.setForeground(new java.awt.Color(0, 0, 0));
+        lblFormatoSalida1.setText("Output Format");
+        add(lblFormatoSalida1);
+        lblFormatoSalida1.setBounds(120, 150, 160, 20);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jtfEntradaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtfEntradaActionPerformed
+    private void jtxtUrlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtUrlActionPerformed
 
-    }//GEN-LAST:event_jtfEntradaActionPerformed
-
-    private void btnDonwloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDonwloadActionPerformed
-        url = jtfEntrada.getText().trim();
+    }//GEN-LAST:event_jtxtUrlActionPerformed
+    /**
+     * Event triggered when the Download button is pressed. Starts the download
+     * process using the selected format and URL.
+     */
+    private void btnDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownloadActionPerformed
+        url = jtxtUrl.getText().trim();
         if (url.isEmpty()) {
-            jTxtLog.append("Por favor, introduce una URL válida.\n");
+            JOptionPane.showMessageDialog(this, "Ingresa una URL.");
             return;
         }
-        jTxtLog.append("Iniciando descarga...\n");
-       DownloadTask task = new DownloadTask(url, panelPreferencias, jTxtLog, jrbSelectionMp3, jrbSelectionMp4, this);
+
+        jTxtLog.setText("");
+        jTxtLog.append("Iniciando descarga: " + url + "\n");
+
+        String velocidad = preferencesPanel.getVelocidadDescarga();
+
+        DownloadTask task = new DownloadTask(
+                url,
+                preferencesPanel,
+                jTxtLog,
+                comboFormat,
+                comboQuality,
+                this
+        );
         task.execute();
-    }//GEN-LAST:event_btnDonwloadActionPerformed
 
-    private void jrbSelectionMp4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbSelectionMp4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jrbSelectionMp4ActionPerformed
-
-    private void jrbSelectionMp3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbSelectionMp3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jrbSelectionMp3ActionPerformed
-
+    }//GEN-LAST:event_btnDownloadActionPerformed
+    /**
+     * Opens the last downloaded file using the default system application.
+     */
     private void btnReproducirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReproducirActionPerformed
-        if (lastDownloadedFile != null) {
-            java.io.File file = new java.io.File(lastDownloadedFile);
-            if (file.exists()) {
-                try {
-                    jTxtLog.append("Reproduciendo: " + file.getName() + "\n");
-                    java.awt.Desktop.getDesktop().open(file);
-                } catch (Exception e) {
-                    jTxtLog.append("ERROR al reproducir el archivo: " + e.getMessage() + "\n");
-                }
-            } else {
-                jTxtLog.append("No se encontró el archivo descargado.\n");
-            }
-        } else {
+        if (lastDownloadedFile == null) {
             jTxtLog.append("Primero descarga un archivo para poder reproducirlo.\n");
+            return;
         }
-
+        File file = new File(lastDownloadedFile);
+        if (!file.exists()) {
+            jTxtLog.append("No se encontró el archivo descargado.\n");
+            return;
+        }
+        try {
+            jTxtLog.append("Reproduciendo: " + file.getName() + "\n");
+            java.awt.Desktop.getDesktop().open(file);
+        } catch (Exception e) {
+            jTxtLog.append("ERROR al reproducir el archivo: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_btnReproducirActionPerformed
+    /**
+     * Opens the Library panel to show all downloaded media files.
+     */
+    private void btnOpenLibraryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenLibraryActionPerformed
+
+        mainFrame.showLibraryPanel();
+
+    }//GEN-LAST:event_btnOpenLibraryActionPerformed
+
+    private void comboQualityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboQualityActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboQualityActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnDonwload;
+    private javax.swing.JButton btnDownload;
+    private javax.swing.JButton btnOpenLibrary;
     private javax.swing.JButton btnReproducir;
-    private javax.swing.ButtonGroup buttonGroupFormato;
+    private javax.swing.JComboBox<String> comboFormat;
+    private javax.swing.JComboBox<String> comboQuality;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTxtLog;
-    private javax.swing.JRadioButton jrbSelectionMp3;
-    private javax.swing.JRadioButton jrbSelectionMp4;
     private javax.swing.JSeparator jslFormato;
     private javax.swing.JSeparator jslOptionA;
-    private java.awt.TextField jtfEntrada;
-    private javax.swing.JLabel lblFormatoSalida;
+    private java.awt.TextField jtxtUrl;
+    private javax.swing.JLabel lblCalidad;
+    private javax.swing.JLabel lblFormatoSalida1;
     private javax.swing.JLabel lblUrl;
     // End of variables declaration//GEN-END:variables
 }
