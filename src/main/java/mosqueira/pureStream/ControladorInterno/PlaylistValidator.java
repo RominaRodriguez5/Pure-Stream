@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * Utility class to validate M3U playlists and extract valid URLs.
+ * 
  * @author Romina
  */
 public class PlaylistValidator {
