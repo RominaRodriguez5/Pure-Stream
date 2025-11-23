@@ -8,46 +8,55 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Represents a downloaded media file with its metadata.
- * This class stores information about a specific file, including its
- * name, size, MIME type, path, and download date. It is mainly used
- * to populate tables or lists of downloaded media within the PureStream
- * application.
+ * Represents a downloaded media file with its metadata. This class stores
+ * information about a specific file, including its name, size, MIME type, path,
+ * and download date. It is mainly used to populate tables or lists of
+ * downloaded media within the PureStream application.
  *
  * @author Romina
- * 
+ *
  */
-public class MediaFile implements Serializable  {
+public class MediaFile implements Serializable {
 
-    /** The name of the media file (e.g., video.mp4). */
+    /**
+     * The name of the media file (e.g., video.mp4).
+     */
     private String fileName;
 
-    /** The MIME type of the file (e.g., video/mp4, audio/mpeg). */
+    /**
+     * The MIME type of the file (e.g., video/mp4, audio/mpeg).
+     */
     private String mimeType;
 
-    /** The absolute file path on disk. */
+    /**
+     * The absolute file path on disk.
+     */
     private String filePath;
 
-    /** The file size in bytes. */
+    /**
+     * The file size in bytes.
+     */
     private long fileSizeBytes;
 
-    /** The date when the file was downloaded or last modified. */
+    /**
+     * The date when the file was downloaded or last modified.
+     */
     private Date dateDownloaded;
 
     /**
      * Constructs a new MediaFile object using the provided File.
      * <p>
-     * It extracts metadata such as name, size, MIME type, and last
-     * modification date from the file system.
+     * It extracts metadata such as name, size, MIME type, and last modification
+     * date from the file system.
      * </p>
      *
      * @param file the File object representing the media file.
      */
-    public MediaFile(File file) {
+    public MediaFile(File file, Date downloadDate) {
         this.fileName = file.getName();
         this.filePath = file.getAbsolutePath();
         this.fileSizeBytes = file.length();
-        this.dateDownloaded = new Date(file.lastModified());
+        this.dateDownloaded = downloadDate;
 
         try {
             Path path = file.toPath();
@@ -83,8 +92,12 @@ public class MediaFile implements Serializable  {
      *
      * @return the file path.
      */
-    public String getFilePath() {
-        return filePath;
+    public File getFile() {
+        return new File(filePath);
+    }
+
+    public void setFilePath(String newPath) {
+        this.filePath = newPath;
     }
 
     /**
@@ -125,13 +138,45 @@ public class MediaFile implements Serializable  {
     }
 
     /**
-     * Returns a string representation of this MediaFile object,
-     * including its name and formatted size.
+     * Returns a string representation of this MediaFile object, including its
+     * name and formatted size.
      *
      * @return a formatted string representing the media file.
      */
     @Override
     public String toString() {
-        return fileName + " (" + String.format("%.2f MB", getSizeInMB()) + ")";
+        return fileName;  // SOLO el nombre
+    }
+    /**
+     * Checks equality based on the absolute file path.
+     *
+     * <p>
+     * Two MediaFile objects are considered equal if they reference the same
+     * physical file on disk.
+     * </p>
+     *
+     * @param obj object to compare
+     * @return true if both refer to the same file path
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        MediaFile other = (MediaFile) obj;
+        return this.filePath.equals(other.filePath);
+    }
+    /**
+     * Generates a hash code using the file path, ensuring consistency with equals().
+     *
+     * @return hash code for this MediaFile
+     */
+    @Override
+    public int hashCode() {
+        return filePath.hashCode();
     }
 }

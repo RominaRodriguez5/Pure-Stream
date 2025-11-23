@@ -6,15 +6,20 @@ import java.util.List;
 
 /**
  * MediaTableModel is a table model that manages a list of MediaFile objects.
- * It provides the data structure and behavior needed to display media files
- * in a JTable, showing details like name, MIME type, size and date.
- *
- * @author Romina
- * 
+ * It provides the data structure and behavior needed to display media files in
+ * a JTable.
  */
 public class MediaTableModel extends AbstractTableModel {
 
-    private final String[] columnNames = {"File Name", "MIME Type", "Size (MB)", "Date Downloaded"};
+    // Column titles for the JTable
+    private final String[] columnNames = {
+        "File Name",
+        "MIME Type",
+        "Size (MB)",
+        "Date Downloaded"
+    };
+
+    // Internal storage for MediaFile rows
     private final List<MediaFile> mediaFiles;
 
     /**
@@ -26,8 +31,6 @@ public class MediaTableModel extends AbstractTableModel {
 
     /**
      * Returns the number of rows in the table.
-     *
-     * @return number of media files
      */
     @Override
     public int getRowCount() {
@@ -36,8 +39,6 @@ public class MediaTableModel extends AbstractTableModel {
 
     /**
      * Returns the number of columns in the table.
-     *
-     * @return number of columns (fixed)
      */
     @Override
     public int getColumnCount() {
@@ -46,9 +47,6 @@ public class MediaTableModel extends AbstractTableModel {
 
     /**
      * Returns the name of a given column.
-     *
-     * @param column the index of the column
-     * @return column name
      */
     @Override
     public String getColumnName(int column) {
@@ -57,10 +55,6 @@ public class MediaTableModel extends AbstractTableModel {
 
     /**
      * Returns the value for a specific cell in the table.
-     *
-     * @param rowIndex    the row index
-     * @param columnIndex the column index
-     * @return cell value
      */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
@@ -75,15 +69,12 @@ public class MediaTableModel extends AbstractTableModel {
                 return String.format("%.2f", file.getSizeInMB());
             case 3:
                 return file.getFormattedDate();
-            default:
-                return null;
         }
+        return null;
     }
 
     /**
-     * Adds a new MediaFile to the table and updates the view.
-     *
-     * @param mediaFile the media file to be added
+     * Adds a new MediaFile to the table.
      */
     public void addMediaFile(MediaFile mediaFile) {
         mediaFiles.add(mediaFile);
@@ -91,9 +82,7 @@ public class MediaTableModel extends AbstractTableModel {
     }
 
     /**
-     * Removes a MediaFile from the table by its row index.
-     *
-     * @param rowIndex the index of the row to remove
+     * Removes a MediaFile from the table.
      */
     public void removeMediaFile(int rowIndex) {
         if (rowIndex >= 0 && rowIndex < mediaFiles.size()) {
@@ -103,10 +92,7 @@ public class MediaTableModel extends AbstractTableModel {
     }
 
     /**
-     * Returns the MediaFile at the specified row.
-     *
-     * @param rowIndex index of the row
-     * @return MediaFile object
+     * Gets the MediaFile at the specified row.
      */
     public MediaFile getMediaFileAt(int rowIndex) {
         if (rowIndex >= 0 && rowIndex < mediaFiles.size()) {
@@ -116,7 +102,7 @@ public class MediaTableModel extends AbstractTableModel {
     }
 
     /**
-     * Clears all media files from the table.
+     * Removes all media files from the table.
      */
     public void clearAll() {
         mediaFiles.clear();
@@ -124,11 +110,25 @@ public class MediaTableModel extends AbstractTableModel {
     }
 
     /**
-     * Returns the entire list of media files.
-     *
-     * @return list of MediaFile objects
+     * Returns the list of all MediaFiles.
      */
     public List<MediaFile> getMediaFiles() {
         return mediaFiles;
+    }
+
+    /**
+     * Replaces the current list of MediaFiles with another list.
+     */
+    public void setMediaFiles(List<MediaFile> files) {
+        mediaFiles.clear();
+        mediaFiles.addAll(files);
+        fireTableDataChanged();
+    }
+
+    /**
+     * Returns the index of a specific MediaFile.
+     */
+    public int indexOf(MediaFile mf) {
+        return mediaFiles.indexOf(mf);
     }
 }
