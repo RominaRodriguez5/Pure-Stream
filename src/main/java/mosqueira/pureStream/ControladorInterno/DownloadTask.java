@@ -3,29 +3,47 @@ package mosqueira.pureStream.ControladorInterno;
 import javax.swing.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
-import mosqueira.pureStream.Paneles.PreferencesPanel;
+import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Paneles.PanelPrincipal;
-
+import mosqueira.pureStream.Paneles.PreferencesPanel;
 /**
  * SwingWorker to handle yt-dlp downloads in background.
  * @author Romina
  */
 public class DownloadTask extends SwingWorker<Void, String> {
 
+    // URL to download
     private final String url;
+
+    // User preferences (yt-dlp path, speed limit, etc.)
     private final PreferencesPanel preferencesPanel;
+
+    // Log area where progress/output is displayed
     private final JTextArea logArea;
+
+    // Selected output format (mp3/mp4)
     private final JComboBox<String> format;
+
+    // Selected quality (360p, 720p, etc.)
     private final JComboBox<String> quality;
+
+    // Reference to main panel to notify on completion
     private final PanelPrincipal parentPanel;
 
-    private String lastDownloadedFile;
+    // Stores the detected final output file
+    private String detectedFile = null;
 
-    public DownloadTask(String url, PreferencesPanel panelPref, JTextArea logArea,
-                        JComboBox<String> format, JComboBox<String> quality, PanelPrincipal parentPanel) {
+    public DownloadTask(String url,
+                        PreferencesPanel preferencesPanel,
+                        JTextArea logArea,
+                        JComboBox<String> format,
+                        JComboBox<String> quality,
+                        PanelPrincipal parentPanel) {
+
         this.url = url;
-        this.preferencesPanel = panelPref;
+        this.preferencesPanel = preferencesPanel;
         this.logArea = logArea;
         this.format = format;
         this.quality = quality;
@@ -34,85 +52,148 @@ public class DownloadTask extends SwingWorker<Void, String> {
 
     @Override
     protected Void doInBackground() throws Exception {
-        // Get selected format and quality
-        String selectedFormat = format.getSelectedItem() != null ? format.getSelectedItem().toString() : "mp4";
-        String selectedQuality = quality.getSelectedItem() != null ? quality.getSelectedItem().toString() : "";
 
-        // Build the command using CommandBuilder
-        List<String> command = CommandBuilder.buildCommand(url, preferencesPanel, selectedFormat, selectedQuality);
-        if (command == null) {
-            publish("Error: Could not build download command.\n");
+        // Build yt-dlp command
+        List<String> command = CommandBuilder.buildCommand(
+                url,
+                preferencesPanel,
+                format.getSelectedItem().toString(),
+                quality.getSelectedItem().toString()
+        );
+
+        if (command == null)
             return null;
-        }
 
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.redirectErrorStream(true);
-        Process process = processBuilder.start();
+        // Run process with merged stdout/stderr
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectErrorStream(true);
+        Process process = pb.start();
 
+        // Read yt-dlp output line-by-line
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
 
             String line;
             while ((line = reader.readLine()) != null) {
-                publish(line + "\n");
-
-                // Detect downloaded file path
-                if (line.contains("has already been downloaded") || line.contains("[Merger] Merging formats into")) {
-                    String regex = "[A-Z]:\\\\[^\\s]+\\.(mp4|webm|mkv|mp3)";
-                    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
-                    java.util.regex.Matcher matcher = pattern.matcher(line);
-                    if (matcher.find()) {
-                        lastDownloadedFile = matcher.group();
-                        publish("Detected file: " + lastDownloadedFile + "\n");
-                        if (parentPanel != null) {
-                            parentPanel.setLastDownloadedFile(lastDownloadedFile);
-                        }
-                    }
-                }
+                publish(line + "\n"); // send to process()
+                detectDownloadedFile(line); // detect final file name
             }
         }
 
-        int exitCode = process.waitFor();
-        publish("\nProcess finished with exit code: " + exitCode + "\n");
+        process.waitFor();
         return null;
     }
 
     @Override
     protected void process(List<String> chunks) {
         for (String line : chunks) {
+
+            // Append full yt-dlp output to log
             logArea.append(line);
+
+            // Extract download percentage when available
+            if (line.contains("[download]")) {
+
+                var match = java.util.regex.Pattern
+                        .compile("(\\d+(?:\\.\\d+)?)%")
+                        .matcher(line);
+
+                if (match.find()) {
+                    String percent = match.group(1);
+                    logArea.append("Progress: " + percent + "%\n");
+                }
+            }
         }
     }
 
     @Override
     protected void done() {
-        logArea.append("\nDownload completed.\n");
 
-        // If file was not detected in output, get the latest file in the download folder
-        if (lastDownloadedFile == null && parentPanel != null) {
-            String downloadFolder = preferencesPanel.getRutaDescargas();
-            if (downloadFolder != null) {
-                File dir = new File(downloadFolder);
-                if (dir.exists() && dir.isDirectory()) {
-                    File[] files = dir.listFiles();
-                    if (files != null && files.length > 0) {
-                        File latestFile = files[0];
-                        for (File f : files) {
-                            if (f.lastModified() > latestFile.lastModified()) {
-                                latestFile = f;
-                            }
-                        }
-                        lastDownloadedFile = latestFile.getAbsolutePath();
-                        parentPanel.setLastDownloadedFile(lastDownloadedFile);
-                        logArea.append("File ready to play: " + lastDownloadedFile + "\n");
-                        return;
-                    }
-                }
+        // Check if any file was detected
+        if (detectedFile == null) {
+            logArea.append("No final file detected.\n");
+            return;
+        }
+
+        File file = new File(detectedFile);
+
+        // Download directory selected by the user
+        String rutaDescargas = parentPanel.getMainFrame().getRutaDescargas();
+        File carpeta = new File(rutaDescargas);
+
+        // If file does not exist, try finding a close match (yt-dlp temp names)
+        if (!file.exists()) {
+
+            final String base = new File(detectedFile).getName().replaceAll("\\.f\\d+.*", "");
+            final String baseName = base.contains(".")
+                    ? base.substring(0, base.lastIndexOf('.'))
+                    : base;
+
+            // Look for matching files in the download folder
+            File[] matches = carpeta.listFiles((d, name)
+                    -> name.toLowerCase().startsWith(baseName.toLowerCase())
+                    && (name.endsWith(".mp4") || name.endsWith(".mp3")
+                    || name.endsWith(".m4a") || name.endsWith(".webm"))
+            );
+
+            if (matches != null && matches.length > 0) {
+                file = matches[0];
             }
         }
 
-        if (lastDownloadedFile == null) {
-            logArea.append("Could not determine the downloaded file.\n");
+        // Final check: file must exist
+        if (!file.exists()) {
+            logArea.append("No final file found.\n");
+            return;
+        }
+
+        // Create metadata object
+        MediaFile media = new MediaFile(file, new Date());
+
+        // Notify PanelPrincipal
+        parentPanel.notifyDownloaded(media);
+
+        // Notify MainFrame (library + playlist)
+        parentPanel.getMainFrame().notifyDownloadedMedia(media);
+
+        logArea.append("File ready: " + file.getAbsolutePath() + "\n");
+    }
+
+    /**
+     * Attempts to detect the final filename from yt-dlp logs.
+     * Handles extract audio, merges, direct downloads and "already downloaded".
+     */
+    private void detectDownloadedFile(String line) {
+
+        // ExtractAudio final output
+        if (line.contains("ExtractAudio] Destination:")) {
+            detectedFile = line.substring(line.indexOf("Destination:") + 12).trim();
+            return;
+        }
+
+        // Merge output
+        if (line.contains("Merging formats into")) {
+            detectedFile = line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\""));
+            return;
+        }
+
+        // Direct download output
+        if (line.contains("Destination:")) {
+            String f = line.substring(line.indexOf("Destination:") + 12).trim();
+
+            // Skip temp/intermediate files
+            if (!f.contains(".webm") && !f.contains(".f") && !f.endsWith(".m4a"))
+                detectedFile = f;
+
+            return;
+        }
+
+        // Already downloaded case
+        if (line.contains("has already been downloaded")) {
+            String f = line.replace("[download]", "")
+                    .replace("has already been downloaded", "")
+                    .trim();
+            detectedFile = f;
         }
     }
 }
