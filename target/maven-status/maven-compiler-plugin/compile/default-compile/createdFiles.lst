@@ -1,6 +1,6 @@
 mosqueira\pureStream\Paneles\LibraryPanel$1.class
 mosqueira\pureStream\Paneles\PanelPrincipal$2.class
-mosqueira\pureStream\Paneles\PreferencesPanel$7.class
+mosqueira\pureStream\Paneles\LibraryPanel$6.class
 mosqueira\pureStream\Paneles\PanelPrincipal$5.class
 mosqueira\pureStream\Dialogs\AboutDialog.class
 mosqueira\pureStream\Modelo\MediaTableModel.class
@@ -10,18 +10,20 @@ mosqueira\pureStream\MainFrame$3.class
 mosqueira\pureStream\Paneles\PreferencesPanel$4.class
 mosqueira\pureStream\Paneles\LibraryPanel$4.class
 mosqueira\pureStream\Paneles\PanelPrincipal$3.class
+mosqueira\pureStream\Paneles\PanelPrincipal$6.class
 mosqueira\pureStream\MainFrame$1.class
 mosqueira\pureStream\Modelo\MediaFile.class
 mosqueira\pureStream\Paneles\PreferencesPanel.class
 mosqueira\pureStream\Paneles\PreferencesPanel$1.class
+mosqueira\pureStream\Paneles\LibraryPanel$7.class
 mosqueira\pureStream\Paneles\PanelPrincipal$1.class
 mosqueira\pureStream\Paneles\PreferencesPanel$6.class
 mosqueira\pureStream\MainFrame.class
 mosqueira\pureStream\Paneles\LibraryPanel$2.class
 mosqueira\pureStream\Dialogs\AboutDialog$2$1.class
 mosqueira\pureStream\Paneles\LibraryPanel.class
-mosqueira\pureStream\Paneles\PreferencesPanel$8.class
 mosqueira\pureStream\Dialogs\AboutDialog$2.class
+mosqueira\pureStream\Paneles\LibraryPanel$5.class
 mosqueira\pureStream\ControladorInterno\CommandBuilder.class
 mosqueira\pureStream\Paneles\PanelPrincipal.class
 mosqueira\pureStream\Paneles\PanelPrincipal$4.class
@@ -32,3 +34,4 @@ mosqueira\pureStream\Paneles\PreferencesPanel$5.class
 mosqueira\pureStream\Paneles\LibraryPanel$3.class
 mosqueira\pureStream\Paneles\PreferencesPanel$2.class
 mosqueira\pureStream\ControladorInterno\DownloadTask.class
+mosqueira\pureStream\Paneles\PanelPrincipal$7.class
