@@ -1,12 +1,8 @@
 package mosqueira.pureStream.Paneles;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import mosqueira.pureStream.ControladorInterno.CommandBuilder;
 import mosqueira.pureStream.ControladorInterno.DownloadTask;
 import mosqueira.pureStream.MainFrame;
 import mosqueira.pureStream.Modelo.MediaFile;
@@ -23,46 +19,32 @@ public class PanelPrincipal extends javax.swing.JPanel {
     // Reference to the preferences panel where the user sets the download folder
     private PreferencesPanel preferencesPanel;
 
-    // Stores the last entered URL
-    private String url;
-
     // Stores the path of the last downloaded file
     private String lastDownloadedFile;
 
     // Reference to the main frame to switch between panels
     private MainFrame mainFrame;
 
-    // Table model shared with LibraryPanel to display downloaded files
-    private MediaTableModel tableModel;
 
-    // Local list of downloaded media files
-    private List<MediaFile> archivosDescargados = new ArrayList<>();
-
-    
     /**
-     * Constructs the main download panel.
-     * Initializes references to the PreferencesPanel, MainFrame, and shared MediaTableModel.
+     * Constructs the main download panel. Initializes references to the
+     * PreferencesPanel, MainFrame, and shared MediaTableModel.
      *
-     * @param panelPref  Reference to the preferences configuration panel
-     * @param mainFrame  Reference to the main window for switching panels
+     * @param panelPref Reference to the preferences configuration panel
+     * @param mainFrame Reference to the main window for switching panels
      * @param tableModel Shared model containing downloaded media
      */
     public PanelPrincipal(PreferencesPanel panelPref, MainFrame mainFrame, MediaTableModel tableModel) {
         initComponents();
-        setSize(800, 800);
+
         this.preferencesPanel = panelPref;
         this.mainFrame = mainFrame;
-        this.tableModel = tableModel;
-
+        // Show current download path in the text field
+        jtxtFolderDownload.setText(mainFrame.getRutaDescargas());
     }
 
-   /**
-     * Returns the list of downloaded media files.
-     *
-     * @return List of MediaFile objects
-     */
-    public List<MediaFile> getArchivosDescargados() {
-        return archivosDescargados;
+    public MainFrame getMainFrame() {
+        return mainFrame;
     }
 
     /**
@@ -73,35 +55,15 @@ public class PanelPrincipal extends javax.swing.JPanel {
     public void setPanelPreferencias(PreferencesPanel panelPreferencias) {
         this.preferencesPanel = panelPreferencias;
     }
-
-      /**
-     * Updates the last downloaded file reference and logs it in the text area.
-     * Also creates a MediaFile object, adds it to the shared model,
-     * and updates the LibraryPanel and M3U playlist if enabled.
-     *
-     * @param path Absolute path of the downloaded file
+    /**
+     * Called when a file is successfully downloaded.
+     * Updates log and stores last downloaded file path.
      */
-    public void setLastDownloadedFile(String path) {
-        lastDownloadedFile = path;
-        jTxtLog.append("Archivo descargado: " + path + "\n");
-        File file = new File(path);
-        if (file.exists()) {
-            MediaFile media = new MediaFile(file);
-            archivosDescargados.add(media);
-            tableModel.addMediaFile(media);
+    public void notifyDownloaded(MediaFile mf) {
+        lastDownloadedFile = mf.getFile().getAbsolutePath();
+        jTxtLog.append("Downloaded: " + lastDownloadedFile + "\n");
+        mainFrame.notifyDownloadedMedia(mf);
 
-           // Update LibraryPanel with the new file
-            mainFrame.getLibraryPanel().addMediaFile(media);
-
-            // Update M3U playlist
-            CommandBuilder.verificarM3U(preferencesPanel.getRutaDescargas());
-            File m3uFile = new File(preferencesPanel.getRutaDescargas(), "playlist.m3u");
-            try (FileWriter writer = new FileWriter(m3uFile, true)) {
-                writer.write(path + System.lineSeparator());
-            } catch (IOException e) {
-                jTxtLog.append("Error al actualizar M3U: " + e.getMessage() + "\n");
-            }
-        }
     }
 
     /**
@@ -114,7 +76,6 @@ public class PanelPrincipal extends javax.swing.JPanel {
     private void initComponents() {
 
         lblUrl = new javax.swing.JLabel();
-        jtxtUrl = new java.awt.TextField();
         btnDownload = new javax.swing.JButton();
         lblCalidad = new javax.swing.JLabel();
         jslFormato = new javax.swing.JSeparator();
@@ -126,6 +87,10 @@ public class PanelPrincipal extends javax.swing.JPanel {
         comboFormat = new javax.swing.JComboBox<>();
         comboQuality = new javax.swing.JComboBox<>();
         lblFormatoSalida1 = new javax.swing.JLabel();
+        jtxtInsertUrl = new javax.swing.JTextField();
+        btnSearchFolderDownload = new javax.swing.JButton();
+        jtxtFolderDownload = new javax.swing.JTextField();
+        lblSelectFolderDownload = new javax.swing.JLabel();
 
         setLayout(null);
 
@@ -133,18 +98,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
         lblUrl.setForeground(new java.awt.Color(0, 0, 0));
         lblUrl.setText("Url");
         add(lblUrl);
-        lblUrl.setBounds(110, 50, 50, 20);
-
-        jtxtUrl.setBackground(new java.awt.Color(204, 204, 204));
-        jtxtUrl.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        jtxtUrl.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
-        jtxtUrl.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jtxtUrlActionPerformed(evt);
-            }
-        });
-        add(jtxtUrl);
-        jtxtUrl.setBounds(170, 50, 380, 30);
+        lblUrl.setBounds(120, 50, 40, 20);
 
         btnDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnDownload.setForeground(new java.awt.Color(0, 0, 153));
@@ -161,7 +115,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
         lblCalidad.setForeground(new java.awt.Color(0, 0, 0));
         lblCalidad.setText("Quality");
         add(lblCalidad);
-        lblCalidad.setBounds(440, 150, 90, 20);
+        lblCalidad.setBounds(490, 250, 90, 20);
         add(jslFormato);
         jslFormato.setBounds(0, 130, 790, 10);
         add(jslOptionA);
@@ -199,8 +153,13 @@ public class PanelPrincipal extends javax.swing.JPanel {
         btnOpenLibrary.setBounds(500, 670, 120, 30);
 
         comboFormat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "mp4", "mp3" }));
+        comboFormat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboFormatActionPerformed(evt);
+            }
+        });
         add(comboFormat);
-        comboFormat.setBounds(140, 190, 72, 22);
+        comboFormat.setBounds(190, 290, 72, 22);
 
         comboQuality.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1080p", "720p", "480p", "360p" }));
         comboQuality.addActionListener(new java.awt.event.ActionListener() {
@@ -209,34 +168,64 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(comboQuality);
-        comboQuality.setBounds(440, 190, 72, 22);
+        comboQuality.setBounds(490, 290, 72, 22);
 
         lblFormatoSalida1.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblFormatoSalida1.setForeground(new java.awt.Color(0, 0, 0));
         lblFormatoSalida1.setText("Output Format");
         add(lblFormatoSalida1);
-        lblFormatoSalida1.setBounds(120, 150, 160, 20);
+        lblFormatoSalida1.setBounds(170, 250, 160, 20);
+
+        jtxtInsertUrl.setBackground(new java.awt.Color(204, 204, 204));
+        add(jtxtInsertUrl);
+        jtxtInsertUrl.setBounds(170, 50, 370, 30);
+
+        btnSearchFolderDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnSearchFolderDownload.setForeground(new java.awt.Color(0, 0, 153));
+        btnSearchFolderDownload.setText("Search");
+        btnSearchFolderDownload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchFolderDownloadActionPerformed(evt);
+            }
+        });
+        add(btnSearchFolderDownload);
+        btnSearchFolderDownload.setBounds(580, 180, 95, 30);
+
+        jtxtFolderDownload.setBackground(new java.awt.Color(204, 204, 204));
+        jtxtFolderDownload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jtxtFolderDownloadActionPerformed(evt);
+            }
+        });
+        add(jtxtFolderDownload);
+        jtxtFolderDownload.setBounds(170, 180, 370, 30);
+
+        lblSelectFolderDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        lblSelectFolderDownload.setForeground(new java.awt.Color(0, 0, 0));
+        lblSelectFolderDownload.setText("Select download folder");
+        add(lblSelectFolderDownload);
+        lblSelectFolderDownload.setBounds(10, 180, 150, 30);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jtxtUrlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtUrlActionPerformed
-
-    }//GEN-LAST:event_jtxtUrlActionPerformed
-    /**
-     * Event triggered when the Download button is pressed. Starts the download
-     * process using the selected format and URL.
+     /**
+     * Starts a new download using DownloadTask.
      */
     private void btnDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownloadActionPerformed
-        url = jtxtUrl.getText().trim();
+        if (mainFrame.getRutaDescargas() == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Select a download folder first.", "Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String url = jtxtInsertUrl.getText().trim();
         if (url.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresa una URL.");
+            JOptionPane.showMessageDialog(this, "Insert a URL.");
             return;
         }
 
         jTxtLog.setText("");
-        jTxtLog.append("Iniciando descarga: " + url + "\n");
-
-        String velocidad = preferencesPanel.getVelocidadDescarga();
-
+        jTxtLog.append("Downloading: " + url + "\n");
+  // Create and execute background download task
         DownloadTask task = new DownloadTask(
                 url,
                 preferencesPanel,
@@ -247,6 +236,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
         );
         task.execute();
 
+
     }//GEN-LAST:event_btnDownloadActionPerformed
     /**
      * Opens the last downloaded file using the default system application.
@@ -256,14 +246,21 @@ public class PanelPrincipal extends javax.swing.JPanel {
             jTxtLog.append("Primero descarga un archivo para poder reproducirlo.\n");
             return;
         }
-        File file = new File(lastDownloadedFile);
-        if (!file.exists()) {
-            jTxtLog.append("No se encontró el archivo descargado.\n");
-            return;
-        }
+
         try {
-            jTxtLog.append("Reproduciendo: " + file.getName() + "\n");
+            
+            java.nio.file.Path path = java.nio.file.Paths.get(lastDownloadedFile);
+            File file = path.toFile();
+
+            if (!file.exists()) {
+                jTxtLog.append("No se encontró el archivo descargado: " + lastDownloadedFile + "\n");
+                return;
+            }
+
+            jTxtLog.append("Reproduciendo: " + file.getAbsolutePath() + "\n");
+
             java.awt.Desktop.getDesktop().open(file);
+
         } catch (Exception e) {
             jTxtLog.append("ERROR al reproducir el archivo: " + e.getMessage() + "\n");
         }
@@ -272,29 +269,51 @@ public class PanelPrincipal extends javax.swing.JPanel {
      * Opens the Library panel to show all downloaded media files.
      */
     private void btnOpenLibraryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenLibraryActionPerformed
-
         mainFrame.showLibraryPanel();
-
     }//GEN-LAST:event_btnOpenLibraryActionPerformed
 
     private void comboQualityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboQualityActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_comboQualityActionPerformed
+
+    private void comboFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboFormatActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboFormatActionPerformed
+    /**
+     * Lets the user choose a folder for saving downloads.
+     */
+    private void btnSearchFolderDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchFolderDownloadActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            String ruta = chooser.getSelectedFile().getAbsolutePath();
+            jtxtFolderDownload.setText(ruta);
+            mainFrame.setRutaDescargas(ruta);
+        }
+    }//GEN-LAST:event_btnSearchFolderDownloadActionPerformed
+
+    private void jtxtFolderDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtFolderDownloadActionPerformed
+
+    }//GEN-LAST:event_jtxtFolderDownloadActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDownload;
     private javax.swing.JButton btnOpenLibrary;
     private javax.swing.JButton btnReproducir;
+    private javax.swing.JButton btnSearchFolderDownload;
     private javax.swing.JComboBox<String> comboFormat;
     private javax.swing.JComboBox<String> comboQuality;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTxtLog;
     private javax.swing.JSeparator jslFormato;
     private javax.swing.JSeparator jslOptionA;
-    private java.awt.TextField jtxtUrl;
+    private javax.swing.JTextField jtxtFolderDownload;
+    private javax.swing.JTextField jtxtInsertUrl;
     private javax.swing.JLabel lblCalidad;
     private javax.swing.JLabel lblFormatoSalida1;
+    private javax.swing.JLabel lblSelectFolderDownload;
     private javax.swing.JLabel lblUrl;
     // End of variables declaration//GEN-END:variables
 }
