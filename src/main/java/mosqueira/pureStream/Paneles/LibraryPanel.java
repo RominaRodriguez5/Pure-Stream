@@ -9,9 +9,10 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import mosqueira.pureStream.MainFrame;
 import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Modelo.MediaTableModel;
@@ -21,111 +22,168 @@ import mosqueira.pureStream.Modelo.MediaTableModel;
  * user to search, filter, and delete them from the library.
  *
  * @author Romina
- * 
+ *
  */
 public class LibraryPanel extends javax.swing.JPanel {
 
+    // Name of the serialized library file
     private static final String BIBLIOTECA_FILE = "mediaLibrary.dat";
+
+    // Table model for detailed view
     private MediaTableModel tableModel;
+
+    // List model for compact list view
     private DefaultListModel<MediaFile> listModel;
-    private List<MediaFile> allMediaFiles;
+
+    // Full library of media files (unfiltered)
+    private List<MediaFile> allMediaFiles = new ArrayList<>();
+
+    // Reference to MainFrame for navigation
     private MainFrame mainFrame;
 
     /**
-     * Constructor: Initializes the panel with reference to the main frame and
-     * table model.
+     * Constructor: initializes UI components and loads saved library.
      */
     public LibraryPanel(MainFrame mainFrame, MediaTableModel tableModel) {
         this.mainFrame = mainFrame;
         this.tableModel = tableModel;
+
         initComponents();
         setSize(800, 800);
 
-        // Initialize the list model and assign it to the JList
+        jTblDetails.setModel(tableModel);
         listModel = new DefaultListModel<>();
-        jdownloadsList.setModel((javax.swing.ListModel) listModel);
-        allMediaFiles = new ArrayList<>();
+        jListDownloads.setModel(listModel);
 
-        loadMediaFiles();  // load from download folder
-        cargarBiblioteca(); // load serialized library if exists
+        cargarBiblioteca();
+        jTblDetails.setAutoCreateRowSorter(true);
+
+        conectarEventos();
     }
 
     /**
-     * Loads all media files from the downloads directory and populates the
-     * table and list.
+     * Connects selection events between JTable and JList.
      */
-    private void loadMediaFiles() {
-        File downloadDir = new File(mainFrame.getRutaDescargas());
-        if (!downloadDir.exists()) {
-            downloadDir.mkdirs();
-        }
-
-        File[] files = downloadDir.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                MediaFile media = new MediaFile(f);
-                if (!allMediaFiles.contains(media)) { 
-                    allMediaFiles.add(media);
-                    tableModel.addMediaFile(media);
-                    listModel.addElement(media);
+    private void conectarEventos() {
+        jListDownloads.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting()) {
+                    MediaFile selected = jListDownloads.getSelectedValue();
+                    if (selected != null) {
+                        int modelIndex = tableModel.indexOf(selected);
+                        if (modelIndex != -1) {
+                            int viewIndex = jTblDetails.convertRowIndexToView(modelIndex);
+                            if (viewIndex != -1) {
+                                jTblDetails.setRowSelectionInterval(viewIndex, viewIndex);
+                            }
+                        }
+                    }
                 }
             }
-        }
-
-        jTblDetails.setModel(tableModel);
+        });
+        // Sync from JTable to JList
+        jTblDetails.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int viewRow = jTblDetails.getSelectedRow();
+                    if (viewRow != -1) {
+                        int modelRow = jTblDetails.convertRowIndexToModel(viewRow);
+                        MediaFile mf = tableModel.getMediaFileAt(modelRow);
+                        if (mf != null) {
+                            jListDownloads.setSelectedValue(mf, true);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     /**
-     * Save library to disk via serialization 
+     * Add a new media file to library
      */
-    public void guardarBiblioteca() {
-        if (allMediaFiles.isEmpty()) {
-            return;
-        }
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(BIBLIOTECA_FILE))) {
-            oos.writeObject(allMediaFiles);
-            System.out.println("Biblioteca guardada correctamente.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    public void addMediaFile(MediaFile media) {
 
-    /**
-     *Load library from serialized file if it exists 
-     */
-    private void cargarBiblioteca() {
-        File file = new File(BIBLIOTECA_FILE);
-        if (file.exists()) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                List<MediaFile> archivos = (List<MediaFile>) ois.readObject();
-                receiveFiles(archivos);
-                System.out.println("Biblioteca cargada correctamente.");
-            } catch (Exception e) {
-                e.printStackTrace();
+        for (MediaFile mf : allMediaFiles) {
+            if (mf.getFile().getAbsolutePath().equals(media.getFile().getAbsolutePath())) {
+                return; // evitar duplicado
             }
         }
-    }
-/** Add a new media file to library */
-    public void addMediaFile(MediaFile media) {
+
         allMediaFiles.add(media);
         tableModel.addMediaFile(media);
         listModel.addElement(media);
-        guardarBiblioteca(); // opcional: guardar inmediatamente
+        guardarBiblioteca(); // save updated library
     }
 
     /**
-     * Update view and internal list with provided files 
+     * Saves the full media library via serialization.
      */
-    public void receiveFiles(List<MediaFile> archivos) {
-        allMediaFiles.clear();
-        allMediaFiles.addAll(archivos);
-        tableModel.clearAll();
-        listModel.clear();
-
-        for (MediaFile archivo : archivos) {
-            tableModel.addMediaFile(archivo);
-            listModel.addElement(archivo);
+    private void guardarBiblioteca() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(BIBLIOTECA_FILE))) {
+            oos.writeObject(allMediaFiles);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
+    }
+
+    /**
+     * Loads the serialized media library if the file exists.
+     */
+    private void cargarBiblioteca() {
+        File f = new File(BIBLIOTECA_FILE);
+        if (!f.exists()) {
+            return;
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
+
+            List<MediaFile> files = (List<MediaFile>) ois.readObject();
+            allMediaFiles.clear();
+            allMediaFiles.addAll(files);
+
+            receiveFiles(allMediaFiles);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Update view and internal list with provided files
+     */
+    public void receiveFiles(List<MediaFile> lista) {
+        // actualizar tabla
+        tableModel.setMediaFiles(lista);
+
+        // actualizar lista
+        listModel.clear();
+        for (MediaFile mf : lista) {
+            listModel.addElement(mf);
+        }
+    }
+
+    /**
+     * Filters library by search text and selected type.
+     */
+    private void filtrarLista() {
+        String searchText = jtxtSearch.getText().toLowerCase().trim();
+        String filter = jcbFiltrados.getSelectedItem().toString();
+
+        List<MediaFile> filtered = allMediaFiles.stream()
+                .filter(f -> f.getFileName().toLowerCase().contains(searchText))
+                .filter(f -> switch (filter) {
+            case "Video" ->
+                f.getMimeType().contains("video");
+            case "Audio" ->
+                f.getMimeType().contains("audio");
+            default ->
+                true;
+        })
+                .collect(Collectors.toList());
+
+        receiveFiles(filtered);
     }
 
     /**
@@ -137,8 +195,6 @@ public class LibraryPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollList = new javax.swing.JScrollPane();
-        jdownloadsList = new javax.swing.JList<>();
         jScrollTable = new javax.swing.JScrollPane();
         jTblDetails = new javax.swing.JTable();
         btnSearch = new javax.swing.JButton();
@@ -146,24 +202,22 @@ public class LibraryPanel extends javax.swing.JPanel {
         jSeparatorListDownload = new javax.swing.JSeparator();
         jtxtSearch = new javax.swing.JTextField();
         jcbFiltrados = new javax.swing.JComboBox<>();
+        btnBack = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jListDownloads = new javax.swing.JList<>();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Details Download", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI Light", 1, 18), new java.awt.Color(0, 0, 153))); // NOI18N
         setLayout(null);
 
-        jScrollList.setViewportView(jdownloadsList);
-
-        add(jScrollList);
-        jScrollList.setBounds(20, 420, 520, 290);
-
         jTblDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {},
+                {},
+                {},
+                {}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+
             }
         ));
         jScrollTable.setViewportView(jTblDetails);
@@ -193,7 +247,7 @@ public class LibraryPanel extends javax.swing.JPanel {
 
         jSeparatorListDownload.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "List Download", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI Light", 1, 18), new java.awt.Color(0, 0, 153))); // NOI18N
         add(jSeparatorListDownload);
-        jSeparatorListDownload.setBounds(0, 380, 820, 390);
+        jSeparatorListDownload.setBounds(0, 380, 820, 40);
 
         jtxtSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -212,6 +266,21 @@ public class LibraryPanel extends javax.swing.JPanel {
         });
         add(jcbFiltrados);
         jcbFiltrados.setBounds(550, 180, 120, 26);
+
+        btnBack.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnBack.setText("Go back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
+        add(btnBack);
+        btnBack.setBounds(670, 310, 110, 30);
+
+        jScrollPane1.setViewportView(jListDownloads);
+
+        add(jScrollPane1);
+        jScrollPane1.setBounds(30, 440, 680, 240);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -219,86 +288,82 @@ public class LibraryPanel extends javax.swing.JPanel {
      * filters.
      */
     private void jtxtSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtSearchActionPerformed
-        String searchText = jtxtSearch.getText().toLowerCase().trim();
-        String filter = jcbFiltrados.getSelectedItem().toString();
-
-        List<MediaFile> filtered = allMediaFiles.stream()
-                .filter(f -> f.getFileName().toLowerCase().contains(searchText))
-                .filter(f -> switch (filter) {
-            case "Video" ->
-                f.getMimeType().contains("video");
-            case "Audio" ->
-                f.getMimeType().contains("audio");
-            default ->
-                true;
-        })
-                .collect(Collectors.toList());
-
-        tableModel.clearAll();
-        listModel.clear();
-        filtered.forEach(f -> {
-            tableModel.addMediaFile(f);
-            listModel.addElement(f);
-        });
-
-
+        filtrarLista();
     }//GEN-LAST:event_jtxtSearchActionPerformed
     /**
      * Handles combo box filter selection (Audio, Video, All).
      */
     private void jcbFiltradosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbFiltradosActionPerformed
-        if (allMediaFiles != null && !allMediaFiles.isEmpty()) {
-            jtxtSearchActionPerformed(null);
-        }
-
+        filtrarLista();
     }//GEN-LAST:event_jcbFiltradosActionPerformed
+    
     /**
      * Handles the deletion of a selected file from the table and disk.
      */
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        int selectedRow = jTblDetails.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a file to delete.");
+        int selected = jTblDetails.getSelectedRow();
+        if (selected == -1) {
+            JOptionPane.showMessageDialog(this, "Select a file first.");
             return;
         }
 
-        MediaFile fileToDelete = tableModel.getMediaFileAt(selectedRow);
-        File file = new File(fileToDelete.getFilePath());
+        selected = jTblDetails.convertRowIndexToModel(selected);
 
-        int confirm = JOptionPane.showConfirmDialog(this,
+        MediaFile mf = tableModel.getMediaFileAt(selected);
+        File file = mf.getFile();
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
                 "Are you sure you want to delete this file?\n" + file.getName(),
                 "Confirm Deletion",
-                JOptionPane.YES_NO_OPTION);
+                JOptionPane.YES_NO_OPTION
+        );
 
-        if (confirm == JOptionPane.YES_OPTION) {
-            if (file.delete()) {
-                tableModel.removeMediaFile(selectedRow);
-                listModel.removeElement(fileToDelete);
-                allMediaFiles.remove(fileToDelete);
-                JOptionPane.showMessageDialog(this, "File deleted successfully.");
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to delete the file.");
-            }
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
         }
+
+        // Delete file from disk
+        boolean deleted = !file.exists() || file.delete();
+        if (!deleted) {
+            JOptionPane.showMessageDialog(this, "Failed to delete the file.");
+            return;
+        }
+
+        // Remove from internal lists
+        allMediaFiles.remove(mf);
+        tableModel.removeMediaFile(selected);
+        listModel.removeElement(mf);
+
+        guardarBiblioteca();
+
+        JOptionPane.showMessageDialog(this, "File deleted successfully.");
 
     }//GEN-LAST:event_btnDeleteActionPerformed
     /**
      * Triggers the search manually when pressing the Search button.
      */
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        jtxtSearchActionPerformed(evt);
+        filtrarLista();
     }//GEN-LAST:event_btnSearchActionPerformed
+    /**
+     * Returns to the main panel.
+     */
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        mainFrame.mostrarPanelPrincipal();
+    }//GEN-LAST:event_btnBackActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnSearch;
-    private javax.swing.JScrollPane jScrollList;
+    private javax.swing.JList<MediaFile> jListDownloads;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollTable;
     private javax.swing.JSeparator jSeparatorListDownload;
     private javax.swing.JTable jTblDetails;
     private javax.swing.JComboBox<String> jcbFiltrados;
-    private javax.swing.JList<String> jdownloadsList;
     private javax.swing.JTextField jtxtSearch;
     // End of variables declaration//GEN-END:variables
 }
