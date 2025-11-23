@@ -27,46 +27,57 @@ public class PreferencesPanel extends javax.swing.JPanel {
     public PreferencesPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         initComponents();
-        setSize(800, 800);
+        cargarPreferencias();
 
-        // Initialize components with current MainFrame values
+    }
+
+    /**
+     * Loads saved settings from MainFrame into UI controls.
+     */
+
+    public void cargarPreferencias() {
+
         jchM3U.setSelected(mainFrame.isCrearM3U());
+        // Checkbox Limitar velocidad
         jchLimit.setSelected(mainFrame.isLimitarVelocidad());
         jSliderLimit.setEnabled(mainFrame.isLimitarVelocidad());
+        jSliderLimit.setValue(mainFrame.getLimiteVelocidad());
+        jtxtExecutable.setText(mainFrame.getExecutablePath());
+    }
 
-    }
-    
-    // Public getters (for compatibility with other panels)
-    
-    /** Returns the selected download directory path. */
-    public String getRutaDescargas() {
-        return jtxtFolderDownload.getText().trim();
-    }
-    /** 
-     * Returns the download speed limit in yt-dlp format (e.g., "500K").
-     * Returns null if the speed limit option is disabled.
+    /**
+     * Returns the selected download directory path.
      */
-    public String getVelocidadDescarga() {
-        if (!jchLimit.isSelected()) {
-            return null;
-        }
-        int kb = jSliderLimit.getValue();
-        if (kb <= 0) {
-            return null;
-        }
-        return kb + "K"; // yt-dlp acepta "K" para KB/s
+    public boolean isCrearM3U() {
+        return jchM3U.isSelected();
     }
-    /** Returns the selected yt-dlp executable path. */
+
+    /**
+     * Returns the selected yt-dlp executable path.
+     */
     public String getExecutablePath() {
         return jtxtExecutable.getText().trim();
     }
-    /** Returns whether the user has enabled download speed limiting. */
+
+    /**
+     * Returns whether the user has enabled download speed limiting.
+     */
     public boolean isLimitarVelocidad() {
         return jchLimit.isSelected();
     }
-    /** Returns the numeric value of the download speed limit (in KB/s). */
+
+    /**
+     * Returns the numeric value of the download speed limit (in KB/s).
+     */
     public int getLimiteVelocidad() {
         return jSliderLimit.getValue(); // en KB/s
+    }
+
+    /**
+     * Returns the reference to the MainFrame instance.
+     */
+    public MainFrame getMainFrame() {
+        return mainFrame;
     }
 
     /**
@@ -82,19 +93,17 @@ public class PreferencesPanel extends javax.swing.JPanel {
         lblAds = new javax.swing.JLabel();
         jchLimit = new javax.swing.JCheckBox();
         lblSelectPath = new javax.swing.JLabel();
-        btnSearchFolderDownload = new javax.swing.JButton();
-        jtxtFolderDownload = new javax.swing.JTextField();
         btnSaveAndReturn = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jtxtExecutable = new javax.swing.JTextField();
-        lblSelectFolderDownload = new javax.swing.JLabel();
         jSearchPath = new javax.swing.JButton();
         jSliderLimit = new javax.swing.JSlider();
+        jlblValue = new javax.swing.JLabel();
 
         setLayout(null);
 
         jchM3U.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        jchM3U.setForeground(new java.awt.Color(0, 0, 153));
+        jchM3U.setForeground(new java.awt.Color(0, 0, 0));
         jchM3U.setText("Crear archivo  .m3u");
         jchM3U.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -102,16 +111,16 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jchM3U);
-        jchM3U.setBounds(90, 320, 150, 40);
+        jchM3U.setBounds(100, 190, 150, 40);
 
         lblAds.setFont(new java.awt.Font("Segoe UI Light", 1, 24)); // NOI18N
         lblAds.setForeground(new java.awt.Color(0, 0, 0));
         lblAds.setText("Opciones adicionales");
         add(lblAds);
-        lblAds.setBounds(240, 40, 240, 30);
+        lblAds.setBounds(230, 30, 240, 30);
 
         jchLimit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        jchLimit.setForeground(new java.awt.Color(0, 0, 153));
+        jchLimit.setForeground(new java.awt.Color(0, 0, 0));
         jchLimit.setText("Limitar Velocidad de descarga");
         jchLimit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -119,33 +128,16 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jchLimit);
-        jchLimit.setBounds(360, 320, 230, 40);
+        jchLimit.setBounds(370, 190, 230, 40);
 
         lblSelectPath.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        lblSelectPath.setForeground(new java.awt.Color(0, 0, 153));
-        lblSelectPath.setText("\"Select yt-dlp executable");
+        lblSelectPath.setForeground(new java.awt.Color(0, 0, 0));
+        lblSelectPath.setText("Select yt-dlp executable");
         add(lblSelectPath);
-        lblSelectPath.setBounds(10, 220, 160, 30);
-
-        btnSearchFolderDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        btnSearchFolderDownload.setText("Search");
-        btnSearchFolderDownload.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSearchFolderDownloadActionPerformed(evt);
-            }
-        });
-        add(btnSearchFolderDownload);
-        btnSearchFolderDownload.setBounds(530, 100, 95, 30);
-
-        jtxtFolderDownload.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jtxtFolderDownloadActionPerformed(evt);
-            }
-        });
-        add(jtxtFolderDownload);
-        jtxtFolderDownload.setBounds(180, 100, 340, 30);
+        lblSelectPath.setBounds(20, 100, 160, 30);
 
         btnSaveAndReturn.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnSaveAndReturn.setForeground(new java.awt.Color(0, 0, 153));
         btnSaveAndReturn.setText("Save and Return");
         btnSaveAndReturn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -153,10 +145,11 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(btnSaveAndReturn);
-        btnSaveAndReturn.setBounds(260, 450, 160, 30);
+        btnSaveAndReturn.setBounds(250, 400, 160, 30);
         add(jSeparator1);
-        jSeparator1.setBounds(10, 190, 660, 10);
+        jSeparator1.setBounds(10, 160, 660, 10);
 
+        jtxtExecutable.setBackground(new java.awt.Color(204, 204, 204));
         jtxtExecutable.setText("C:\\Program Files\\yt-dlp\\yt-dlp.exe");
         jtxtExecutable.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -164,15 +157,10 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jtxtExecutable);
-        jtxtExecutable.setBounds(180, 220, 340, 30);
-
-        lblSelectFolderDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        lblSelectFolderDownload.setForeground(new java.awt.Color(0, 0, 153));
-        lblSelectFolderDownload.setText("Select download folder");
-        add(lblSelectFolderDownload);
-        lblSelectFolderDownload.setBounds(10, 100, 160, 30);
+        jtxtExecutable.setBounds(190, 100, 340, 30);
 
         jSearchPath.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        jSearchPath.setForeground(new java.awt.Color(0, 0, 153));
         jSearchPath.setText("Search");
         jSearchPath.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -180,12 +168,12 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jSearchPath);
-        jSearchPath.setBounds(530, 220, 100, 30);
+        jSearchPath.setBounds(540, 100, 100, 30);
 
-        jSliderLimit.setMajorTickSpacing(100);
+        jSliderLimit.setMajorTickSpacing(500);
+        jSliderLimit.setMaximum(5000);
         jSliderLimit.setMinimum(50);
         jSliderLimit.setMinorTickSpacing(50);
-        jSliderLimit.setPaintLabels(true);
         jSliderLimit.setPaintTicks(true);
         jSliderLimit.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -193,74 +181,60 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jSliderLimit);
-        jSliderLimit.setBounds(340, 360, 280, 60);
+        jSliderLimit.setBounds(350, 260, 280, 40);
+
+        jlblValue.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        jlblValue.setForeground(new java.awt.Color(0, 0, 153));
+        add(jlblValue);
+        jlblValue.setBounds(440, 230, 100, 30);
     }// </editor-fold>//GEN-END:initComponents
-   
-    /** Updates MainFrame when the user toggles the "Create .m3u" checkbox. */
+
+    /**
+     * Updates MainFrame when the user toggles the "Create .m3u" checkbox.
+     */
     private void jchM3UActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jchM3UActionPerformed
         mainFrame.setCrearM3U(jchM3U.isSelected());
     }//GEN-LAST:event_jchM3UActionPerformed
-    
-    /** Enables or disables the speed limit slider when toggled. */
+
+    /**
+     * Enables or disables the speed limit slider when toggled.
+     */
     private void jchLimitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jchLimitActionPerformed
         mainFrame.setLimitarVelocidad(jchLimit.isSelected());
         jSliderLimit.setEnabled(jchLimit.isSelected());
     }//GEN-LAST:event_jchLimitActionPerformed
-    
-    /** Opens a folder chooser to set the download directory. */
-    private void btnSearchFolderDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchFolderDownloadActionPerformed
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int option = chooser.showOpenDialog(this);
-        if (option == JFileChooser.APPROVE_OPTION) {
-            String ruta = chooser.getSelectedFile().getAbsolutePath();
-            jtxtFolderDownload.setText(ruta);
-            mainFrame.setRutaDescargas(ruta);
-        }
-    }//GEN-LAST:event_btnSearchFolderDownloadActionPerformed
-    
-    /** Validates preferences and returns to the main panel. */
-    private void btnSaveAndReturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveAndReturnActionPerformed
-        String ruta = jtxtFolderDownload.getText().trim();
-        String rutaExecute = jtxtExecutable.getText().trim();
-        if (ruta.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Debes seleccionar una ruta válida de descarga.",
-                    "Ruta inválida", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        if (rutaExecute.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Debes seleccionar la ruta del ejecutable.",
-                    "Ruta inválida", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
 
-        // Return to the main panel
+    /**
+     * Validates preferences and returns to the main panel.
+     */
+    private void btnSaveAndReturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveAndReturnActionPerformed
+        if (jtxtExecutable.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Select yt-dlp executable.");
+            return;
+        }
+        mainFrame.setExecutablePath(jtxtExecutable.getText().trim());
         mainFrame.mostrarPanelPrincipal();
     }//GEN-LAST:event_btnSaveAndReturnActionPerformed
 
-    private void jtxtFolderDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtFolderDownloadActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jtxtFolderDownloadActionPerformed
-  
-    /** Opens a file chooser to select the yt-dlp executable path. */
+    /**
+     * Opens a file chooser to select the yt-dlp executable path.
+     */
     private void jSearchPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSearchPathActionPerformed
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        int option = chooser.showOpenDialog(this);
-        if (option == JFileChooser.APPROVE_OPTION) {
+
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String ruta = chooser.getSelectedFile().getAbsolutePath();
             jtxtExecutable.setText(ruta);
-            
             mainFrame.setExecutablePath(ruta);
         }
     }//GEN-LAST:event_jSearchPathActionPerformed
-    
-    /** Updates the download speed limit value in MainFrame. */
+
+    /**
+     * Updates the download speed limit value in MainFrame.
+     */
     private void jSliderLimitStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSliderLimitStateChanged
-        int valor = jSliderLimit.getValue();   // valor del slider
-        mainFrame.setLimiteVelocidad(valor);      // guardar en MainFrame
+        jlblValue.setText(jSliderLimit.getValue() + " KB/s");
     }//GEN-LAST:event_jSliderLimitStateChanged
 
     private void jtxtExecutableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtExecutableActionPerformed
@@ -270,16 +244,14 @@ public class PreferencesPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSaveAndReturn;
-    private javax.swing.JButton btnSearchFolderDownload;
     private javax.swing.JButton jSearchPath;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSlider jSliderLimit;
     private javax.swing.JCheckBox jchLimit;
     private javax.swing.JCheckBox jchM3U;
+    private javax.swing.JLabel jlblValue;
     private javax.swing.JTextField jtxtExecutable;
-    private javax.swing.JTextField jtxtFolderDownload;
     private javax.swing.JLabel lblAds;
-    private javax.swing.JLabel lblSelectFolderDownload;
     private javax.swing.JLabel lblSelectPath;
     // End of variables declaration//GEN-END:variables
 }
