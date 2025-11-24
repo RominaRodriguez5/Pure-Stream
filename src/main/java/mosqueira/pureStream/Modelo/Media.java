@@ -1,8 +1,4 @@
 package mosqueira.pureStream.Modelo;
-/**
- *
- * @author Lulas
- */
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 // Created by Github Copilot

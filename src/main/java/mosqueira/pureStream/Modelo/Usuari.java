@@ -1,10 +1,4 @@
-
 package mosqueira.pureStream.Modelo;
-
-/**
- *
- * @author Lulas
- */
 // Created by Github Copilot
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Note: API byte[] fields (picture) are expected as base64 strings and Jackson will decode into byte[].
  * If you prefer typed date handling, register JavaTimeModule on your ObjectMapper and change date fields to LocalDate/OffsetDateTime.
  */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Usuari {
     @JsonProperty("id")

@@ -8,6 +8,8 @@ import java.util.List;
  * MediaTableModel is a table model that manages a list of MediaFile objects.
  * It provides the data structure and behavior needed to display media files in
  * a JTable.
+ * 
+ * @author Romina
  */
 public class MediaTableModel extends AbstractTableModel {
 

@@ -1,11 +1,12 @@
 package mosqueira.pureStream;
-
 import java.io.File;
 import javax.swing.JOptionPane;
 import mosqueira.pureStream.Dialogs.AboutDialog;
 import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Modelo.MediaTableModel;
+import mosqueira.pureStream.Modelo.Usuari;
 import mosqueira.pureStream.Paneles.LibraryPanel;
+
 import mosqueira.pureStream.Paneles.PanelPrincipal;
 import mosqueira.pureStream.Paneles.PreferencesPanel;
 
@@ -39,7 +40,11 @@ public class MainFrame extends javax.swing.JFrame {
     // Shared data model used to synchronize the main panel and the library panel
     private MediaTableModel mediaTableModel;
 
-    
+
+
+    private String tokens;
+
+    private Usuari usuariActual;
 
     // User preferences
     private boolean crearM3U = false; // Whether to create an M3U playlist after downloads
@@ -58,15 +63,20 @@ public class MainFrame extends javax.swing.JFrame {
         setResizable(false);
         setSize(800, 800);
         setLocationRelativeTo(null);
+        setContentPane(panelPrincipal);
+        cargarPanelPrincipal();
+    }
 
+    private void cargarPanelPrincipal() {
         // Initialize shared model and all panels
         mediaTableModel = new MediaTableModel();
         preferencesPanel = new PreferencesPanel(this);
         panelPrincipal = new PanelPrincipal(preferencesPanel, this, mediaTableModel);
         panelLibrary = new LibraryPanel(this, mediaTableModel);
 
-        // Display the main panel by default
         setContentPane(panelPrincipal);
+        revalidate();
+        repaint();
     }
 
     /**
@@ -173,9 +183,11 @@ public class MainFrame extends javax.swing.JFrame {
     public String getExecutablePath() {
         return executablePath;
     }
+
     /**
      * Notifies the application that a new media file has been downloaded.
-     * Updates the library panel and optionally appends the file to an M3U playlist.
+     * Updates the library panel and optionally appends the file to an M3U
+     * playlist.
      *
      * @param media the downloaded MediaFile
      */

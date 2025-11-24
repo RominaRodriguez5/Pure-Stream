@@ -1,12 +1,10 @@
 package mosqueira.pureStream.Modelo;
-
 import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 /**
  * Represents a downloaded media file with its metadata. This class stores
  * information about a specific file, including its name, size, MIME type, path,

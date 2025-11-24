@@ -1,5 +1,4 @@
 package mosqueira.pureStream.ControladorInterno;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,12 +6,14 @@ import javax.swing.JOptionPane;
 import mosqueira.pureStream.MainFrame;
 import mosqueira.pureStream.Paneles.PreferencesPanel;
 
+/**
+ * Builds the yt-dlp command based on user preferences and selected options.
+ * Returns a list of arguments that will be executed as a process.
+ *
+ * @author Romina
+ */
 public class CommandBuilder {
 
-    /**
-     * Builds the yt-dlp command based on user preferences and selected options.
-     * Returns a list of arguments that will be executed as a process.
-     */
     public static List<String> buildCommand(
             String url,
             PreferencesPanel preferencesPanel,
