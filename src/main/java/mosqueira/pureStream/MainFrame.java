@@ -1,4 +1,5 @@
 package mosqueira.pureStream;
+
 import java.io.File;
 import javax.swing.JOptionPane;
 import mosqueira.pureStream.Dialogs.AboutDialog;
@@ -6,7 +7,7 @@ import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Modelo.MediaTableModel;
 import mosqueira.pureStream.Modelo.Usuari;
 import mosqueira.pureStream.Paneles.LibraryPanel;
-
+import mosqueira.pureStream.Paneles.LoginPanel;
 import mosqueira.pureStream.Paneles.PanelPrincipal;
 import mosqueira.pureStream.Paneles.PreferencesPanel;
 
@@ -34,17 +35,17 @@ public class MainFrame extends javax.swing.JFrame {
     // Reference to the library panel (used to display downloaded media)
     private LibraryPanel panelLibrary;
 
+    private LoginPanel loginPanel;
+
     // Default path for downloaded files
     private String rutaDescargas = System.getProperty("user.home") + File.separator + "Downloads";
 
     // Shared data model used to synchronize the main panel and the library panel
     private MediaTableModel mediaTableModel;
 
-
-
-    private String tokens;
-
-    private Usuari usuariActual;
+    // Cloud login data
+    private String jwtToken = null;
+    private Usuari loggedUser = null;
 
     // User preferences
     private boolean crearM3U = false; // Whether to create an M3U playlist after downloads
@@ -63,8 +64,16 @@ public class MainFrame extends javax.swing.JFrame {
         setResizable(false);
         setSize(800, 800);
         setLocationRelativeTo(null);
-        setContentPane(panelPrincipal);
-        cargarPanelPrincipal();
+        loginPanel = new LoginPanel();
+        // Listener  login
+        loginPanel.setLoginListener((String token, Usuari user) -> {
+            this.jwtToken = token;
+            this.loggedUser = user;
+            cargarPanelPrincipal();
+        });
+
+        setContentPane(loginPanel);
+
     }
 
     private void cargarPanelPrincipal() {
@@ -73,7 +82,6 @@ public class MainFrame extends javax.swing.JFrame {
         preferencesPanel = new PreferencesPanel(this);
         panelPrincipal = new PanelPrincipal(preferencesPanel, this, mediaTableModel);
         panelLibrary = new LibraryPanel(this, mediaTableModel);
-
         setContentPane(panelPrincipal);
         revalidate();
         repaint();
@@ -184,6 +192,14 @@ public class MainFrame extends javax.swing.JFrame {
         return executablePath;
     }
 
+    public String getJwtToken() {
+        return jwtToken;
+    }
+
+    public Usuari getLoggedUser() {
+        return loggedUser;
+    }
+
     /**
      * Notifies the application that a new media file has been downloaded.
      * Updates the library panel and optionally appends the file to an M3U
@@ -234,6 +250,7 @@ public class MainFrame extends javax.swing.JFrame {
         jmnMenu = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         itemExit = new javax.swing.JMenuItem();
+        itemLogout = new javax.swing.JMenuItem();
         menuEdit = new javax.swing.JMenu();
         itemPreferences = new javax.swing.JMenuItem();
         menuHelp = new javax.swing.JMenu();
@@ -259,6 +276,14 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         menuFile.add(itemExit);
+
+        itemLogout.setText("Logout");
+        itemLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemLogoutActionPerformed(evt);
+            }
+        });
+        menuFile.add(itemLogout);
 
         jmnMenu.add(menuFile);
 
@@ -329,6 +354,27 @@ public class MainFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_itemPreferencesActionPerformed
 
+    private void itemLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemLogoutActionPerformed
+        java.io.File remember = new java.io.File("remember.json");
+        if (remember.exists()) {
+            remember.delete();
+        }
+        this.jwtToken = null;
+        this.loggedUser = null;
+
+        // Back LoginPanel
+        loginPanel = new LoginPanel();
+        loginPanel.setLoginListener((String token, Usuari user) -> {
+            this.jwtToken = token;
+            this.loggedUser = user;
+            cargarPanelPrincipal();
+        });
+
+        setContentPane(loginPanel);
+        revalidate();
+        repaint();
+    }//GEN-LAST:event_itemLogoutActionPerformed
+
     /**
      * Main entry point of the application. Initializes the UI and sets the
      * Nimbus Look and Feel if available.
@@ -354,6 +400,7 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem itemAbout;
     private javax.swing.JMenuItem itemExit;
+    private javax.swing.JMenuItem itemLogout;
     private javax.swing.JMenuItem itemPreferences;
     private javax.swing.JMenuBar jmnMenu;
     private javax.swing.JMenu menuEdit;
