@@ -1,4 +1,5 @@
 package mosqueira.pureStream.ControladorInterno;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,17 +53,28 @@ public class CommandBuilder {
 
             cmd.add("-f");
 
-            // Extract numeric part from quality string
+            // Extract numeric height from quality (e.g., "720p" → "720")
             String height = quality.replaceAll("[^0-9]", "");
 
-            // Best video + best audio combination
-            cmd.add("bestvideo[ext=mp4][height<=" + height + "]+bestaudio[ext=m4a]");
+            // Fallback format chain 
+            String fallback
+                    = "bv*[height<=" + height + "][ext=mp4]+ba[ext=m4a]/"
+                    + // prefer mp4+m4a
+                    "bv*[height<=" + height + "]+ba/"
+                    + // cualquier vídeo + cualquier audio
+                    "best";  // fallback final
+
+            cmd.add(fallback);
 
             cmd.add("--merge-output-format");
             cmd.add("mp4");
-
         } else if (format.equalsIgnoreCase("mp3")) {
-            cmd.add("-x"); // Extract audio
+
+            // Mejor flujo para mp3
+            cmd.add("-f");
+            cmd.add("bestaudio/best");  // fallback automático
+
+            cmd.add("--extract-audio");
             cmd.add("--audio-format");
             cmd.add("mp3");
         }
