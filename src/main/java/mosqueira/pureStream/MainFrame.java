@@ -60,18 +60,19 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
-        setTitle("YT Downloader");
         setResizable(false);
         setSize(800, 800);
         setLocationRelativeTo(null);
         loginPanel = new LoginPanel();
         // Listener  login
-        loginPanel.setLoginListener((String token, Usuari user) -> {
-            this.jwtToken = token;
-            this.loggedUser = user;
-            cargarPanelPrincipal();
+        loginPanel.setLoginListener(new LoginPanel.LoginListener() {
+            @Override
+            public void onLoginSuccess(String token, Usuari user) {
+                MainFrame.this.jwtToken = token;
+                MainFrame.this.loggedUser = user;
+                cargarPanelPrincipal();
+            }
         });
-
         setContentPane(loginPanel);
 
     }
@@ -257,7 +258,7 @@ public class MainFrame extends javax.swing.JFrame {
         itemAbout = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("PureStream");
+        setTitle("PureStream ");
         setResizable(false);
         setSize(new java.awt.Dimension(800, 800));
         getContentPane().setLayout(null);
@@ -277,6 +278,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
         menuFile.add(itemExit);
 
+        itemLogout.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         itemLogout.setText("Logout");
         itemLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -304,7 +306,7 @@ public class MainFrame extends javax.swing.JFrame {
         menuHelp.setText("Help");
         menuHelp.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
 
-        itemAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 12)); // NOI18N
+        itemAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         itemAbout.setText("About");
         itemAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
