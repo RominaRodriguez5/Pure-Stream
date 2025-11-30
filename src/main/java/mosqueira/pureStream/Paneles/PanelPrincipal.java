@@ -1,4 +1,5 @@
 package mosqueira.pureStream.Paneles;
+
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -23,7 +24,6 @@ public class PanelPrincipal extends javax.swing.JPanel {
 
     // Reference to the main frame to switch between panels
     private MainFrame mainFrame;
-
 
     /**
      * Constructs the main download panel. Initializes references to the
@@ -54,9 +54,10 @@ public class PanelPrincipal extends javax.swing.JPanel {
     public void setPanelPreferencias(PreferencesPanel panelPreferencias) {
         this.preferencesPanel = panelPreferencias;
     }
+
     /**
-     * Called when a file is successfully downloaded.
-     * Updates log and stores last downloaded file path.
+     * Called when a file is successfully downloaded. Updates log and stores
+     * last downloaded file path.
      */
     public void notifyDownloaded(MediaFile mf) {
         lastDownloadedFile = mf.getFile().getAbsolutePath();
@@ -167,7 +168,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(comboQuality);
-        comboQuality.setBounds(490, 290, 72, 22);
+        comboQuality.setBounds(490, 290, 90, 22);
 
         lblFormatoSalida1.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblFormatoSalida1.setForeground(new java.awt.Color(0, 0, 0));
@@ -224,7 +225,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
 
         jTxtLog.setText("");
         jTxtLog.append("Downloading: " + url + "\n");
-  // Create and execute background download task
+        // Create and execute background download task
         DownloadTask task = new DownloadTask(
                 url,
                 preferencesPanel,
@@ -247,7 +248,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
         }
 
         try {
-            
+
             java.nio.file.Path path = java.nio.file.Paths.get(lastDownloadedFile);
             File file = path.toFile();
 
@@ -276,7 +277,24 @@ public class PanelPrincipal extends javax.swing.JPanel {
     }//GEN-LAST:event_comboQualityActionPerformed
 
     private void comboFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboFormatActionPerformed
-        // TODO add your handling code here:
+
+        String formato = comboFormat.getSelectedItem().toString();
+
+        comboQuality.removeAllItems();
+
+        if (formato.equalsIgnoreCase("mp4")) {
+
+            comboQuality.addItem("1080p");
+            comboQuality.addItem("720p");
+            comboQuality.addItem("480p");
+            comboQuality.addItem("360p");
+
+        } else if (formato.equalsIgnoreCase("mp3")) {
+
+            comboQuality.addItem("320 kbps");
+            comboQuality.addItem("192 kbps");
+            comboQuality.addItem("128 kbps");
+        }
     }//GEN-LAST:event_comboFormatActionPerformed
     /**
      * Lets the user choose a folder for saving downloads.

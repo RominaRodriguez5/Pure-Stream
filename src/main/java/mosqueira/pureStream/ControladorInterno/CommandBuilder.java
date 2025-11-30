@@ -77,6 +77,22 @@ public class CommandBuilder {
             cmd.add("--extract-audio");
             cmd.add("--audio-format");
             cmd.add("mp3");
+
+            switch (quality) {
+                case "128 kbps":
+                    cmd.add("--audio-quality");
+                    cmd.add("5");
+                    break;
+                case "192 kbps":
+                    cmd.add("--audio-quality");
+                    cmd.add("2");
+                    break;
+                case "320 kbps":
+                default:
+                    cmd.add("--audio-quality");
+                    cmd.add("0");
+                    break;
+            }
         }
 
         // Output template (escaped properly)
