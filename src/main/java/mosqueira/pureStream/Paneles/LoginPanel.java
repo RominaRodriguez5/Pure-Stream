@@ -28,12 +28,13 @@ public class LoginPanel extends javax.swing.JPanel {
     private JButton btnLogin;
     private JCheckBox chkRemember;
     private final String API_URL = "https://dimedianetapi9.azurewebsites.net";
-    private final File jsonFile = new File("remember.json");
+   private final File jsonFile;
+    
     private final ObjectMapper mapper = new ObjectMapper();
     public LoginListener loginListener;
 
     public LoginPanel() {
-
+        jsonFile= new File(System.getProperty("user.home") + File.separator + "Downloads" + File.separator + "remember.json");
         // Diseño sin NetBeans Designer
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();

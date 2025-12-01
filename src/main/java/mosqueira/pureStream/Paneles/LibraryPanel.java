@@ -1,4 +1,5 @@
 package mosqueira.pureStream.Paneles;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,7 +27,7 @@ import mosqueira.pureStream.Modelo.MediaTableModel;
 public class LibraryPanel extends javax.swing.JPanel {
 
     // Name of the serialized library file
-    private static final String BIBLIOTECA_FILE = "mediaLibrary.dat";
+    private static String BIBLIOTECA_FILE;
 
     // Table model for detailed view
     private MediaTableModel tableModel;
@@ -46,6 +47,7 @@ public class LibraryPanel extends javax.swing.JPanel {
     public LibraryPanel(MainFrame mainFrame, MediaTableModel tableModel) {
         this.mainFrame = mainFrame;
         this.tableModel = tableModel;
+        BIBLIOTECA_FILE = mainFrame.getRutaDescargas() + File.separator + "mediaLibrary.dat";
 
         initComponents();
         setSize(800, 800);
@@ -120,8 +122,16 @@ public class LibraryPanel extends javax.swing.JPanel {
      * Saves the full media library via serialization.
      */
     private void guardarBiblioteca() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(BIBLIOTECA_FILE))) {
-            oos.writeObject(allMediaFiles);
+        try {
+            // 1) Crear carpeta si no existe
+            File f = new File(BIBLIOTECA_FILE);
+            File parent = f.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(BIBLIOTECA_FILE))) {
+                oos.writeObject(allMediaFiles);
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -141,7 +151,6 @@ public class LibraryPanel extends javax.swing.JPanel {
             List<MediaFile> files = (List<MediaFile>) ois.readObject();
             allMediaFiles.clear();
             allMediaFiles.addAll(files);
-
             receiveFiles(allMediaFiles);
 
         } catch (Exception ex) {
@@ -169,7 +178,6 @@ public class LibraryPanel extends javax.swing.JPanel {
     private void filtrarLista() {
         String searchText = jtxtSearch.getText().toLowerCase().trim();
         String filter = jcbFiltrados.getSelectedItem().toString();
-
         List<MediaFile> filtered = allMediaFiles.stream()
                 .filter(f -> f.getFileName().toLowerCase().contains(searchText))
                 .filter(f -> switch (filter) {
@@ -295,7 +303,7 @@ public class LibraryPanel extends javax.swing.JPanel {
     private void jcbFiltradosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbFiltradosActionPerformed
         filtrarLista();
     }//GEN-LAST:event_jcbFiltradosActionPerformed
-    
+
     /**
      * Handles the deletion of a selected file from the table and disk.
      */
@@ -305,37 +313,29 @@ public class LibraryPanel extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Select a file first.");
             return;
         }
-
         selected = jTblDetails.convertRowIndexToModel(selected);
-
         MediaFile mf = tableModel.getMediaFileAt(selected);
         File file = mf.getFile();
-
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 "Are you sure you want to delete this file?\n" + file.getName(),
                 "Confirm Deletion",
                 JOptionPane.YES_NO_OPTION
         );
-
         if (confirm != JOptionPane.YES_OPTION) {
             return;
         }
-
         // Delete file from disk
         boolean deleted = !file.exists() || file.delete();
         if (!deleted) {
             JOptionPane.showMessageDialog(this, "Failed to delete the file.");
             return;
         }
-
         // Remove from internal lists
         allMediaFiles.remove(mf);
         tableModel.removeMediaFile(selected);
         listModel.removeElement(mf);
-
         guardarBiblioteca();
-
         JOptionPane.showMessageDialog(this, "File deleted successfully.");
 
     }//GEN-LAST:event_btnDeleteActionPerformed

@@ -65,23 +65,23 @@ public class MainFrame extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         loginPanel = new LoginPanel();
         // Listener  login
-        loginPanel.setLoginListener(new LoginPanel.LoginListener() {
+        /*loginPanel.setLoginListener(new LoginPanel.LoginListener() {
             @Override
             public void onLoginSuccess(String token, Usuari user) {
                 MainFrame.this.jwtToken = token;
                 MainFrame.this.loggedUser = user;
-                cargarPanelPrincipal();
+                
             }
         });
-        setContentPane(loginPanel);
+        setContentPane(loginPanel);*/
+        cargarPanelPrincipal();
+        }
 
-    }
-
-    private void cargarPanelPrincipal() {
-        // Initialize shared model and all panels
-        mediaTableModel = new MediaTableModel();
-        preferencesPanel = new PreferencesPanel(this);
-        panelPrincipal = new PanelPrincipal(preferencesPanel, this, mediaTableModel);
+        private void cargarPanelPrincipal() {
+            // Initialize shared model and all panels
+            mediaTableModel = new MediaTableModel();
+            preferencesPanel = new PreferencesPanel(this);
+            panelPrincipal = new PanelPrincipal(preferencesPanel, this, mediaTableModel);
         panelLibrary = new LibraryPanel(this, mediaTableModel);
         setContentPane(panelPrincipal);
         revalidate();
