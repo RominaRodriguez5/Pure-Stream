@@ -349,7 +349,7 @@ public class LibraryPanel extends javax.swing.JPanel {
      * Returns to the main panel.
      */
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        mainFrame.mostrarPanelPrincipal();
+        mainFrame.showPanelPrincipal();
     }//GEN-LAST:event_btnBackActionPerformed
 
 

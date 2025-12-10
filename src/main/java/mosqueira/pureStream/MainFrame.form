@@ -118,4 +118,18 @@
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
     <Property name="useNullLayout" type="boolean" value="true"/>
   </Layout>
+  <SubComponents>
+    <Component class="mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent" name="mediaComponent1">
+      <Properties>
+        <Property name="apiUrl" type="java.lang.String" value="https://dimedianetapi9.azurewebsites.net"/>
+        <Property name="pollingInterval" type="int" value="10"/>
+        <Property name="running" type="boolean" value="true"/>
+      </Properties>
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
+          <AbsoluteConstraints x="720" y="10" width="-1" height="-1"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+  </SubComponents>
 </Form>

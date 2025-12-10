@@ -111,13 +111,13 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jchM3U);
-        jchM3U.setBounds(100, 190, 150, 40);
+        jchM3U.setBounds(130, 310, 150, 40);
 
         lblAds.setFont(new java.awt.Font("Segoe UI Light", 1, 24)); // NOI18N
         lblAds.setForeground(new java.awt.Color(0, 0, 0));
         lblAds.setText("Opciones adicionales");
         add(lblAds);
-        lblAds.setBounds(230, 30, 240, 30);
+        lblAds.setBounds(290, 70, 240, 30);
 
         jchLimit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         jchLimit.setForeground(new java.awt.Color(0, 0, 0));
@@ -128,13 +128,13 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jchLimit);
-        jchLimit.setBounds(370, 190, 230, 40);
+        jchLimit.setBounds(400, 310, 230, 40);
 
         lblSelectPath.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblSelectPath.setForeground(new java.awt.Color(0, 0, 0));
         lblSelectPath.setText("Select yt-dlp executable");
         add(lblSelectPath);
-        lblSelectPath.setBounds(20, 100, 160, 30);
+        lblSelectPath.setBounds(80, 140, 160, 30);
 
         btnSaveAndReturn.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnSaveAndReturn.setForeground(new java.awt.Color(0, 0, 153));
@@ -145,9 +145,9 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(btnSaveAndReturn);
-        btnSaveAndReturn.setBounds(250, 400, 160, 30);
+        btnSaveAndReturn.setBounds(310, 520, 160, 30);
         add(jSeparator1);
-        jSeparator1.setBounds(10, 160, 660, 10);
+        jSeparator1.setBounds(10, 250, 750, 10);
 
         jtxtExecutable.setBackground(new java.awt.Color(204, 204, 204));
         jtxtExecutable.setText("C:\\Program Files\\yt-dlp\\yt-dlp.exe");
@@ -157,7 +157,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jtxtExecutable);
-        jtxtExecutable.setBounds(190, 100, 340, 30);
+        jtxtExecutable.setBounds(250, 140, 340, 30);
 
         jSearchPath.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         jSearchPath.setForeground(new java.awt.Color(0, 0, 153));
@@ -168,7 +168,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jSearchPath);
-        jSearchPath.setBounds(540, 100, 100, 30);
+        jSearchPath.setBounds(600, 140, 100, 30);
 
         jSliderLimit.setMajorTickSpacing(500);
         jSliderLimit.setMaximum(5000);
@@ -181,12 +181,12 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jSliderLimit);
-        jSliderLimit.setBounds(350, 260, 280, 40);
+        jSliderLimit.setBounds(380, 380, 280, 40);
 
         jlblValue.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         jlblValue.setForeground(new java.awt.Color(0, 0, 153));
         add(jlblValue);
-        jlblValue.setBounds(440, 230, 100, 30);
+        jlblValue.setBounds(470, 350, 100, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -213,7 +213,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
             return;
         }
         mainFrame.setExecutablePath(jtxtExecutable.getText().trim());
-        mainFrame.mostrarPanelPrincipal();
+        mainFrame.showPanelPrincipal();
     }//GEN-LAST:event_btnSaveAndReturnActionPerformed
 
     /**

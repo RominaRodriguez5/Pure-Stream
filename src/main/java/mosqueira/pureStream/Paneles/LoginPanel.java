@@ -11,29 +11,22 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import mosqueira.pureStream.ControladorInterno.ApiClient;
-import mosqueira.pureStream.Modelo.Usuari;
+
+import mosqueira.pureStream.MainFrame;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * LoginPanel
- *
- * @author Romina
- */
 public class LoginPanel extends javax.swing.JPanel {
 
-    // Componentes de login
     private JTextField txtEmail;
     private JPasswordField txtPassword;
     private JButton btnLogin;
     private JCheckBox chkRemember;
-    private final String API_URL = "https://dimedianetapi9.azurewebsites.net";
-   private final File jsonFile;
-    
+    private MainFrame main;
+    private final File jsonFile;
     private final ObjectMapper mapper = new ObjectMapper();
-    public LoginListener loginListener;
 
-    public LoginPanel() {
+    public LoginPanel(MainFrame main) {
+        this.main=main;
         jsonFile= new File(System.getProperty("user.home") + File.separator + "Downloads" + File.separator + "remember.json");
         // Diseño sin NetBeans Designer
         setLayout(new GridBagLayout());
@@ -83,6 +76,7 @@ public class LoginPanel extends javax.swing.JPanel {
     }
 
     private void Login() {
+
         String email = txtEmail.getText();
         String pass = new String(txtPassword.getPassword());
 
@@ -91,28 +85,22 @@ public class LoginPanel extends javax.swing.JPanel {
             return;
         }
 
-        if (!email.contains("@")) {
-            JOptionPane.showMessageDialog(this, "Email no válido");
-            return;
-        }
-
         try {
-            ApiClient api = new ApiClient(API_URL);
-            String token = api.login(email, pass);
+           //Login usando solo el componente
+            String token = MainFrame.COMPONENT.login(email, pass);
+            main.setJwtToken(token);
 
-            JOptionPane.showMessageDialog(this, "Login correcto");
+            //Activar polling
+            MainFrame.COMPONENT.setToken(token);
+            MainFrame.COMPONENT.setRunning(true);
 
-            // Guardar o borrar remember.json
+            //Cambiar a pantalla principal
+            main.cargarPanelPrincipal();
+
             if (chkRemember.isSelected()) {
                 saveRemember(email, pass, token);
             } else {
                 deleteRemember();
-            }
-
-            // Notificar a la app (opcional)
-            if (loginListener != null) {
-                Usuari me = api.getMe(token);
-                loginListener.onLoginSuccess(token, me);
             }
 
         } catch (Exception ex) {
@@ -127,8 +115,7 @@ public class LoginPanel extends javax.swing.JPanel {
         try {
             RememberData data = new RememberData(email, password, token);
             mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile, data);
-        } catch (Exception ex) {
-            System.out.println("No se pudo guardar remember.json");
+        } catch (Exception ignored) {
         }
     }
 
@@ -139,17 +126,12 @@ public class LoginPanel extends javax.swing.JPanel {
             }
 
             RememberData data = mapper.readValue(jsonFile, RememberData.class);
-
             txtEmail.setText(data.email());
             txtPassword.setText(data.password());
             chkRemember.setSelected(true);
-        } catch (Exception ex) {
-            System.out.println("No se pudo cargar remember.json");
+
+        } catch (Exception ignored) {
         }
-    }
-
-    public static record RememberData(String email, String password, String token) {
-
     }
 
     private void deleteRemember() {
@@ -158,27 +140,7 @@ public class LoginPanel extends javax.swing.JPanel {
         }
     }
 
-    public interface LoginListener {
-         void onLoginSuccess(String token, Usuari user);
-    }
+    public static record RememberData(String email, String password, String token) {
 
-    public void setLoginListener(LoginListener listener) {
-        this.loginListener = listener;
-    }
-
-    public JTextField getTxtEmail() {
-        return txtEmail;
-    }
-
-    public JPasswordField getTxtPassword() {
-        return txtPassword;
-    }
-
-    public JButton getBtnLogin() {
-        return btnLogin;
-    }
-
-    public JCheckBox getChkRemember() {
-        return chkRemember;
     }
 }

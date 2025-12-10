@@ -91,6 +91,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
         btnSearchFolderDownload = new javax.swing.JButton();
         jtxtFolderDownload = new javax.swing.JTextField();
         lblSelectFolderDownload = new javax.swing.JLabel();
+        jslFormato1 = new javax.swing.JSeparator();
 
         setLayout(null);
 
@@ -115,11 +116,11 @@ public class PanelPrincipal extends javax.swing.JPanel {
         lblCalidad.setForeground(new java.awt.Color(0, 0, 0));
         lblCalidad.setText("Quality");
         add(lblCalidad);
-        lblCalidad.setBounds(490, 250, 90, 20);
+        lblCalidad.setBounds(470, 320, 90, 20);
         add(jslFormato);
-        jslFormato.setBounds(0, 130, 790, 10);
+        jslFormato.setBounds(0, 100, 790, 10);
         add(jslOptionA);
-        jslOptionA.setBounds(10, 320, 780, 10);
+        jslOptionA.setBounds(10, 390, 780, 10);
 
         btnReproducir.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnReproducir.setForeground(new java.awt.Color(0, 0, 153));
@@ -130,7 +131,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(btnReproducir);
-        btnReproducir.setBounds(130, 670, 120, 27);
+        btnReproducir.setBounds(130, 730, 120, 27);
 
         jTxtLog.setBackground(new java.awt.Color(204, 204, 204));
         jTxtLog.setColumns(20);
@@ -139,7 +140,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
         jScrollPane1.setViewportView(jTxtLog);
 
         add(jScrollPane1);
-        jScrollPane1.setBounds(0, 350, 790, 290);
+        jScrollPane1.setBounds(0, 410, 790, 290);
 
         btnOpenLibrary.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnOpenLibrary.setForeground(new java.awt.Color(0, 0, 153));
@@ -150,7 +151,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(btnOpenLibrary);
-        btnOpenLibrary.setBounds(500, 670, 120, 30);
+        btnOpenLibrary.setBounds(500, 730, 120, 30);
 
         comboFormat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "mp4", "mp3" }));
         comboFormat.addActionListener(new java.awt.event.ActionListener() {
@@ -159,7 +160,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(comboFormat);
-        comboFormat.setBounds(190, 290, 72, 22);
+        comboFormat.setBounds(170, 360, 72, 22);
 
         comboQuality.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1080p", "720p", "480p", "360p" }));
         comboQuality.addActionListener(new java.awt.event.ActionListener() {
@@ -168,13 +169,13 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(comboQuality);
-        comboQuality.setBounds(490, 290, 90, 22);
+        comboQuality.setBounds(470, 360, 90, 22);
 
         lblFormatoSalida1.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblFormatoSalida1.setForeground(new java.awt.Color(0, 0, 0));
         lblFormatoSalida1.setText("Output Format");
         add(lblFormatoSalida1);
-        lblFormatoSalida1.setBounds(170, 250, 160, 20);
+        lblFormatoSalida1.setBounds(150, 320, 160, 20);
 
         jtxtInsertUrl.setBackground(new java.awt.Color(204, 204, 204));
         add(jtxtInsertUrl);
@@ -189,7 +190,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(btnSearchFolderDownload);
-        btnSearchFolderDownload.setBounds(580, 180, 95, 30);
+        btnSearchFolderDownload.setBounds(580, 260, 95, 30);
 
         jtxtFolderDownload.setBackground(new java.awt.Color(204, 204, 204));
         jtxtFolderDownload.addActionListener(new java.awt.event.ActionListener() {
@@ -198,13 +199,15 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(jtxtFolderDownload);
-        jtxtFolderDownload.setBounds(170, 180, 370, 30);
+        jtxtFolderDownload.setBounds(170, 260, 370, 30);
 
         lblSelectFolderDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblSelectFolderDownload.setForeground(new java.awt.Color(0, 0, 0));
         lblSelectFolderDownload.setText("Select download folder");
         add(lblSelectFolderDownload);
-        lblSelectFolderDownload.setBounds(10, 180, 150, 30);
+        lblSelectFolderDownload.setBounds(10, 260, 150, 30);
+        add(jslFormato1);
+        jslFormato1.setBounds(0, 230, 790, 10);
     }// </editor-fold>//GEN-END:initComponents
      /**
      * Starts a new download using DownloadTask.
@@ -325,6 +328,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTxtLog;
     private javax.swing.JSeparator jslFormato;
+    private javax.swing.JSeparator jslFormato1;
     private javax.swing.JSeparator jslOptionA;
     private javax.swing.JTextField jtxtFolderDownload;
     private javax.swing.JTextField jtxtInsertUrl;

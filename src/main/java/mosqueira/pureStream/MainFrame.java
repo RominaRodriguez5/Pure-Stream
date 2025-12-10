@@ -2,10 +2,11 @@ package mosqueira.pureStream;
 
 import java.io.File;
 import javax.swing.JOptionPane;
+import mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent;
+import mosqueira.mediaPollingClientComponent.model.Usuari;
 import mosqueira.pureStream.Dialogs.AboutDialog;
 import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Modelo.MediaTableModel;
-import mosqueira.pureStream.Modelo.Usuari;
 import mosqueira.pureStream.Paneles.LibraryPanel;
 import mosqueira.pureStream.Paneles.LoginPanel;
 import mosqueira.pureStream.Paneles.PanelPrincipal;
@@ -47,6 +48,7 @@ public class MainFrame extends javax.swing.JFrame {
     private String jwtToken = null;
     private Usuari loggedUser = null;
 
+    public static MediaPollingClientComponent COMPONENT;
     // User preferences
     private boolean crearM3U = false; // Whether to create an M3U playlist after downloads
     private boolean limitarVelocidad; // Whether to limit download speed
@@ -63,25 +65,16 @@ public class MainFrame extends javax.swing.JFrame {
         setResizable(false);
         setSize(800, 800);
         setLocationRelativeTo(null);
-        loginPanel = new LoginPanel();
-        // Listener  login
-        /*loginPanel.setLoginListener(new LoginPanel.LoginListener() {
-            @Override
-            public void onLoginSuccess(String token, Usuari user) {
-                MainFrame.this.jwtToken = token;
-                MainFrame.this.loggedUser = user;
-                
-            }
-        });
-        setContentPane(loginPanel);*/
-        cargarPanelPrincipal();
-        }
+        COMPONENT = mediaComponent1;
+        loginPanel = new LoginPanel(this);
+        setContentPane(loginPanel);
+    }
 
-        private void cargarPanelPrincipal() {
-            // Initialize shared model and all panels
-            mediaTableModel = new MediaTableModel();
-            preferencesPanel = new PreferencesPanel(this);
-            panelPrincipal = new PanelPrincipal(preferencesPanel, this, mediaTableModel);
+    public void cargarPanelPrincipal() {
+        // Initialize shared model and all panels
+        mediaTableModel = new MediaTableModel();
+        preferencesPanel = new PreferencesPanel(this);
+        panelPrincipal = new PanelPrincipal(preferencesPanel, this, mediaTableModel);
         panelLibrary = new LibraryPanel(this, mediaTableModel);
         setContentPane(panelPrincipal);
         revalidate();
@@ -91,7 +84,7 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Displays the main download panel (PanelPrincipal).
      */
-    public void mostrarPanelPrincipal() {
+    public void showPanelPrincipal() {
         setContentPane(panelPrincipal);
         revalidate();
         repaint();
@@ -100,7 +93,7 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Displays the user preferences panel (PreferencesPanel).
      */
-    private void mostrarPanelPreferencias() {
+    private void showPanelPreferencias() {
         setContentPane(preferencesPanel);
         revalidate();
         repaint();
@@ -193,12 +186,12 @@ public class MainFrame extends javax.swing.JFrame {
         return executablePath;
     }
 
-    public String getJwtToken() {
-        return jwtToken;
+    public void setJwtToken(String token) {
+        this.jwtToken = token;
     }
 
-    public Usuari getLoggedUser() {
-        return loggedUser;
+    public void setLoggedUser(Usuari user) {
+        this.loggedUser = user;
     }
 
     /**
@@ -248,6 +241,7 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        mediaComponent1 = new mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent();
         jmnMenu = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         itemExit = new javax.swing.JMenuItem();
@@ -262,6 +256,12 @@ public class MainFrame extends javax.swing.JFrame {
         setResizable(false);
         setSize(new java.awt.Dimension(800, 800));
         getContentPane().setLayout(null);
+
+        mediaComponent1.setApiUrl("https://dimedianetapi9.azurewebsites.net");
+        mediaComponent1.setPollingInterval(10);
+        mediaComponent1.setRunning(true);
+        getContentPane().add(mediaComponent1);
+        mediaComponent1.setBounds(720, 10, 30, 40);
 
         jmnMenu.setBorder(null);
         jmnMenu.setForeground(new java.awt.Color(0, 102, 153));
@@ -352,29 +352,23 @@ public class MainFrame extends javax.swing.JFrame {
      * let the user modify settings.
      */
     private void itemPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemPreferencesActionPerformed
-        mostrarPanelPreferencias();
+        showPanelPreferencias();
 
     }//GEN-LAST:event_itemPreferencesActionPerformed
 
     private void itemLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemLogoutActionPerformed
-        java.io.File remember = new java.io.File("remember.json");
-        if (remember.exists()) {
-            remember.delete();
-        }
-        this.jwtToken = null;
+       this.jwtToken = null;
         this.loggedUser = null;
 
-        // Back LoginPanel
-        loginPanel = new LoginPanel();
-        loginPanel.setLoginListener((String token, Usuari user) -> {
-            this.jwtToken = token;
-            this.loggedUser = user;
-            cargarPanelPrincipal();
-        });
+        COMPONENT.setRunning(false);
+        COMPONENT.setToken(null);
 
+        loginPanel = new LoginPanel(this);
         setContentPane(loginPanel);
         revalidate();
         repaint();
+ 
+
     }//GEN-LAST:event_itemLogoutActionPerformed
 
     /**
@@ -405,6 +399,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem itemLogout;
     private javax.swing.JMenuItem itemPreferences;
     private javax.swing.JMenuBar jmnMenu;
+    private mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent mediaComponent1;
     private javax.swing.JMenu menuEdit;
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenu menuHelp;
