@@ -40,6 +40,11 @@ public class MediaFile implements Serializable {
      * The date when the file was downloaded or last modified.
      */
     private Date dateDownloaded;
+    
+    
+    private String networkState = "LOCAL";   // LOCAL, NETWORK, BOTH
+    
+    private Integer remoteId = null;
 
     /**
      * Constructs a new MediaFile object using the provided File.
@@ -134,6 +139,25 @@ public class MediaFile implements Serializable {
     public Date getDateDownloaded() {
         return dateDownloaded;
     }
+
+    public String getNetworkState() {
+        return networkState;
+    }
+
+    public void setNetworkState(String networkState) {
+        this.networkState = networkState;
+    }
+
+    public Integer getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(Integer remoteId) {
+        this.remoteId = remoteId;
+    }
+    
+    
+    
 
     /**
      * Returns a string representation of this MediaFile object, including its

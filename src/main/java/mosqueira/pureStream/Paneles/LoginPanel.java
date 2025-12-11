@@ -26,8 +26,8 @@ public class LoginPanel extends javax.swing.JPanel {
     private final ObjectMapper mapper = new ObjectMapper();
 
     public LoginPanel(MainFrame main) {
-        this.main=main;
-        jsonFile= new File(System.getProperty("user.home") + File.separator + "Downloads" + File.separator + "remember.json");
+        this.main = main;
+        jsonFile = new File(System.getProperty("user.home") + File.separator + "Downloads" + File.separator + "remember.json");
         // Diseño sin NetBeans Designer
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -70,7 +70,12 @@ public class LoginPanel extends javax.swing.JPanel {
         add(btnLogin, gbc);
 
         // Acción del botón
-        btnLogin.addActionListener((ActionEvent e) -> Login());
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Login();
+            }
+        });
         // Cargar remember.json si existe
         loadRemember();
     }
@@ -86,7 +91,7 @@ public class LoginPanel extends javax.swing.JPanel {
         }
 
         try {
-           //Login usando solo el componente
+            //Login usando solo el componente
             String token = MainFrame.COMPONENT.login(email, pass);
             main.setJwtToken(token);
 

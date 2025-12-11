@@ -1,5 +1,6 @@
 package mosqueira.pureStream.Paneles;
 
+import mosqueira.mediaPollingClientComponent.model.Media;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -41,6 +42,10 @@ public class LibraryPanel extends javax.swing.JPanel {
     // Reference to MainFrame for navigation
     private MainFrame mainFrame;
 
+    private List<MediaFile> localMedia = new ArrayList<>();
+    private List<MediaFile> netWorkMedia = new ArrayList<>();
+    private List<MediaFile> botMedia = new ArrayList<>();
+
     /**
      * Constructor: initializes UI components and loads saved library.
      */
@@ -51,15 +56,50 @@ public class LibraryPanel extends javax.swing.JPanel {
 
         initComponents();
         setSize(800, 800);
-
+        jtabSources.addTab("Local", null);
+        jtabSources.addTab("Network", null);
+        jtabSources.addTab("Both", null);
+       
         jTblDetails.setModel(tableModel);
         listModel = new DefaultListModel<>();
         jListDownloads.setModel(listModel);
 
         cargarBiblioteca();
+        
+        localMedia.clear();
+        localMedia.addAll(allMediaFiles);
+        
         jTblDetails.setAutoCreateRowSorter(true);
 
         conectarEventos();
+
+        jtabSources.addChangeListener(new javax.swing.event.ChangeListener() {
+            @Override
+            public void stateChanged(javax.swing.event.ChangeEvent e) {
+
+                int index = jtabSources.getSelectedIndex();
+
+                List<MediaFile> listaActual;
+
+                if (index == 0) {
+                    listaActual = localMedia;
+                } else if (index == 1) {
+                    listaActual = netWorkMedia;
+                } else {
+                    listaActual = botMedia;
+                }
+
+                // Update table
+                tableModel.setMediaFiles(listaActual);
+                tableModel.fireTableDataChanged();
+
+                // Update JList 
+                listModel.clear();
+                for (MediaFile mf : listaActual) {
+                    listModel.addElement(mf);
+                }
+            }
+        });
     }
 
     /**
@@ -111,8 +151,11 @@ public class LibraryPanel extends javax.swing.JPanel {
                 return; // evitar duplicado
             }
         }
-
         allMediaFiles.add(media);
+        
+        media.setNetworkState("LOCAL");
+        localMedia.add(media);
+        
         tableModel.addMediaFile(media);
         listModel.addElement(media);
         guardarBiblioteca(); // save updated library
@@ -123,7 +166,7 @@ public class LibraryPanel extends javax.swing.JPanel {
      */
     private void guardarBiblioteca() {
         try {
-            // 1) Crear carpeta si no existe
+            
             File f = new File(BIBLIOTECA_FILE);
             File parent = f.getParentFile();
             if (parent != null && !parent.exists()) {
@@ -135,6 +178,8 @@ public class LibraryPanel extends javax.swing.JPanel {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        localMedia.clear();
+        localMedia.addAll(allMediaFiles);
     }
 
     /**
@@ -153,6 +198,8 @@ public class LibraryPanel extends javax.swing.JPanel {
             allMediaFiles.addAll(files);
             receiveFiles(allMediaFiles);
 
+            localMedia.clear();
+            localMedia.addAll(allMediaFiles);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -162,10 +209,10 @@ public class LibraryPanel extends javax.swing.JPanel {
      * Update view and internal list with provided files
      */
     public void receiveFiles(List<MediaFile> lista) {
-        // actualizar tabla
+        // Update table
         tableModel.setMediaFiles(lista);
 
-        // actualizar lista
+        // Update list
         listModel.clear();
         for (MediaFile mf : lista) {
             listModel.addElement(mf);
@@ -193,6 +240,62 @@ public class LibraryPanel extends javax.swing.JPanel {
         receiveFiles(filtered);
     }
 
+    public void loadNetworkMedia(List<Media> mediaFromNet) {
+
+        netWorkMedia.clear();
+        botMedia.clear();
+        localMedia.clear();
+
+       
+        for (Media m : mediaFromNet) {
+
+            File fakeFile = new File(mainFrame.getRutaDescargas(), m.mediaFileName);
+
+            MediaFile mf = new MediaFile(fakeFile, new java.util.Date());
+            mf.setRemoteId(m.id);
+            mf.setNetworkState("NETWORK");
+
+            netWorkMedia.add(mf);
+        }
+
+     
+        for (MediaFile local : allMediaFiles) {
+
+            boolean existsRemote = false;
+
+            for (MediaFile remote : netWorkMedia) {
+                if (remote.getFileName().equals(local.getFileName())) {
+                    existsRemote = true;
+                    break;
+                }
+            }
+
+            if (existsRemote) {
+                local.setNetworkState("BOTH");
+                botMedia.add(local);
+            } else {
+                local.setNetworkState("LOCAL");
+                localMedia.add(local);
+            }
+        }
+
+       
+        jtabSources.setSelectedIndex(0);
+
+        tableModel.setMediaFiles(localMedia);
+        tableModel.fireTableDataChanged();
+
+        // Update JList
+        listModel.clear();
+        for (MediaFile mf : localMedia) {
+            listModel.addElement(mf);
+        }
+
+        System.out.println("LibraryPanel: Local=" + localMedia.size()
+                + " Remote=" + netWorkMedia.size()
+                + " Both=" + botMedia.size());
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -212,6 +315,7 @@ public class LibraryPanel extends javax.swing.JPanel {
         btnBack = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jListDownloads = new javax.swing.JList<>();
+        jtabSources = new javax.swing.JTabbedPane();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Details Download", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI Light", 1, 18), new java.awt.Color(0, 0, 153))); // NOI18N
         setLayout(null);
@@ -230,7 +334,7 @@ public class LibraryPanel extends javax.swing.JPanel {
         jScrollTable.setViewportView(jTblDetails);
 
         add(jScrollTable);
-        jScrollTable.setBounds(20, 40, 520, 300);
+        jScrollTable.setBounds(10, 70, 760, 290);
 
         btnSearch.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnSearch.setText("Buscar");
@@ -240,7 +344,7 @@ public class LibraryPanel extends javax.swing.JPanel {
             }
         });
         add(btnSearch);
-        btnSearch.setBounds(550, 50, 72, 27);
+        btnSearch.setBounds(160, 390, 72, 30);
 
         btnDelete.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnDelete.setText("Delete");
@@ -250,11 +354,11 @@ public class LibraryPanel extends javax.swing.JPanel {
             }
         });
         add(btnDelete);
-        btnDelete.setBounds(550, 310, 90, 27);
+        btnDelete.setBounds(510, 390, 110, 30);
 
         jSeparatorListDownload.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "List Download", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI Light", 1, 18), new java.awt.Color(0, 0, 153))); // NOI18N
         add(jSeparatorListDownload);
-        jSeparatorListDownload.setBounds(0, 380, 820, 40);
+        jSeparatorListDownload.setBounds(10, 460, 790, 40);
 
         jtxtSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -262,7 +366,7 @@ public class LibraryPanel extends javax.swing.JPanel {
             }
         });
         add(jtxtSearch);
-        jtxtSearch.setBounds(550, 100, 220, 40);
+        jtxtSearch.setBounds(240, 390, 240, 30);
 
         jcbFiltrados.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         jcbFiltrados.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "Video", "Audio" }));
@@ -272,7 +376,7 @@ public class LibraryPanel extends javax.swing.JPanel {
             }
         });
         add(jcbFiltrados);
-        jcbFiltrados.setBounds(550, 180, 120, 26);
+        jcbFiltrados.setBounds(10, 390, 120, 26);
 
         btnBack.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnBack.setText("Go back");
@@ -282,12 +386,14 @@ public class LibraryPanel extends javax.swing.JPanel {
             }
         });
         add(btnBack);
-        btnBack.setBounds(670, 310, 110, 30);
+        btnBack.setBounds(620, 510, 110, 30);
 
         jScrollPane1.setViewportView(jListDownloads);
 
         add(jScrollPane1);
-        jScrollPane1.setBounds(30, 440, 680, 240);
+        jScrollPane1.setBounds(10, 510, 590, 240);
+        add(jtabSources);
+        jtabSources.setBounds(10, 40, 760, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -363,6 +469,7 @@ public class LibraryPanel extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparatorListDownload;
     private javax.swing.JTable jTblDetails;
     private javax.swing.JComboBox<String> jcbFiltrados;
+    private javax.swing.JTabbedPane jtabSources;
     private javax.swing.JTextField jtxtSearch;
     // End of variables declaration//GEN-END:variables
 }

@@ -3,6 +3,8 @@ package mosqueira.pureStream;
 import java.io.File;
 import javax.swing.JOptionPane;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent;
+import mosqueira.mediaPollingClientComponent.component.MediaPollingClientEvent;
+import mosqueira.mediaPollingClientComponent.component.MediaPollingClientListener;
 import mosqueira.mediaPollingClientComponent.model.Usuari;
 import mosqueira.pureStream.Dialogs.AboutDialog;
 import mosqueira.pureStream.Modelo.MediaFile;
@@ -63,7 +65,7 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         initComponents();
         setResizable(false);
-        setSize(800, 800);
+        setSize(800, 900);
         setLocationRelativeTo(null);
         COMPONENT = mediaComponent1;
         loginPanel = new LoginPanel(this);
@@ -76,6 +78,12 @@ public class MainFrame extends javax.swing.JFrame {
         preferencesPanel = new PreferencesPanel(this);
         panelPrincipal = new PanelPrincipal(preferencesPanel, this, mediaTableModel);
         panelLibrary = new LibraryPanel(this, mediaTableModel);
+        COMPONENT.addMediaPollingListener(new MediaPollingClientListener() {
+            @Override
+            public void onNewMediaDetected(MediaPollingClientEvent event) {
+               panelLibrary.loadNetworkMedia(event.getNewMedia());
+            }  
+        });
         setContentPane(panelPrincipal);
         revalidate();
         repaint();

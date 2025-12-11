@@ -110,7 +110,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(btnDownload);
-        btnDownload.setBounds(570, 50, 100, 24);
+        btnDownload.setBounds(580, 50, 100, 30);
 
         lblCalidad.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblCalidad.setForeground(new java.awt.Color(0, 0, 0));
@@ -120,7 +120,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
         add(jslFormato);
         jslFormato.setBounds(0, 100, 790, 10);
         add(jslOptionA);
-        jslOptionA.setBounds(10, 390, 780, 10);
+        jslOptionA.setBounds(0, 420, 780, 10);
 
         btnReproducir.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnReproducir.setForeground(new java.awt.Color(0, 0, 153));
@@ -131,7 +131,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(btnReproducir);
-        btnReproducir.setBounds(130, 730, 120, 27);
+        btnReproducir.setBounds(140, 770, 120, 30);
 
         jTxtLog.setBackground(new java.awt.Color(204, 204, 204));
         jTxtLog.setColumns(20);
@@ -140,7 +140,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
         jScrollPane1.setViewportView(jTxtLog);
 
         add(jScrollPane1);
-        jScrollPane1.setBounds(0, 410, 790, 290);
+        jScrollPane1.setBounds(10, 450, 770, 290);
 
         btnOpenLibrary.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnOpenLibrary.setForeground(new java.awt.Color(0, 0, 153));
@@ -151,7 +151,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(btnOpenLibrary);
-        btnOpenLibrary.setBounds(500, 730, 120, 30);
+        btnOpenLibrary.setBounds(490, 770, 130, 30);
 
         comboFormat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "mp4", "mp3" }));
         comboFormat.addActionListener(new java.awt.event.ActionListener() {
