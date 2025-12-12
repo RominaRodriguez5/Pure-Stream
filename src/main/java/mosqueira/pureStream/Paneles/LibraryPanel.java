@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
@@ -41,8 +41,7 @@ public class LibraryPanel extends javax.swing.JPanel {
 
     // Reference to MainFrame for navigation
     private MainFrame mainFrame;
-
-    private List<MediaFile> localMedia = new ArrayList<>();
+    // NETWORK LISTS
     private List<MediaFile> netWorkMedia = new ArrayList<>();
     private List<MediaFile> botMedia = new ArrayList<>();
 
@@ -59,19 +58,24 @@ public class LibraryPanel extends javax.swing.JPanel {
         jtabSources.addTab("Local", null);
         jtabSources.addTab("Network", null);
         jtabSources.addTab("Both", null);
-       
+
         jTblDetails.setModel(tableModel);
         listModel = new DefaultListModel<>();
         jListDownloads.setModel(listModel);
 
         cargarBiblioteca();
-        
-        localMedia.clear();
-        localMedia.addAll(allMediaFiles);
-        
+
         jTblDetails.setAutoCreateRowSorter(true);
 
         conectarEventos();
+
+        tableModel.setMediaFiles(allMediaFiles);
+        tableModel.fireTableDataChanged();
+
+        listModel.clear();
+        for (MediaFile mf : allMediaFiles) {
+            listModel.addElement(mf);
+        }
 
         jtabSources.addChangeListener(new javax.swing.event.ChangeListener() {
             @Override
@@ -82,7 +86,7 @@ public class LibraryPanel extends javax.swing.JPanel {
                 List<MediaFile> listaActual;
 
                 if (index == 0) {
-                    listaActual = localMedia;
+                    listaActual = allMediaFiles;
                 } else if (index == 1) {
                     listaActual = netWorkMedia;
                 } else {
@@ -151,11 +155,10 @@ public class LibraryPanel extends javax.swing.JPanel {
                 return; // evitar duplicado
             }
         }
-        allMediaFiles.add(media);
-        
+
         media.setNetworkState("LOCAL");
-        localMedia.add(media);
-        
+        allMediaFiles.add(media);
+
         tableModel.addMediaFile(media);
         listModel.addElement(media);
         guardarBiblioteca(); // save updated library
@@ -166,7 +169,7 @@ public class LibraryPanel extends javax.swing.JPanel {
      */
     private void guardarBiblioteca() {
         try {
-            
+
             File f = new File(BIBLIOTECA_FILE);
             File parent = f.getParentFile();
             if (parent != null && !parent.exists()) {
@@ -178,8 +181,7 @@ public class LibraryPanel extends javax.swing.JPanel {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        localMedia.clear();
-        localMedia.addAll(allMediaFiles);
+
     }
 
     /**
@@ -198,8 +200,6 @@ public class LibraryPanel extends javax.swing.JPanel {
             allMediaFiles.addAll(files);
             receiveFiles(allMediaFiles);
 
-            localMedia.clear();
-            localMedia.addAll(allMediaFiles);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -225,40 +225,59 @@ public class LibraryPanel extends javax.swing.JPanel {
     private void filtrarLista() {
         String searchText = jtxtSearch.getText().toLowerCase().trim();
         String filter = jcbFiltrados.getSelectedItem().toString();
-        List<MediaFile> filtered = allMediaFiles.stream()
-                .filter(f -> f.getFileName().toLowerCase().contains(searchText))
-                .filter(f -> switch (filter) {
-            case "Video" ->
-                f.getMimeType().contains("video");
-            case "Audio" ->
-                f.getMimeType().contains("audio");
-            default ->
-                true;
-        })
-                .collect(Collectors.toList());
+
+        List<MediaFile> sourceList;
+
+        int index = jtabSources.getSelectedIndex();
+        if (index == 0) {
+            sourceList = allMediaFiles;
+        } else if (index == 1) {
+            sourceList = netWorkMedia;
+        } else {
+            sourceList = botMedia;
+        }
+
+        List<MediaFile> filtered = new ArrayList<>();
+        for (MediaFile f : sourceList) {
+
+            // Filtro por texto
+            boolean matchesText = f.getFileName().toLowerCase().contains(searchText);
+            if (!matchesText) {
+                continue;
+            }
+            boolean matchesType = true;
+
+            if (filter.equals("Video")) {
+                matchesType = f.getMimeType() != null && f.getMimeType().contains("video");
+            } else if (filter.equals("Audio")) {
+                matchesType = f.getMimeType() != null && f.getMimeType().contains("audio");
+            }
+
+            if (matchesType) {
+                filtered.add(f);
+            }
+        }
 
         receiveFiles(filtered);
     }
 
-    public void loadNetworkMedia(List<Media> mediaFromNet) {
-
+    public void loadNetworkMedia() throws Exception {
         netWorkMedia.clear();
         botMedia.clear();
-        localMedia.clear();
 
-       
+        List<Media> mediaFromNet = MainFrame.COMPONENT.getAllMedia(mainFrame.getJwtToken());
+
         for (Media m : mediaFromNet) {
 
-            File fakeFile = new File(mainFrame.getRutaDescargas(), m.mediaFileName);
+            File fakeRemote = new File(m.mediaFileName);
+            MediaFile mf = new MediaFile(fakeRemote, new Date());
 
-            MediaFile mf = new MediaFile(fakeFile, new java.util.Date());
             mf.setRemoteId(m.id);
             mf.setNetworkState("NETWORK");
 
             netWorkMedia.add(mf);
         }
 
-     
         for (MediaFile local : allMediaFiles) {
 
             boolean existsRemote = false;
@@ -275,25 +294,21 @@ public class LibraryPanel extends javax.swing.JPanel {
                 botMedia.add(local);
             } else {
                 local.setNetworkState("LOCAL");
-                localMedia.add(local);
             }
         }
 
-       
-        jtabSources.setSelectedIndex(0);
+        // 4) Mostrar LOCAL por defecto
+        if (jtabSources.getSelectedIndex() == 0) {
+            tableModel.setMediaFiles(allMediaFiles);
+            tableModel.fireTableDataChanged();
 
-        tableModel.setMediaFiles(localMedia);
-        tableModel.fireTableDataChanged();
+            listModel.clear();
+            for (MediaFile mf : allMediaFiles) {
+                listModel.addElement(mf);
+            }
 
-        // Update JList
-        listModel.clear();
-        for (MediaFile mf : localMedia) {
-            listModel.addElement(mf);
+           
         }
-
-        System.out.println("LibraryPanel: Local=" + localMedia.size()
-                + " Remote=" + netWorkMedia.size()
-                + " Both=" + botMedia.size());
     }
 
     /**

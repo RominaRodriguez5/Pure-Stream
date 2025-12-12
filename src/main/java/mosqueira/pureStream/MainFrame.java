@@ -1,6 +1,7 @@
 package mosqueira.pureStream;
 
 import java.io.File;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientEvent;
@@ -78,12 +79,19 @@ public class MainFrame extends javax.swing.JFrame {
         preferencesPanel = new PreferencesPanel(this);
         panelPrincipal = new PanelPrincipal(preferencesPanel, this, mediaTableModel);
         panelLibrary = new LibraryPanel(this, mediaTableModel);
+
         COMPONENT.addMediaPollingListener(new MediaPollingClientListener() {
             @Override
             public void onNewMediaDetected(MediaPollingClientEvent event) {
-               panelLibrary.loadNetworkMedia(event.getNewMedia());
-            }  
+                try {
+                    panelLibrary.loadNetworkMedia();
+                } catch (Exception ex) {
+                    System.getLogger(MainFrame.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                }
+ 
+            }
         });
+
         setContentPane(panelPrincipal);
         revalidate();
         repaint();
@@ -113,6 +121,11 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public void showLibraryPanel() {
         setContentPane(panelLibrary);
+        try {
+            panelLibrary.loadNetworkMedia();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         revalidate();
         repaint();
     }
@@ -202,6 +215,10 @@ public class MainFrame extends javax.swing.JFrame {
         this.loggedUser = user;
     }
 
+    public String getJwtToken() {
+        return jwtToken;
+    }
+
     /**
      * Notifies the application that a new media file has been downloaded.
      * Updates the library panel and optionally appends the file to an M3U
@@ -265,7 +282,8 @@ public class MainFrame extends javax.swing.JFrame {
         setSize(new java.awt.Dimension(800, 800));
         getContentPane().setLayout(null);
 
-        mediaComponent1.setApiUrl("https://dimedianetapi9.azurewebsites.net");
+        mediaComponent1.setApiUrl("https://difreenet9.azurewebsites.net");
+        mediaComponent1.setAutoscrolls(true);
         mediaComponent1.setPollingInterval(10);
         mediaComponent1.setRunning(true);
         getContentPane().add(mediaComponent1);
@@ -365,7 +383,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_itemPreferencesActionPerformed
 
     private void itemLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemLogoutActionPerformed
-       this.jwtToken = null;
+        this.jwtToken = null;
         this.loggedUser = null;
 
         COMPONENT.setRunning(false);
@@ -375,7 +393,7 @@ public class MainFrame extends javax.swing.JFrame {
         setContentPane(loginPanel);
         revalidate();
         repaint();
- 
+
 
     }//GEN-LAST:event_itemLogoutActionPerformed
 
