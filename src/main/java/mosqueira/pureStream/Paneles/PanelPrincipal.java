@@ -78,7 +78,6 @@ public class PanelPrincipal extends javax.swing.JPanel {
         lblUrl = new javax.swing.JLabel();
         btnDownload = new javax.swing.JButton();
         lblCalidad = new javax.swing.JLabel();
-        jslFormato = new javax.swing.JSeparator();
         jslOptionA = new javax.swing.JSeparator();
         btnReproducir = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -99,7 +98,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
         lblUrl.setForeground(new java.awt.Color(0, 0, 0));
         lblUrl.setText("Url");
         add(lblUrl);
-        lblUrl.setBounds(120, 50, 40, 20);
+        lblUrl.setBounds(140, 50, 40, 20);
 
         btnDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnDownload.setForeground(new java.awt.Color(0, 0, 153));
@@ -110,15 +109,13 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(btnDownload);
-        btnDownload.setBounds(580, 50, 100, 30);
+        btnDownload.setBounds(600, 50, 100, 30);
 
         lblCalidad.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblCalidad.setForeground(new java.awt.Color(0, 0, 0));
         lblCalidad.setText("Quality");
         add(lblCalidad);
-        lblCalidad.setBounds(470, 320, 90, 20);
-        add(jslFormato);
-        jslFormato.setBounds(0, 100, 790, 10);
+        lblCalidad.setBounds(490, 250, 90, 20);
         add(jslOptionA);
         jslOptionA.setBounds(0, 420, 780, 10);
 
@@ -160,7 +157,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(comboFormat);
-        comboFormat.setBounds(170, 360, 72, 22);
+        comboFormat.setBounds(190, 290, 72, 22);
 
         comboQuality.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1080p", "720p", "480p", "360p" }));
         comboQuality.addActionListener(new java.awt.event.ActionListener() {
@@ -169,17 +166,17 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(comboQuality);
-        comboQuality.setBounds(470, 360, 90, 22);
+        comboQuality.setBounds(490, 290, 90, 22);
 
         lblFormatoSalida1.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblFormatoSalida1.setForeground(new java.awt.Color(0, 0, 0));
         lblFormatoSalida1.setText("Output Format");
         add(lblFormatoSalida1);
-        lblFormatoSalida1.setBounds(150, 320, 160, 20);
+        lblFormatoSalida1.setBounds(170, 250, 160, 20);
 
         jtxtInsertUrl.setBackground(new java.awt.Color(204, 204, 204));
         add(jtxtInsertUrl);
-        jtxtInsertUrl.setBounds(170, 50, 370, 30);
+        jtxtInsertUrl.setBounds(190, 50, 370, 30);
 
         btnSearchFolderDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnSearchFolderDownload.setForeground(new java.awt.Color(0, 0, 153));
@@ -190,7 +187,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(btnSearchFolderDownload);
-        btnSearchFolderDownload.setBounds(580, 260, 95, 30);
+        btnSearchFolderDownload.setBounds(600, 190, 95, 30);
 
         jtxtFolderDownload.setBackground(new java.awt.Color(204, 204, 204));
         jtxtFolderDownload.addActionListener(new java.awt.event.ActionListener() {
@@ -199,15 +196,15 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(jtxtFolderDownload);
-        jtxtFolderDownload.setBounds(170, 260, 370, 30);
+        jtxtFolderDownload.setBounds(190, 190, 370, 30);
 
         lblSelectFolderDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblSelectFolderDownload.setForeground(new java.awt.Color(0, 0, 0));
         lblSelectFolderDownload.setText("Select download folder");
         add(lblSelectFolderDownload);
-        lblSelectFolderDownload.setBounds(10, 260, 150, 30);
+        lblSelectFolderDownload.setBounds(30, 190, 150, 30);
         add(jslFormato1);
-        jslFormato1.setBounds(0, 230, 790, 10);
+        jslFormato1.setBounds(0, 130, 790, 10);
     }// </editor-fold>//GEN-END:initComponents
      /**
      * Starts a new download using DownloadTask.
@@ -327,7 +324,6 @@ public class PanelPrincipal extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> comboQuality;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTxtLog;
-    private javax.swing.JSeparator jslFormato;
     private javax.swing.JSeparator jslFormato1;
     private javax.swing.JSeparator jslOptionA;
     private javax.swing.JTextField jtxtFolderDownload;

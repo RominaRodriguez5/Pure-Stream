@@ -1,7 +1,6 @@
 package mosqueira.pureStream;
 
 import java.io.File;
-import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientEvent;
