@@ -11,17 +11,35 @@ Multimedia downloader with ad removal (DI01 Project)
 It features a user-friendly GUI built with NetBeans Designer and allows managing download options, user preferences, and playback of the last downloaded file.
 
 ## ⚙️ Main Features
-- GUI created with NetBeans Designer.  
-- Download videos and audios in MP4 or MP3 format.  
-- Automatic ad removal using yt-dlp.  
-- Automatic playback of the last downloaded file.  
-- User preferences:
-  - Download folder.  
-  - Creation of .m3u playlists.  
-  - Download speed limit.  
-  - Paths for binaries (yt-dlp).  
-- Asynchronous download using `SwingWorker`.  
-- Progress and error logging in the interface.  
+### **1. Download Engine**
+- Download videos and audio (MP4 / MP3)
+- Automatic ad removal via yt-dlp
+- Automatic playback of the last downloaded file
+
+### **2. User Interface**
+- GUI designed with NetBeans Swing Designer  
+- Table + List media views (**JTable + JList**)  
+- Filters:
+  - by text  
+  - by type (Video / Audio)  
+  - by source (Local / Network / Both)  
+- Asynchronous operations using **SwingWorker**
+
+### **3. Preferences**
+- Customizable download folder  
+- Automatic `.m3u` playlist creation  
+- Download speed limit  
+- External binary configuration: yt-dlp, ffmpeg, ffprobe  
+
+### **4. Library Management**
+- Serializable library file: `mediaLibrary.dat`  
+- File deletion + automatic UI synchronization  
+- Real-time cloud sync  
+- Buttons:
+  - **Download from Cloud**
+  - **Upload to Cloud**
+
+---
 
 ## 💻 System Requirements
 - JDK 24  
@@ -30,7 +48,46 @@ It features a user-friendly GUI built with NetBeans Designer and allows managing
 - External dependencies:
   - **yt-dlp**  
   - **FFmpeg**  
-  - **FFprobe**  
+  - **FFprobe**
+
+## 🌐 Cloud Integration (DI Media Component)
+
+PureStream integrates with the **MediaPollingClientComponent**, enabling real-time cloud synchronization.
+
+### **1. Real-time Polling**
+The component checks periodically for new uploads in the DI Media API.
+
+onNewMediaDetected → LibraryPanel.loadNetworkMedia()
+
+Updates include:
+- Remote file list  
+- Local vs Network comparison  
+- “Both” tab (intersection of local + cloud files)
+
+### **2. Network Views**
+The Library has **three tabs**:
+- **Local** → files on disk  
+- **Network** → files in the cloud  
+- **Both** → files present in both locations  
+
+### **3. Manual Cloud Upload**
+The **Upload to Cloud** button allows:
+- Selecting any local file  
+- Uploading via multipart/form-data  
+- Automatic refresh of cloud media lists  
+
+### **4. Manual Cloud Download**
+From the **Network** tab:
+- Select a remote file  
+- Download it  
+- Automatically add it to the local library  
+
+### **5. Remember Me + Auto-Login**
+- Saves credentials + token to `remember.json`  
+- Auto-login when application opens  
+- Logout deletes stored credentials  
+
+---
 
 ## 📺 Videos and References
 
@@ -46,21 +103,19 @@ During the development of **PureStream**, the following videos and resources wer
 - Dialogs (modal and non-modal): [Playlist videos 1–8](https://www.youtube.com/playlist?list=PLIfP1vJ2qakli4Z_-yVZV-rq_hQeHQzUb)  
 - JOptionPane: Video 11 from the same playlist  
 
-
 - JDBC Swing tutorial: [UBC Article](https://www.cs.ubc.ca/~laks/cpsc304/Swing/jdbc_swing.html)  
 - Practiced components: JFrame, JLabel, JButton, JTextField, JTextArea, JCheckBox, JRadioButton, ButtonGroup, JSlider, JProgressBar, JSpinner, JOptionPane, JFileChooser, JMenuBar, JMenu, JMenuItem  
 
-
 - JList and JComboBox of objects: Tutoria 2022-11-11  
 - JTable: [Playlist videos 9–20 (exclude 13 & 17)](https://www.youtube.com/playlist?list=PLIfP1vJ2qakli4Z_-yVZV-rq_hQeHQzUb)  
-
 
 ## 📝 Prompts to LLM
 - “Explain how to create a Swing GUI in Java with NetBeans for video download application.”  
 - “Provide a SwingWorker implementation to handle asynchronous video downloads in Java.”  
 - “Show how to use JList, JTable, JComboBox, and filters for a media library in Java Swing.”  
 - “How to serialize and deserialize a list of media files in Java.”  
-- “Give an example of using yt-dlp with command line options from Java.”  
+- “Give an example of using yt-dlp with command line options from Java.”
+- “Implement cloud synchronization with MediaPollingClientComponent.”
 
 ## ⚠️ Problems Encountered
 1. **Detecting the last downloaded file:**  
