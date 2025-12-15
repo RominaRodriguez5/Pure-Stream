@@ -116,6 +116,31 @@ public class LoginPanel extends javax.swing.JPanel {
         }
     }
 
+    public void tryAutoLogin() {
+        try {
+            if (!jsonFile.exists()) {
+                return; // No hay remember.json → no hacer nada
+            }
+
+            RememberData data = mapper.readValue(jsonFile, RememberData.class);
+
+            // Intento de login con email/contraseña guardados
+            String token = MainFrame.COMPONENT.login(data.email(), data.password());
+
+            // Guardamos y activamos el componente
+            main.setJwtToken(token);
+            MainFrame.COMPONENT.setToken(token);
+            MainFrame.COMPONENT.setRunning(true);
+
+            // Cambiamos directamente al panel principal
+            main.cargarPanelPrincipal();
+
+        } catch (Exception ex) {
+            System.out.println("AutoLogin falló: " + ex.getMessage());
+            // NO borramos remember.json; solo mostramos login normal
+        }
+    }
+
     private void saveRemember(String email, String password, String token) {
         try {
             RememberData data = new RememberData(email, password, token);

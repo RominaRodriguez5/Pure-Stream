@@ -69,7 +69,10 @@ public class MainFrame extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         COMPONENT = mediaComponent1;
         loginPanel = new LoginPanel(this);
-        setContentPane(loginPanel);
+        loginPanel.tryAutoLogin();
+        if (getContentPane() == null || !(getContentPane() instanceof PanelPrincipal)) {
+            setContentPane(loginPanel);
+        }
     }
 
     public void cargarPanelPrincipal() {
@@ -87,7 +90,7 @@ public class MainFrame extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     System.getLogger(MainFrame.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                 }
- 
+
             }
         });
 
@@ -387,7 +390,12 @@ public class MainFrame extends javax.swing.JFrame {
 
         COMPONENT.setRunning(false);
         COMPONENT.setToken(null);
-
+        File jsonFile = new File(System.getProperty("user.home")
+                + File.separator + "Downloads"
+                + File.separator + "remember.json");
+        if (jsonFile.exists()) {
+            jsonFile.delete();
+        }
         loginPanel = new LoginPanel(this);
         setContentPane(loginPanel);
         revalidate();
