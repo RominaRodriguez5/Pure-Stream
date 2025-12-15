@@ -307,6 +307,7 @@ public class LibraryPanel extends javax.swing.JPanel {
                 listModel.addElement(mf);
             }
 
+           
         }
     }
 
@@ -330,7 +331,8 @@ public class LibraryPanel extends javax.swing.JPanel {
         jListDownloads = new javax.swing.JList<>();
         jtabSources = new javax.swing.JTabbedPane();
         btnBack = new javax.swing.JButton();
-        btnUploadtoCloud1 = new javax.swing.JButton();
+        btnUploadtoCloud = new javax.swing.JButton();
+        btnDownloadFromCloud = new javax.swing.JButton();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Details Download", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI Light", 1, 18), new java.awt.Color(0, 0, 153))); // NOI18N
         setLayout(null);
@@ -410,15 +412,25 @@ public class LibraryPanel extends javax.swing.JPanel {
         add(btnBack);
         btnBack.setBounds(500, 720, 190, 30);
 
-        btnUploadtoCloud1.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        btnUploadtoCloud1.setText("Upload to Cloud");
-        btnUploadtoCloud1.addActionListener(new java.awt.event.ActionListener() {
+        btnUploadtoCloud.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnUploadtoCloud.setText("Upload to Cloud");
+        btnUploadtoCloud.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnUploadtoCloud1ActionPerformed(evt);
+                btnUploadtoCloudActionPerformed(evt);
             }
         });
-        add(btnUploadtoCloud1);
-        btnUploadtoCloud1.setBounds(500, 620, 190, 30);
+        add(btnUploadtoCloud);
+        btnUploadtoCloud.setBounds(500, 620, 190, 30);
+
+        btnDownloadFromCloud.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnDownloadFromCloud.setText("Download From Cloud");
+        btnDownloadFromCloud.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDownloadFromCloudActionPerformed(evt);
+            }
+        });
+        add(btnDownloadFromCloud);
+        btnDownloadFromCloud.setBounds(500, 530, 190, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -481,7 +493,7 @@ public class LibraryPanel extends javax.swing.JPanel {
         mainFrame.showPanelPrincipal();
     }//GEN-LAST:event_btnBackActionPerformed
 
-    private void btnUploadtoCloud1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUploadtoCloud1ActionPerformed
+    private void btnUploadtoCloudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUploadtoCloudActionPerformed
         int selected = jTblDetails.getSelectedRow();
         if (selected == -1) {
             JOptionPane.showMessageDialog(this, "Selecciona un archivo de la tabla.");
@@ -515,14 +527,57 @@ public class LibraryPanel extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Error al subir archivo:\n" + ex.getMessage());
         }
 
-    }//GEN-LAST:event_btnUploadtoCloud1ActionPerformed
+    }//GEN-LAST:event_btnUploadtoCloudActionPerformed
+
+    private void btnDownloadFromCloudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownloadFromCloudActionPerformed
+        int selected = jTblDetails.getSelectedRow();
+        if (selected == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un archivo en la pestaña Network.");
+            return;
+        }
+
+        selected = jTblDetails.convertRowIndexToModel(selected);
+        MediaFile remoteMF = tableModel.getMediaFileAt(selected);
+
+        if (remoteMF.getRemoteId() == null) {
+            JOptionPane.showMessageDialog(this, "El archivo no tiene ID remoto.");
+            return;
+        }
+        try {
+            File destino = new File(mainFrame.getRutaDescargas(), remoteMF.getFileName());
+            MainFrame.COMPONENT.download(
+                    remoteMF.getRemoteId(),
+                    destino,
+                    mainFrame.getJwtToken()
+            );
+
+            MediaFile localMF = new MediaFile(destino, new Date());
+            localMF.setRemoteId(remoteMF.getRemoteId());
+            localMF.setNetworkState("BOTH");
+
+            allMediaFiles.add(localMF);
+
+            botMedia.add(localMF);
+
+            guardarBiblioteca();
+
+            JOptionPane.showMessageDialog(this, "Archivo descargado correctamente.");
+
+            loadNetworkMedia();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al descargar:\n" + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnDownloadFromCloudActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnDownloadFromCloud;
     private javax.swing.JButton btnSearch;
-    private javax.swing.JButton btnUploadtoCloud1;
+    private javax.swing.JButton btnUploadtoCloud;
     private javax.swing.JList<MediaFile> jListDownloads;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollTable;
