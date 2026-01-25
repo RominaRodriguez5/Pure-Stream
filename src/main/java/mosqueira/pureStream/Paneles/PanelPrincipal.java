@@ -4,6 +4,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import mosqueira.pureStream.ControladorInterno.DownloadTask;
+import mosqueira.pureStream.ControladorInterno.IconUtils;
 import mosqueira.pureStream.MainFrame;
 import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Modelo.MediaTableModel;
@@ -35,11 +36,26 @@ public class PanelPrincipal extends javax.swing.JPanel {
      */
     public PanelPrincipal(PreferencesPanel panelPref, MainFrame mainFrame, MediaTableModel tableModel) {
         initComponents();
-
         this.preferencesPanel = panelPref;
         this.mainFrame = mainFrame;
         // Show current download path in the text field
         jtxtFolderDownload.setText(mainFrame.getRutaDescargas());
+        
+        btnDownload.setIcon(IconUtils.load("/images/download.png", 20));
+        btnReproducir.setIcon(IconUtils.load("/images/play.png",20));
+        btnOpenLibrary.setIcon(IconUtils.load("/images/folder.png", 20));
+
+        lblUrl.setIcon(IconUtils.load("/images/url.png", 20));
+        lblSelectFolderDownload.setIcon(IconUtils.load("/images/folder.png", 20));
+        btnSearchFolderDownload.setIcon(IconUtils.load("/images/search.png", 20));
+        
+        btnDownload.setToolTipText("Start download");
+        btnReproducir.setToolTipText("Play last downloaded file");
+        btnOpenLibrary.setToolTipText("Open your media library");
+        btnSearchFolderDownload.setToolTipText("Choose download folder");
+        jtxtInsertUrl.setToolTipText("Paste a media URL to download");
+        comboFormat.setToolTipText("Select output format");
+        comboQuality.setToolTipText("Select output quality");
     }
 
     public MainFrame getMainFrame() {
@@ -91,6 +107,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
         jtxtFolderDownload = new javax.swing.JTextField();
         lblSelectFolderDownload = new javax.swing.JLabel();
         jslFormato1 = new javax.swing.JSeparator();
+        jfFormato2 = new javax.swing.JSeparator();
 
         setLayout(null);
 
@@ -98,7 +115,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
         lblUrl.setForeground(new java.awt.Color(0, 0, 0));
         lblUrl.setText("Url");
         add(lblUrl);
-        lblUrl.setBounds(140, 50, 40, 20);
+        lblUrl.setBounds(120, 60, 70, 20);
 
         btnDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnDownload.setForeground(new java.awt.Color(0, 0, 153));
@@ -109,26 +126,26 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(btnDownload);
-        btnDownload.setBounds(600, 50, 100, 30);
+        btnDownload.setBounds(600, 50, 140, 30);
 
         lblCalidad.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblCalidad.setForeground(new java.awt.Color(0, 0, 0));
         lblCalidad.setText("Quality");
         add(lblCalidad);
-        lblCalidad.setBounds(490, 250, 90, 20);
+        lblCalidad.setBounds(500, 300, 90, 20);
         add(jslOptionA);
         jslOptionA.setBounds(0, 420, 780, 10);
 
         btnReproducir.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnReproducir.setForeground(new java.awt.Color(0, 0, 153));
-        btnReproducir.setText("Reproducir");
+        btnReproducir.setText("Play");
         btnReproducir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnReproducirActionPerformed(evt);
             }
         });
         add(btnReproducir);
-        btnReproducir.setBounds(140, 770, 120, 30);
+        btnReproducir.setBounds(140, 770, 130, 30);
 
         jTxtLog.setBackground(new java.awt.Color(204, 204, 204));
         jTxtLog.setColumns(20);
@@ -141,14 +158,14 @@ public class PanelPrincipal extends javax.swing.JPanel {
 
         btnOpenLibrary.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnOpenLibrary.setForeground(new java.awt.Color(0, 0, 153));
-        btnOpenLibrary.setText("Details");
+        btnOpenLibrary.setText("Open Library");
         btnOpenLibrary.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnOpenLibraryActionPerformed(evt);
             }
         });
         add(btnOpenLibrary);
-        btnOpenLibrary.setBounds(490, 770, 130, 30);
+        btnOpenLibrary.setBounds(490, 770, 150, 30);
 
         comboFormat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "mp4", "mp3" }));
         comboFormat.addActionListener(new java.awt.event.ActionListener() {
@@ -157,7 +174,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(comboFormat);
-        comboFormat.setBounds(190, 290, 72, 22);
+        comboFormat.setBounds(200, 340, 72, 22);
 
         comboQuality.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1080p", "720p", "480p", "360p" }));
         comboQuality.addActionListener(new java.awt.event.ActionListener() {
@@ -166,28 +183,28 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(comboQuality);
-        comboQuality.setBounds(490, 290, 90, 22);
+        comboQuality.setBounds(500, 340, 90, 22);
 
         lblFormatoSalida1.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblFormatoSalida1.setForeground(new java.awt.Color(0, 0, 0));
         lblFormatoSalida1.setText("Output Format");
         add(lblFormatoSalida1);
-        lblFormatoSalida1.setBounds(170, 250, 160, 20);
+        lblFormatoSalida1.setBounds(180, 300, 160, 20);
 
         jtxtInsertUrl.setBackground(new java.awt.Color(204, 204, 204));
         add(jtxtInsertUrl);
-        jtxtInsertUrl.setBounds(190, 50, 370, 30);
+        jtxtInsertUrl.setBounds(210, 50, 370, 30);
 
         btnSearchFolderDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnSearchFolderDownload.setForeground(new java.awt.Color(0, 0, 153));
-        btnSearchFolderDownload.setText("Search");
+        btnSearchFolderDownload.setText("Browse..");
         btnSearchFolderDownload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSearchFolderDownloadActionPerformed(evt);
             }
         });
         add(btnSearchFolderDownload);
-        btnSearchFolderDownload.setBounds(600, 190, 95, 30);
+        btnSearchFolderDownload.setBounds(600, 190, 140, 30);
 
         jtxtFolderDownload.setBackground(new java.awt.Color(204, 204, 204));
         jtxtFolderDownload.addActionListener(new java.awt.event.ActionListener() {
@@ -196,15 +213,17 @@ public class PanelPrincipal extends javax.swing.JPanel {
             }
         });
         add(jtxtFolderDownload);
-        jtxtFolderDownload.setBounds(190, 190, 370, 30);
+        jtxtFolderDownload.setBounds(210, 190, 370, 30);
 
         lblSelectFolderDownload.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblSelectFolderDownload.setForeground(new java.awt.Color(0, 0, 0));
         lblSelectFolderDownload.setText("Select download folder");
         add(lblSelectFolderDownload);
-        lblSelectFolderDownload.setBounds(30, 190, 150, 30);
+        lblSelectFolderDownload.setBounds(20, 190, 180, 30);
         add(jslFormato1);
         jslFormato1.setBounds(0, 130, 790, 10);
+        add(jfFormato2);
+        jfFormato2.setBounds(0, 263, 790, 10);
     }// </editor-fold>//GEN-END:initComponents
      /**
      * Starts a new download using DownloadTask.
@@ -212,14 +231,19 @@ public class PanelPrincipal extends javax.swing.JPanel {
     private void btnDownloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownloadActionPerformed
         if (mainFrame.getRutaDescargas() == null) {
             JOptionPane.showMessageDialog(this,
-                    "Select a download folder first.", "Error",
+                    "Please select a download folder first.",
+                    "Error",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         String url = jtxtInsertUrl.getText().trim();
         if (url.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Insert a URL.");
+            JOptionPane.showMessageDialog(this,
+                    "Please enter a URL.",
+                    "Missing URL",
+                    JOptionPane.WARNING_MESSAGE
+            );
             return;
         }
 
@@ -243,7 +267,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
      */
     private void btnReproducirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReproducirActionPerformed
         if (lastDownloadedFile == null) {
-            jTxtLog.append("Primero descarga un archivo para poder reproducirlo.\n");
+            jTxtLog.append("Download a file first to play it.\n");
             return;
         }
 
@@ -253,16 +277,16 @@ public class PanelPrincipal extends javax.swing.JPanel {
             File file = path.toFile();
 
             if (!file.exists()) {
-                jTxtLog.append("No se encontró el archivo descargado: " + lastDownloadedFile + "\n");
+                jTxtLog.append("Downloaded file not found: " + lastDownloadedFile + "\n");
                 return;
             }
 
-            jTxtLog.append("Reproduciendo: " + file.getAbsolutePath() + "\n");
+            jTxtLog.append("Playing: " + file.getAbsolutePath() + "\n");
 
             java.awt.Desktop.getDesktop().open(file);
 
         } catch (Exception e) {
-            jTxtLog.append("ERROR al reproducir el archivo: " + e.getMessage() + "\n");
+            jTxtLog.append("Error playing file: " + e.getMessage() + "\n");
         }
     }//GEN-LAST:event_btnReproducirActionPerformed
     /**
@@ -324,6 +348,7 @@ public class PanelPrincipal extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> comboQuality;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTxtLog;
+    private javax.swing.JSeparator jfFormato2;
     private javax.swing.JSeparator jslFormato1;
     private javax.swing.JSeparator jslOptionA;
     private javax.swing.JTextField jtxtFolderDownload;

@@ -14,6 +14,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import mosqueira.pureStream.ControladorInterno.IconUtils;
 import mosqueira.pureStream.MainFrame;
 import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Modelo.MediaTableModel;
@@ -104,6 +105,18 @@ public class LibraryPanel extends javax.swing.JPanel {
                 }
             }
         });
+
+        btnSearch.setToolTipText("Search in the library");
+        btnDelete.setToolTipText("Delete selected file");
+        btnBack.setToolTipText("Return to main screen");
+        btnUploadtoCloud.setToolTipText("Upload selected local file to cloud");
+        btnDownloadFromCloud.setToolTipText("Download selected cloud file");
+
+        btnSearch.setIcon(IconUtils.load("/images/search.png", 20));
+        btnDelete.setIcon(IconUtils.load("/images/delete.png", 20));
+        btnBack.setIcon(IconUtils.load("/images/back.png", 20));
+        btnUploadtoCloud.setIcon(IconUtils.load("/images/upload.png", 20));
+        btnDownloadFromCloud.setIcon(IconUtils.load("/images/download.png", 20));
     }
 
     /**
@@ -307,7 +320,6 @@ public class LibraryPanel extends javax.swing.JPanel {
                 listModel.addElement(mf);
             }
 
-           
         }
     }
 
@@ -334,7 +346,7 @@ public class LibraryPanel extends javax.swing.JPanel {
         btnUploadtoCloud = new javax.swing.JButton();
         btnDownloadFromCloud = new javax.swing.JButton();
 
-        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Details Download", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI Light", 1, 18), new java.awt.Color(0, 0, 153))); // NOI18N
+        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Download details", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Serif", 1, 18), new java.awt.Color(0, 0, 153))); // NOI18N
         setLayout(null);
 
         jTblDetails.setModel(new javax.swing.table.DefaultTableModel(
@@ -354,14 +366,14 @@ public class LibraryPanel extends javax.swing.JPanel {
         jScrollTable.setBounds(10, 70, 760, 290);
 
         btnSearch.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        btnSearch.setText("Buscar");
+        btnSearch.setText("Search");
         btnSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSearchActionPerformed(evt);
             }
         });
         add(btnSearch);
-        btnSearch.setBounds(160, 390, 72, 30);
+        btnSearch.setBounds(160, 390, 110, 30);
 
         btnDelete.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnDelete.setText("Delete");
@@ -371,9 +383,9 @@ public class LibraryPanel extends javax.swing.JPanel {
             }
         });
         add(btnDelete);
-        btnDelete.setBounds(510, 390, 110, 30);
+        btnDelete.setBounds(580, 390, 110, 30);
 
-        jSeparatorListDownload.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "List Download", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI Light", 1, 18), new java.awt.Color(0, 0, 153))); // NOI18N
+        jSeparatorListDownload.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Downloads list", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Serif", 1, 18), new java.awt.Color(0, 0, 153))); // NOI18N
         add(jSeparatorListDownload);
         jSeparatorListDownload.setBounds(10, 460, 790, 40);
 
@@ -383,7 +395,7 @@ public class LibraryPanel extends javax.swing.JPanel {
             }
         });
         add(jtxtSearch);
-        jtxtSearch.setBounds(240, 390, 240, 30);
+        jtxtSearch.setBounds(300, 390, 240, 30);
 
         jcbFiltrados.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         jcbFiltrados.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "Video", "Audio" }));
@@ -403,7 +415,7 @@ public class LibraryPanel extends javax.swing.JPanel {
         jtabSources.setBounds(10, 40, 760, 30);
 
         btnBack.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        btnBack.setText("Go back");
+        btnBack.setText("Back");
         btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBackActionPerformed(evt);
@@ -423,7 +435,7 @@ public class LibraryPanel extends javax.swing.JPanel {
         btnUploadtoCloud.setBounds(500, 620, 190, 30);
 
         btnDownloadFromCloud.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        btnDownloadFromCloud.setText("Download From Cloud");
+        btnDownloadFromCloud.setText("Download from cloud");
         btnDownloadFromCloud.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDownloadFromCloudActionPerformed(evt);
@@ -462,7 +474,7 @@ public class LibraryPanel extends javax.swing.JPanel {
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 "Are you sure you want to delete this file?\n" + file.getName(),
-                "Confirm Deletion",
+                "Confirm deletion",
                 JOptionPane.YES_NO_OPTION
         );
         if (confirm != JOptionPane.YES_OPTION) {
@@ -496,7 +508,7 @@ public class LibraryPanel extends javax.swing.JPanel {
     private void btnUploadtoCloudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUploadtoCloudActionPerformed
         int selected = jTblDetails.getSelectedRow();
         if (selected == -1) {
-            JOptionPane.showMessageDialog(this, "Selecciona un archivo de la tabla.");
+            JOptionPane.showMessageDialog(this, "Please select a file from the table.");
             return;
         }
 
@@ -505,7 +517,7 @@ public class LibraryPanel extends javax.swing.JPanel {
         File file = mf.getFile();
 
         if (!file.exists()) {
-            JOptionPane.showMessageDialog(this, "El archivo no existe en disco.");
+            JOptionPane.showMessageDialog(this, "The file does not exist on disk.");
             return;
         }
 
@@ -517,14 +529,14 @@ public class LibraryPanel extends javax.swing.JPanel {
                     mainFrame.getJwtToken() // token JWT
             );
 
-            JOptionPane.showMessageDialog(this, "Archivo subido correctamente.");
+            JOptionPane.showMessageDialog(this, "File uploaded successfully.");
 
             // Recargar datos de la nube
             loadNetworkMedia();
 
         } catch (Exception ex) {
 
-            JOptionPane.showMessageDialog(this, "Error al subir archivo:\n" + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Upload failed:\n" + ex.getMessage());
         }
 
     }//GEN-LAST:event_btnUploadtoCloudActionPerformed
@@ -532,7 +544,7 @@ public class LibraryPanel extends javax.swing.JPanel {
     private void btnDownloadFromCloudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownloadFromCloudActionPerformed
         int selected = jTblDetails.getSelectedRow();
         if (selected == -1) {
-            JOptionPane.showMessageDialog(this, "Selecciona un archivo en la pestaña Network.");
+            JOptionPane.showMessageDialog(this, "Please select a file in the Network tab.");
             return;
         }
 
@@ -540,7 +552,7 @@ public class LibraryPanel extends javax.swing.JPanel {
         MediaFile remoteMF = tableModel.getMediaFileAt(selected);
 
         if (remoteMF.getRemoteId() == null) {
-            JOptionPane.showMessageDialog(this, "El archivo no tiene ID remoto.");
+            JOptionPane.showMessageDialog(this, "This file has no remote ID.");
             return;
         }
         try {
@@ -561,13 +573,13 @@ public class LibraryPanel extends javax.swing.JPanel {
 
             guardarBiblioteca();
 
-            JOptionPane.showMessageDialog(this, "Archivo descargado correctamente.");
+            JOptionPane.showMessageDialog(this, "File downloaded successfully.");
 
             loadNetworkMedia();
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al descargar:\n" + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Download failed:\n" + ex.getMessage());
         }
     }//GEN-LAST:event_btnDownloadFromCloudActionPerformed
 

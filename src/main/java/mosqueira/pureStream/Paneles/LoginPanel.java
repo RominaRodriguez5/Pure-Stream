@@ -11,9 +11,9 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
 import mosqueira.pureStream.MainFrame;
 import tools.jackson.databind.ObjectMapper;
+import mosqueira.pureStream.ControladorInterno.IconUtils;
 
 public class LoginPanel extends javax.swing.JPanel {
 
@@ -34,39 +34,56 @@ public class LoginPanel extends javax.swing.JPanel {
 
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // -------- EMAIL --------
-        JLabel lblEmail = new JLabel("Email:");
+        JLabel lblLogo = new JLabel();
+        lblLogo.setHorizontalAlignment(JLabel.CENTER);
+        lblLogo.setIcon(IconUtils.load("/images/iconApp.png", 100));
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        add(lblLogo, gbc);
+        gbc.gridwidth = 1;
+
+        // -------- EMAIL --------
+        JLabel lblEmail = new JLabel();
+        lblEmail.setIcon(IconUtils.load("/images/email.png", 20));
+        lblEmail.setIconTextGap(10);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         add(lblEmail, gbc);
 
-        txtEmail = new JTextField(20);
+        txtEmail = new JTextField(15);
         gbc.gridx = 1;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         add(txtEmail, gbc);
 
         // -------- PASSWORD --------
-        JLabel lblPassword = new JLabel("Password:");
+        JLabel lblPassword = new JLabel();
+        lblPassword.setIcon(IconUtils.load("/images/password.png", 20));
+        lblPassword.setIconTextGap(10);
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         add(lblPassword, gbc);
 
         txtPassword = new JPasswordField(20);
         gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         add(txtPassword, gbc);
 
         // -------- REMEMBER ME --------
         chkRemember = new JCheckBox("Remember me");
+       
+        chkRemember.setToolTipText("Keep session data on this device");
         gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         add(chkRemember, gbc);
 
         // -------- LOGIN BUTTON --------
         btnLogin = new JButton("Login");
+        btnLogin.setIcon(IconUtils.load("/images/login.png", 20));
+        btnLogin.setToolTipText("Sign in to start using PureStream");
         gbc.gridx = 1;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         add(btnLogin, gbc);
 
         // Acción del botón
@@ -78,6 +95,7 @@ public class LoginPanel extends javax.swing.JPanel {
         });
         // Cargar remember.json si existe
         loadRemember();
+        main.getRootPane().setDefaultButton(btnLogin);
     }
 
     private void Login() {
@@ -86,7 +104,7 @@ public class LoginPanel extends javax.swing.JPanel {
         String pass = new String(txtPassword.getPassword());
 
         if (email.isEmpty() || pass.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debes rellenar todos los campos");
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.");
             return;
         }
 
@@ -110,16 +128,16 @@ public class LoginPanel extends javax.swing.JPanel {
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
-                    "Login incorrecto: " + ex.getMessage(),
-                    "ERROR",
-                    JOptionPane.ERROR_MESSAGE);
+        "Login failed: " + ex.getMessage(),
+        "Error",
+        JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void tryAutoLogin() {
         try {
             if (!jsonFile.exists()) {
-                return; // No hay remember.json → no hacer nada
+                return; // No hay remember.json 
             }
 
             RememberData data = mapper.readValue(jsonFile, RememberData.class);
@@ -137,7 +155,7 @@ public class LoginPanel extends javax.swing.JPanel {
 
         } catch (Exception ex) {
             System.out.println("AutoLogin falló: " + ex.getMessage());
-            // NO borramos remember.json; solo mostramos login normal
+            
         }
     }
 

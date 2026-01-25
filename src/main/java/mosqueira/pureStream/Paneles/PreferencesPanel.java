@@ -1,7 +1,7 @@
 package mosqueira.pureStream.Paneles;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import mosqueira.pureStream.ControladorInterno.IconUtils;
 import mosqueira.pureStream.MainFrame;
 
 /**
@@ -28,13 +28,21 @@ public class PreferencesPanel extends javax.swing.JPanel {
         this.mainFrame = mainFrame;
         initComponents();
         cargarPreferencias();
+        
+        
+        btnSaveAndReturn.setIcon(IconUtils.load("/images/save.png", 20));
+        btnSearchPath.setIcon(IconUtils.load("/images/search.png", 20));
+        lblSelectPath.setIcon(IconUtils.load("/images/folder.png", 20));
+        jtxtExecutable.setToolTipText("Path to yt-dlp executable");
+        jchLimit.setToolTipText("Limit download speed (KB/s)");
+        jchM3U.setToolTipText("Generate a playlist after downloads");
+        
 
     }
 
     /**
      * Loads saved settings from MainFrame into UI controls.
      */
-
     public void cargarPreferencias() {
 
         jchM3U.setSelected(mainFrame.isCrearM3U());
@@ -96,7 +104,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
         btnSaveAndReturn = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jtxtExecutable = new javax.swing.JTextField();
-        jSearchPath = new javax.swing.JButton();
+        btnSearchPath = new javax.swing.JButton();
         jSliderLimit = new javax.swing.JSlider();
         jlblValue = new javax.swing.JLabel();
 
@@ -104,31 +112,31 @@ public class PreferencesPanel extends javax.swing.JPanel {
 
         jchM3U.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         jchM3U.setForeground(new java.awt.Color(0, 0, 0));
-        jchM3U.setText("Crear archivo  .m3u");
+        jchM3U.setText("Create .m3u playlist");
         jchM3U.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jchM3UActionPerformed(evt);
             }
         });
         add(jchM3U);
-        jchM3U.setBounds(130, 310, 150, 40);
+        jchM3U.setBounds(130, 340, 150, 40);
 
-        lblAds.setFont(new java.awt.Font("Segoe UI Light", 1, 24)); // NOI18N
+        lblAds.setFont(new java.awt.Font("Serif", 1, 24)); // NOI18N
         lblAds.setForeground(new java.awt.Color(0, 0, 0));
-        lblAds.setText("Opciones adicionales");
+        lblAds.setText("Additional options");
         add(lblAds);
         lblAds.setBounds(290, 70, 240, 30);
 
         jchLimit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         jchLimit.setForeground(new java.awt.Color(0, 0, 0));
-        jchLimit.setText("Limitar Velocidad de descarga");
+        jchLimit.setText("Limit download speed");
         jchLimit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jchLimitActionPerformed(evt);
             }
         });
         add(jchLimit);
-        jchLimit.setBounds(400, 310, 230, 40);
+        jchLimit.setBounds(400, 340, 230, 40);
 
         lblSelectPath.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         lblSelectPath.setForeground(new java.awt.Color(0, 0, 0));
@@ -138,14 +146,14 @@ public class PreferencesPanel extends javax.swing.JPanel {
 
         btnSaveAndReturn.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnSaveAndReturn.setForeground(new java.awt.Color(0, 0, 153));
-        btnSaveAndReturn.setText("Save and Return");
+        btnSaveAndReturn.setText("Save and return");
         btnSaveAndReturn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSaveAndReturnActionPerformed(evt);
             }
         });
         add(btnSaveAndReturn);
-        btnSaveAndReturn.setBounds(310, 520, 160, 30);
+        btnSaveAndReturn.setBounds(270, 520, 160, 30);
         add(jSeparator1);
         jSeparator1.setBounds(10, 250, 750, 10);
 
@@ -159,16 +167,16 @@ public class PreferencesPanel extends javax.swing.JPanel {
         add(jtxtExecutable);
         jtxtExecutable.setBounds(250, 140, 340, 30);
 
-        jSearchPath.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        jSearchPath.setForeground(new java.awt.Color(0, 0, 153));
-        jSearchPath.setText("Search");
-        jSearchPath.addActionListener(new java.awt.event.ActionListener() {
+        btnSearchPath.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnSearchPath.setForeground(new java.awt.Color(0, 0, 153));
+        btnSearchPath.setText("Browse...");
+        btnSearchPath.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jSearchPathActionPerformed(evt);
+                btnSearchPathActionPerformed(evt);
             }
         });
-        add(jSearchPath);
-        jSearchPath.setBounds(600, 140, 100, 30);
+        add(btnSearchPath);
+        btnSearchPath.setBounds(600, 140, 130, 30);
 
         jSliderLimit.setMajorTickSpacing(500);
         jSliderLimit.setMaximum(5000);
@@ -181,12 +189,12 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jSliderLimit);
-        jSliderLimit.setBounds(380, 380, 280, 40);
+        jSliderLimit.setBounds(380, 410, 280, 40);
 
         jlblValue.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         jlblValue.setForeground(new java.awt.Color(0, 0, 153));
         add(jlblValue);
-        jlblValue.setBounds(470, 350, 100, 30);
+        jlblValue.setBounds(470, 380, 100, 30);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -208,18 +216,32 @@ public class PreferencesPanel extends javax.swing.JPanel {
      * Validates preferences and returns to the main panel.
      */
     private void btnSaveAndReturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveAndReturnActionPerformed
+        String path = jtxtExecutable.getText().trim();
         if (jtxtExecutable.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Select yt-dlp executable.");
+            JOptionPane.showMessageDialog(this, "Please select the yt-dlp executable.", "Missing executable",
+                    JOptionPane.WARNING_MESSAGE
+            );
             return;
         }
-        mainFrame.setExecutablePath(jtxtExecutable.getText().trim());
+        java.io.File exe = new java.io.File(path);
+        if (!exe.exists() || !exe.isFile()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "The selected file does not exist or is not a file.",
+                    "Invalid executable",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        mainFrame.setExecutablePath(path);
         mainFrame.showPanelPrincipal();
     }//GEN-LAST:event_btnSaveAndReturnActionPerformed
 
     /**
      * Opens a file chooser to select the yt-dlp executable path.
      */
-    private void jSearchPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSearchPathActionPerformed
+    private void btnSearchPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchPathActionPerformed
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
@@ -228,13 +250,15 @@ public class PreferencesPanel extends javax.swing.JPanel {
             jtxtExecutable.setText(ruta);
             mainFrame.setExecutablePath(ruta);
         }
-    }//GEN-LAST:event_jSearchPathActionPerformed
+    }//GEN-LAST:event_btnSearchPathActionPerformed
 
     /**
      * Updates the download speed limit value in MainFrame.
      */
     private void jSliderLimitStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSliderLimitStateChanged
+        int value = jSliderLimit.getValue();
         jlblValue.setText(jSliderLimit.getValue() + " KB/s");
+        mainFrame.setLimiteVelocidad(value);
     }//GEN-LAST:event_jSliderLimitStateChanged
 
     private void jtxtExecutableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtExecutableActionPerformed
@@ -244,7 +268,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSaveAndReturn;
-    private javax.swing.JButton jSearchPath;
+    private javax.swing.JButton btnSearchPath;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSlider jSliderLimit;
     private javax.swing.JCheckBox jchLimit;

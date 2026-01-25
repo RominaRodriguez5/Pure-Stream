@@ -6,6 +6,7 @@ import mosqueira.mediaPollingClientComponent.component.MediaPollingClientCompone
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientEvent;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientListener;
 import mosqueira.mediaPollingClientComponent.model.Usuari;
+import mosqueira.pureStream.ControladorInterno.IconUtils;
 import mosqueira.pureStream.Dialogs.AboutDialog;
 import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Modelo.MediaTableModel;
@@ -64,8 +65,10 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
-        setResizable(false);
+        applyIcons();
+        mosqueira.pureStream.ControladorInterno.IconUtils.applyFrameIcon(this, "/images/iconApp.png", 32);
         setSize(800, 900);
+        setResizable(false);
         setLocationRelativeTo(null);
         COMPONENT = mediaComponent1;
         loginPanel = new LoginPanel(this);
@@ -73,7 +76,32 @@ public class MainFrame extends javax.swing.JFrame {
         if (getContentPane() == null || !(getContentPane() instanceof PanelPrincipal)) {
             setContentPane(loginPanel);
         }
+
     }
+
+    private void applyIcons() {
+       
+        javax.swing.JLabel lblMenuIcon = new javax.swing.JLabel(
+                mosqueira.pureStream.ControladorInterno.IconUtils.load("/images/menu.png", 20)
+        );
+        lblMenuIcon.setToolTipText("Menu");
+        lblMenuIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 8, 0, 8));
+        jmnMenu.add(lblMenuIcon, 0);
+
+        // JMenuItem icons
+        itemExit.setIcon(IconUtils.load("/images/exit.png", 20));
+        itemLogout.setIcon(IconUtils.load("/images/logout.png", 20));
+        itemPreferences.setIcon(IconUtils.load("/images/edit.png", 20));
+        itemAbout.setIcon(IconUtils.load("/images/about.png", 20));
+
+        // Tooltips
+        itemExit.setToolTipText("Close the application");
+        itemLogout.setToolTipText("Log out of the current session");
+        itemPreferences.setToolTipText("Open application preferences");
+        itemAbout.setToolTipText("About PureStream");
+    }
+
+   
 
     public void cargarPanelPrincipal() {
         // Initialize shared model and all panels
@@ -280,24 +308,22 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PureStream ");
+        setName("mainFrame"); // NOI18N
         setResizable(false);
         setSize(new java.awt.Dimension(800, 800));
-        getContentPane().setLayout(null);
 
-        mediaComponent1.setApiUrl("https://difreenet9.azurewebsites.net");
-        mediaComponent1.setAutoscrolls(true);
+        mediaComponent1.setApiUrl("https://difreenet9.azurewebsites.net/");
         mediaComponent1.setPollingInterval(10);
         mediaComponent1.setRunning(true);
-        getContentPane().add(mediaComponent1);
-        mediaComponent1.setBounds(720, 10, 30, 40);
 
         jmnMenu.setBorder(null);
-        jmnMenu.setForeground(new java.awt.Color(0, 102, 153));
+        jmnMenu.setForeground(new java.awt.Color(0, 0, 102));
 
+        menuFile.setForeground(new java.awt.Color(0, 51, 102));
         menuFile.setText("File");
-        menuFile.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        menuFile.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
 
-        itemExit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        itemExit.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
         itemExit.setText("Exit");
         itemExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -306,7 +332,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
         menuFile.add(itemExit);
 
-        itemLogout.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        itemLogout.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
         itemLogout.setText("Logout");
         itemLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -317,10 +343,12 @@ public class MainFrame extends javax.swing.JFrame {
 
         jmnMenu.add(menuFile);
 
+        menuEdit.setForeground(new java.awt.Color(0, 51, 102));
         menuEdit.setText("Edit");
-        menuEdit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        menuEdit.setToolTipText("");
+        menuEdit.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
 
-        itemPreferences.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        itemPreferences.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
         itemPreferences.setText("Preferences");
         itemPreferences.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -331,10 +359,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         jmnMenu.add(menuEdit);
 
+        menuHelp.setForeground(new java.awt.Color(0, 51, 102));
         menuHelp.setText("Help");
-        menuHelp.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        menuHelp.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
 
-        itemAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        itemAbout.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
         itemAbout.setText("About");
         itemAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -347,6 +376,22 @@ public class MainFrame extends javax.swing.JFrame {
 
         setJMenuBar(jmnMenu);
 
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(364, Short.MAX_VALUE)
+                .addComponent(mediaComponent1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(mediaComponent1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 229, Short.MAX_VALUE))
+        );
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -358,8 +403,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         // Confirmamos salida
         int confirm = JOptionPane.showConfirmDialog(this,
-                "¿Seguro que quieres salir?",
-                "Confirmar salida",
+                "Are you sure you want to exit?",
+                "Exit",
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
@@ -390,6 +435,17 @@ public class MainFrame extends javax.swing.JFrame {
 
         COMPONENT.setRunning(false);
         COMPONENT.setToken(null);
+        
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to log out?",
+                "Logout",
+                JOptionPane.YES_NO_OPTION
+        );
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+        
         File jsonFile = new File(System.getProperty("user.home")
                 + File.separator + "Downloads"
                 + File.separator + "remember.json");
