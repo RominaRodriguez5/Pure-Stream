@@ -6,10 +6,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import mosqueira.pureStream.Modelo.MediaFile;
-import mosqueira.pureStream.Paneles.PanelPrincipal;
+import mosqueira.pureStream.Paneles.MainPanel;
 import mosqueira.pureStream.Paneles.PreferencesPanel;
+
 /**
  * SwingWorker to handle yt-dlp downloads in background.
+ *
  * @author Romina
  */
 public class DownloadTask extends SwingWorker<Void, String> {
@@ -30,17 +32,19 @@ public class DownloadTask extends SwingWorker<Void, String> {
     private final JComboBox<String> quality;
 
     // Reference to main panel to notify on completion
-    private final PanelPrincipal parentPanel;
+    private final MainPanel parentPanel;
 
     // Stores the detected final output file
     private String detectedFile = null;
 
+    private int lastProgress = -1;
+
     public DownloadTask(String url,
-                        PreferencesPanel preferencesPanel,
-                        JTextArea logArea,
-                        JComboBox<String> format,
-                        JComboBox<String> quality,
-                        PanelPrincipal parentPanel) {
+            PreferencesPanel preferencesPanel,
+            JTextArea logArea,
+            JComboBox<String> format,
+            JComboBox<String> quality,
+            MainPanel parentPanel) {
 
         this.url = url;
         this.preferencesPanel = preferencesPanel;
@@ -61,12 +65,14 @@ public class DownloadTask extends SwingWorker<Void, String> {
                 quality.getSelectedItem().toString()
         );
 
-        if (command == null)
+        if (command == null) {
             return null;
+        }
 
         // Run process with merged stdout/stderr
         ProcessBuilder pb = new ProcessBuilder(command);
         pb.redirectErrorStream(true);
+        publish("__START__");
         Process process = pb.start();
 
         // Read yt-dlp output line-by-line
@@ -86,22 +92,60 @@ public class DownloadTask extends SwingWorker<Void, String> {
 
     @Override
     protected void process(List<String> chunks) {
-        for (String line : chunks) {
 
-            // Append full yt-dlp output to log
-            logArea.append(line);
+        for (String raw : chunks) {
+            if ("__START__".equals(raw)) {
+                logArea.append("Starting download...\n");
+                continue;
+            }
+            String line = raw.trim();
+            if (line.isEmpty()) {
+                continue;
+            }
 
-            // Extract download percentage when available
-            if (line.contains("[download]")) {
+            if (line.startsWith("[download]")) {
 
                 var match = java.util.regex.Pattern
                         .compile("(\\d+(?:\\.\\d+)?)%")
                         .matcher(line);
 
                 if (match.find()) {
-                    String percent = match.group(1);
-                    logArea.append("Progress: " + percent + "%\n");
+                    int p = (int) Double.parseDouble(match.group(1));
+                    if (p != lastProgress) {
+                        lastProgress = p;
+                        setProgress(p);
+                    }
                 }
+                continue;
+            }
+
+            if (line.startsWith("Deleting original file")) {
+                continue;
+            }
+
+            if (line.contains("Merging formats into")) {
+                logArea.append("Merging audio and video...\n");
+                continue;
+            }
+
+            if (line.contains("Destination:") || line.contains("ExtractAudio] Destination:")) {
+                logArea.append("Saving file...\n");
+                continue;
+            }
+
+            if (line.contains("has already been downloaded")) {
+                logArea.append("File already downloaded.\n");
+                continue;
+            }
+
+            if (line.startsWith("WARNING:")) {
+                logArea.append("Some formats may be limited.\n");
+                continue;
+            }
+
+            if (line.startsWith("ERROR:")) {
+                logArea.append("Error: " + line + "\n");
+                continue;
             }
         }
     }
@@ -156,12 +200,13 @@ public class DownloadTask extends SwingWorker<Void, String> {
         // Notify MainFrame (library + playlist)
         parentPanel.getMainFrame().notifyDownloadedMedia(media);
 
-        logArea.append("File ready: " + file.getAbsolutePath() + "\n");
+        logArea.append("Download completed: " + file.getName() + "\n");
+        logArea.append("Saved in: " + file.getParent() + "\n");
     }
 
     /**
-     * Attempts to detect the final filename from yt-dlp logs.
-     * Handles extract audio, merges, direct downloads and "already downloaded".
+     * Attempts to detect the final filename from yt-dlp logs. Handles extract
+     * audio, merges, direct downloads and "already downloaded".
      */
     private void detectDownloadedFile(String line) {
 
@@ -182,8 +227,9 @@ public class DownloadTask extends SwingWorker<Void, String> {
             String f = line.substring(line.indexOf("Destination:") + 12).trim();
 
             // Skip temp/intermediate files
-            if (!f.contains(".webm") && !f.contains(".f") && !f.endsWith(".m4a"))
+            if (!f.contains(".webm") && !f.contains(".f") && !f.endsWith(".m4a")) {
                 detectedFile = f;
+            }
 
             return;
         }
