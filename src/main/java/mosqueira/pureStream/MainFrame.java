@@ -1,19 +1,24 @@
 package mosqueira.pureStream;
 
+import java.awt.BorderLayout;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientEvent;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientListener;
 import mosqueira.mediaPollingClientComponent.model.Usuari;
-import mosqueira.pureStream.ControladorInterno.IconUtils;
 import mosqueira.pureStream.Dialogs.AboutDialog;
 import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Modelo.MediaTableModel;
 import mosqueira.pureStream.Paneles.LibraryPanel;
 import mosqueira.pureStream.Paneles.LoginPanel;
-import mosqueira.pureStream.Paneles.PanelPrincipal;
 import mosqueira.pureStream.Paneles.PreferencesPanel;
+import mosqueira.pureStream.diseñoApp.IconUtils;
+import mosqueira.pureStream.diseñoApp.PanelUtils;
+import mosqueira.pureStream.Paneles.MainPanel;
 
 /**
  * MainFrame represents the main application window for PureStream. It controls
@@ -31,7 +36,7 @@ public class MainFrame extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
 
     // Reference to the main download panel
-    private PanelPrincipal panelPrincipal;
+    private MainPanel mainPanel;
 
     // Reference to the preferences panel (for user configuration options)
     private PreferencesPanel preferencesPanel;
@@ -49,6 +54,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     // Cloud login data
     private String jwtToken = null;
+
     private Usuari loggedUser = null;
 
     public static MediaPollingClientComponent COMPONENT;
@@ -58,6 +64,8 @@ public class MainFrame extends javax.swing.JFrame {
     private int limiteVelocidad = 0; // Speed limit in KB/s
     private String executablePath = ""; // Path to the yt-dlp executable
 
+    private PanelUtils bg;
+
     /**
      * Constructor that initializes the main frame, all panels, and the menu
      * bar. It also sets up the general window configuration (title, size,
@@ -66,48 +74,69 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         initComponents();
         applyIcons();
-        mosqueira.pureStream.ControladorInterno.IconUtils.applyFrameIcon(this, "/images/iconApp.png", 32);
+        IconUtils.applyFrameIcon(this, "/images/iconApp.png", 32);
         setSize(800, 900);
-        setResizable(false);
+
         setLocationRelativeTo(null);
+
+        bg = new PanelUtils();
+        bg.setLayout(new BorderLayout());
+        bg.add(pnlRoot, BorderLayout.CENTER);
+
+        setContentPane(bg);
         COMPONENT = mediaComponent1;
+        mediaComponent1.setVisible(false);
         loginPanel = new LoginPanel(this);
+        showPanel(loginPanel);
         loginPanel.tryAutoLogin();
-        if (getContentPane() == null || !(getContentPane() instanceof PanelPrincipal)) {
-            setContentPane(loginPanel);
-        }
 
     }
 
+    public void showPanel(JPanel panel) {
+        pnlRoot.setOpaque(false);
+        pnlRoot.removeAll();
+        pnlRoot.add(panel, BorderLayout.CENTER);
+        pnlRoot.revalidate();
+        pnlRoot.repaint();
+    }
+
+    public void showMain() {
+        showPanel(mainPanel);
+    }
+
+    public void showPreferences() {
+        showPanel(preferencesPanel);
+    }
+
     private void applyIcons() {
-       
+
         javax.swing.JLabel lblMenuIcon = new javax.swing.JLabel(
-                mosqueira.pureStream.ControladorInterno.IconUtils.load("/images/menu.png", 20)
+                mosqueira.pureStream.diseñoApp.IconUtils.load("/images/menu.png", 20)
         );
         lblMenuIcon.setToolTipText("Menu");
         lblMenuIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 8, 0, 8));
         jmnMenu.add(lblMenuIcon, 0);
 
         // JMenuItem icons
-        itemExit.setIcon(IconUtils.load("/images/exit.png", 20));
-        itemLogout.setIcon(IconUtils.load("/images/logout.png", 20));
-        itemPreferences.setIcon(IconUtils.load("/images/edit.png", 20));
-        itemAbout.setIcon(IconUtils.load("/images/about.png", 20));
+        mniExit.setIcon(IconUtils.load("/images/exit.png", 20));
+        mniLogout.setIcon(IconUtils.load("/images/logout.png", 20));
+        mniPreferences.setIcon(IconUtils.load("/images/edit.png", 20));
+        mniAbout.setIcon(IconUtils.load("/images/about.png", 20));
 
         // Tooltips
-        itemExit.setToolTipText("Close the application");
-        itemLogout.setToolTipText("Log out of the current session");
-        itemPreferences.setToolTipText("Open application preferences");
-        itemAbout.setToolTipText("About PureStream");
+        mniExit.setToolTipText("Close the application");
+        mniLogout.setToolTipText("Log out of the current session");
+        mnuFile.setToolTipText("Close the application and Log out of the current session");
+        mnuEdit.setToolTipText("Open application preferences");
+        mnuHelp.setToolTipText("About PureStream");
     }
-
-   
 
     public void cargarPanelPrincipal() {
         // Initialize shared model and all panels
         mediaTableModel = new MediaTableModel();
+
         preferencesPanel = new PreferencesPanel(this);
-        panelPrincipal = new PanelPrincipal(preferencesPanel, this, mediaTableModel);
+        mainPanel = new MainPanel(preferencesPanel, this, mediaTableModel);
         panelLibrary = new LibraryPanel(this, mediaTableModel);
 
         COMPONENT.addMediaPollingListener(new MediaPollingClientListener() {
@@ -122,27 +151,8 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        setContentPane(panelPrincipal);
-        revalidate();
-        repaint();
-    }
+        showPanel(mainPanel);
 
-    /**
-     * Displays the main download panel (PanelPrincipal).
-     */
-    public void showPanelPrincipal() {
-        setContentPane(panelPrincipal);
-        revalidate();
-        repaint();
-    }
-
-    /**
-     * Displays the user preferences panel (PreferencesPanel).
-     */
-    private void showPanelPreferencias() {
-        setContentPane(preferencesPanel);
-        revalidate();
-        repaint();
     }
 
     /**
@@ -150,14 +160,14 @@ public class MainFrame extends javax.swing.JFrame {
      * method updates the LibraryPanel before showing it.
      */
     public void showLibraryPanel() {
-        setContentPane(panelLibrary);
+        panelLibrary.setOpaque(false);
         try {
+
             panelLibrary.loadNetworkMedia();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        revalidate();
-        repaint();
+        showPanel(panelLibrary);
     }
 
     /**
@@ -179,6 +189,10 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public LibraryPanel getLibraryPanel() {
         return panelLibrary;
+    }
+
+    public PreferencesPanel getPreferencesPanel() {
+        return preferencesPanel;
     }
 
     /**
@@ -297,100 +311,88 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         mediaComponent1 = new mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent();
+        pnlRoot = new javax.swing.JPanel();
         jmnMenu = new javax.swing.JMenuBar();
-        menuFile = new javax.swing.JMenu();
-        itemExit = new javax.swing.JMenuItem();
-        itemLogout = new javax.swing.JMenuItem();
-        menuEdit = new javax.swing.JMenu();
-        itemPreferences = new javax.swing.JMenuItem();
-        menuHelp = new javax.swing.JMenu();
-        itemAbout = new javax.swing.JMenuItem();
+        mnuFile = new javax.swing.JMenu();
+        mniExit = new javax.swing.JMenuItem();
+        mniLogout = new javax.swing.JMenuItem();
+        mnuEdit = new javax.swing.JMenu();
+        mniPreferences = new javax.swing.JMenuItem();
+        mnuHelp = new javax.swing.JMenu();
+        mniAbout = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PureStream ");
         setName("mainFrame"); // NOI18N
-        setResizable(false);
         setSize(new java.awt.Dimension(800, 800));
 
         mediaComponent1.setApiUrl("https://difreenet9.azurewebsites.net/");
         mediaComponent1.setPollingInterval(10);
         mediaComponent1.setRunning(true);
+        getContentPane().add(mediaComponent1, java.awt.BorderLayout.CENTER);
+
+        pnlRoot.setLayout(new java.awt.BorderLayout());
+        getContentPane().add(pnlRoot, java.awt.BorderLayout.PAGE_START);
 
         jmnMenu.setBorder(null);
         jmnMenu.setForeground(new java.awt.Color(0, 0, 102));
 
-        menuFile.setForeground(new java.awt.Color(0, 51, 102));
-        menuFile.setText("File");
-        menuFile.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        mnuFile.setForeground(new java.awt.Color(0, 51, 102));
+        mnuFile.setText("File");
+        mnuFile.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
 
-        itemExit.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
-        itemExit.setText("Exit");
-        itemExit.addActionListener(new java.awt.event.ActionListener() {
+        mniExit.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
+        mniExit.setText("Exit");
+        mniExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                itemExitActionPerformed(evt);
+                mniExitActionPerformed(evt);
             }
         });
-        menuFile.add(itemExit);
+        mnuFile.add(mniExit);
 
-        itemLogout.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
-        itemLogout.setText("Logout");
-        itemLogout.addActionListener(new java.awt.event.ActionListener() {
+        mniLogout.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
+        mniLogout.setText("Logout");
+        mniLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                itemLogoutActionPerformed(evt);
+                mniLogoutActionPerformed(evt);
             }
         });
-        menuFile.add(itemLogout);
+        mnuFile.add(mniLogout);
 
-        jmnMenu.add(menuFile);
+        jmnMenu.add(mnuFile);
 
-        menuEdit.setForeground(new java.awt.Color(0, 51, 102));
-        menuEdit.setText("Edit");
-        menuEdit.setToolTipText("");
-        menuEdit.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        mnuEdit.setForeground(new java.awt.Color(0, 51, 102));
+        mnuEdit.setText("Edit");
+        mnuEdit.setToolTipText("");
+        mnuEdit.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
 
-        itemPreferences.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
-        itemPreferences.setText("Preferences");
-        itemPreferences.addActionListener(new java.awt.event.ActionListener() {
+        mniPreferences.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
+        mniPreferences.setText("Preferences");
+        mniPreferences.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                itemPreferencesActionPerformed(evt);
+                mniPreferencesActionPerformed(evt);
             }
         });
-        menuEdit.add(itemPreferences);
+        mnuEdit.add(mniPreferences);
 
-        jmnMenu.add(menuEdit);
+        jmnMenu.add(mnuEdit);
 
-        menuHelp.setForeground(new java.awt.Color(0, 51, 102));
-        menuHelp.setText("Help");
-        menuHelp.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        mnuHelp.setForeground(new java.awt.Color(0, 51, 102));
+        mnuHelp.setText("Help");
+        mnuHelp.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
 
-        itemAbout.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
-        itemAbout.setText("About");
-        itemAbout.addActionListener(new java.awt.event.ActionListener() {
+        mniAbout.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
+        mniAbout.setText("About");
+        mniAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                itemAboutActionPerformed(evt);
+                mniAboutActionPerformed(evt);
             }
         });
-        menuHelp.add(itemAbout);
+        mnuHelp.add(mniAbout);
 
-        jmnMenu.add(menuHelp);
+        jmnMenu.add(mnuHelp);
 
         setJMenuBar(jmnMenu);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(364, Short.MAX_VALUE)
-                .addComponent(mediaComponent1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(mediaComponent1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 229, Short.MAX_VALUE))
-        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -399,7 +401,7 @@ public class MainFrame extends javax.swing.JFrame {
      * Handles the "Exit" menu action. Saves the current library before closing
      * the app, and asks the user for confirmation before exiting.
      */
-    private void itemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemExitActionPerformed
+    private void mniExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniExitActionPerformed
 
         // Confirmamos salida
         int confirm = JOptionPane.showConfirmDialog(this,
@@ -410,32 +412,36 @@ public class MainFrame extends javax.swing.JFrame {
         if (confirm == JOptionPane.YES_OPTION) {
             System.exit(0);
         }
-    }//GEN-LAST:event_itemExitActionPerformed
+    }//GEN-LAST:event_mniExitActionPerformed
     /**
      * Handles the "About" menu item action. Opens a dialog displaying
      * application information.
      */
-    private void itemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemAboutActionPerformed
+    private void mniAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniAboutActionPerformed
         AboutDialog aboutD = new AboutDialog(this, true);
         aboutD.setLocationRelativeTo(this);
         aboutD.setVisible(true);
-    }//GEN-LAST:event_itemAboutActionPerformed
+    }//GEN-LAST:event_mniAboutActionPerformed
     /**
      * Handles the "Preferences" menu item action. Opens the PreferencesPanel to
      * let the user modify settings.
      */
-    private void itemPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemPreferencesActionPerformed
-        showPanelPreferencias();
+    private void mniPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniPreferencesActionPerformed
+        if (jwtToken == null || preferencesPanel == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please login first to access Preferences.",
+                    "Login required",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            return;
+        }
+        preferencesPanel.setOpaque(false);
+        showPanel(preferencesPanel);
 
-    }//GEN-LAST:event_itemPreferencesActionPerformed
+    }//GEN-LAST:event_mniPreferencesActionPerformed
 
-    private void itemLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemLogoutActionPerformed
-        this.jwtToken = null;
-        this.loggedUser = null;
-
-        COMPONENT.setRunning(false);
-        COMPONENT.setToken(null);
-        
+    private void mniLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniLogoutActionPerformed
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 "Are you sure you want to log out?",
@@ -445,20 +451,24 @@ public class MainFrame extends javax.swing.JFrame {
         if (confirm != JOptionPane.YES_OPTION) {
             return;
         }
-        
+
+        this.jwtToken = null;
+        this.loggedUser = null;
+
+        COMPONENT.setRunning(false);
+        COMPONENT.setToken(null);
+
         File jsonFile = new File(System.getProperty("user.home")
                 + File.separator + "Downloads"
                 + File.separator + "remember.json");
         if (jsonFile.exists()) {
             jsonFile.delete();
         }
+
         loginPanel = new LoginPanel(this);
-        setContentPane(loginPanel);
-        revalidate();
-        repaint();
-
-
-    }//GEN-LAST:event_itemLogoutActionPerformed
+        loginPanel.setOpaque(false);
+        showPanel(loginPanel);
+    }//GEN-LAST:event_mniLogoutActionPerformed
 
     /**
      * Main entry point of the application. Initializes the UI and sets the
@@ -467,6 +477,26 @@ public class MainFrame extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            try {
+                File logFile = new File("crash.log");
+                try (PrintWriter out = new PrintWriter(new FileWriter(logFile, true))) {
+                    out.println("==== APPLICATION CRASH ====");
+                    out.println(new java.util.Date());
+                    throwable.printStackTrace(out);
+                    out.println();
+                }
+            } catch (Exception ignored) {
+            }
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Unexpected error occurred. See crash.log",
+                    "Application Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        });
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -483,14 +513,15 @@ public class MainFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> new MainFrame().setVisible(true));
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem itemAbout;
-    private javax.swing.JMenuItem itemExit;
-    private javax.swing.JMenuItem itemLogout;
-    private javax.swing.JMenuItem itemPreferences;
     private javax.swing.JMenuBar jmnMenu;
     private mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent mediaComponent1;
-    private javax.swing.JMenu menuEdit;
-    private javax.swing.JMenu menuFile;
-    private javax.swing.JMenu menuHelp;
+    private javax.swing.JMenuItem mniAbout;
+    private javax.swing.JMenuItem mniExit;
+    private javax.swing.JMenuItem mniLogout;
+    private javax.swing.JMenuItem mniPreferences;
+    private javax.swing.JMenu mnuEdit;
+    private javax.swing.JMenu mnuFile;
+    private javax.swing.JMenu mnuHelp;
+    private javax.swing.JPanel pnlRoot;
     // End of variables declaration//GEN-END:variables
 }
