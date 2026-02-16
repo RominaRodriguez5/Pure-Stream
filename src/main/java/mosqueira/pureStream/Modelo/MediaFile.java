@@ -1,10 +1,12 @@
 package mosqueira.pureStream.Modelo;
+
 import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 /**
  * Represents a downloaded media file with its metadata. This class stores
  * information about a specific file, including its name, size, MIME type, path,
@@ -16,6 +18,7 @@ import java.util.Date;
  */
 public class MediaFile implements Serializable {
 
+    private String uploadedBy;
     /**
      * The name of the media file (e.g., video.mp4).
      */
@@ -40,10 +43,9 @@ public class MediaFile implements Serializable {
      * The date when the file was downloaded or last modified.
      */
     private Date dateDownloaded;
-    
-    
+
     private String networkState = "LOCAL";   // LOCAL, NETWORK, BOTH
-    
+
     private Integer remoteId = null;
 
     /**
@@ -155,9 +157,10 @@ public class MediaFile implements Serializable {
     public void setRemoteId(Integer remoteId) {
         this.remoteId = remoteId;
     }
-    
-    
-    
+
+    public String getUploadedBy() {
+        return uploadedBy;
+    }
 
     /**
      * Returns a string representation of this MediaFile object, including its
@@ -169,6 +172,7 @@ public class MediaFile implements Serializable {
     public String toString() {
         return fileName;  // SOLO el nombre
     }
+
     /**
      * Checks equality based on the absolute file path.
      *
@@ -192,8 +196,10 @@ public class MediaFile implements Serializable {
         MediaFile other = (MediaFile) obj;
         return this.filePath.equals(other.filePath);
     }
+
     /**
-     * Generates a hash code using the file path, ensuring consistency with equals().
+     * Generates a hash code using the file path, ensuring consistency with
+     * equals().
      *
      * @return hash code for this MediaFile
      */
