@@ -1,5 +1,6 @@
 package mosqueira.pureStream.Dialogs;
 
+
 /**
  * This class represents the "About" dialog of the Pure Stream Downloader application.
  * It provides basic information about the developer, course, and resources used.
@@ -14,7 +15,8 @@ package mosqueira.pureStream.Dialogs;
 public class AboutDialog extends javax.swing.JDialog {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AboutDialog.class.getName());
-
+ 
+    
     /**
      * Constructor for the AboutDialog.
      * Initializes the dialog, sets its title, size, and layout.
@@ -27,8 +29,9 @@ public class AboutDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setTitle("Acerca de");
-        setSize(400, 400);
-        this.jDesktopAboutDialog.setSize(400, 400);
+        setSize(450, 350);
+       
+        
     }
 
     /**
@@ -40,19 +43,21 @@ public class AboutDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jDesktopAboutDialog = new javax.swing.JDesktopPane();
+        panelUtils1 = new mosqueira.pureStream.diseñoApp.PanelUtils();
         jSeparatorTitle = new javax.swing.JSeparator();
         btnCloseAbout = new javax.swing.JButton();
         lblTitleAbout = new javax.swing.JLabel();
-        lblRecursos = new javax.swing.JLabel();
-        lblCurso = new javax.swing.JLabel();
-        lblNameDeveloped = new javax.swing.JLabel();
+        jScrollPane = new javax.swing.JScrollPane();
+        jtextAbout = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("About");
+        setModal(true);
         getContentPane().setLayout(null);
 
-        jDesktopAboutDialog.add(jSeparatorTitle);
-        jSeparatorTitle.setBounds(6, 57, 388, 10);
+        panelUtils1.setLayout(null);
+        panelUtils1.add(jSeparatorTitle);
+        jSeparatorTitle.setBounds(-2, 60, 450, 10);
 
         btnCloseAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         btnCloseAbout.setText("Close");
@@ -61,48 +66,34 @@ public class AboutDialog extends javax.swing.JDialog {
                 btnCloseAboutActionPerformed(evt);
             }
         });
-        jDesktopAboutDialog.add(btnCloseAbout);
-        btnCloseAbout.setBounds(160, 260, 75, 27);
+        panelUtils1.add(btnCloseAbout);
+        btnCloseAbout.setBounds(180, 260, 75, 27);
 
         lblTitleAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 18)); // NOI18N
-        lblTitleAbout.setForeground(new java.awt.Color(255, 255, 255));
+        lblTitleAbout.setForeground(new java.awt.Color(0, 0, 0));
         lblTitleAbout.setText("Pure Stream Downloader");
-        jDesktopAboutDialog.add(lblTitleAbout);
-        lblTitleAbout.setBounds(70, 20, 230, 25);
+        panelUtils1.add(lblTitleAbout);
+        lblTitleAbout.setBounds(100, 20, 230, 25);
 
-        lblRecursos.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        lblRecursos.setForeground(new java.awt.Color(255, 255, 255));
-        lblRecursos.setText("Recursos:  yt-dlp, ffmpeg, videos del profesor y chatgpt etc.");
-        jDesktopAboutDialog.add(lblRecursos);
-        lblRecursos.setBounds(10, 200, 380, 20);
+        jtextAbout.setBackground(new java.awt.Color(204, 204, 204));
+        jtextAbout.setColumns(20);
+        jtextAbout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jtextAbout.setForeground(new java.awt.Color(0, 0, 0));
+        jtextAbout.setRows(5);
+        jtextAbout.setText("Developed By Romina Marlene Mosqueira Rodriguez\n\nCurso: Desarrollo de interfaces\n\nRecursos:  yt-dlp, ffmpeg, videos del profesor y chatgpt etc.");
+        jScrollPane.setViewportView(jtextAbout);
 
-        lblCurso.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        lblCurso.setForeground(new java.awt.Color(255, 255, 255));
-        lblCurso.setText("Curso: Desarrollo de interfaces");
-        jDesktopAboutDialog.add(lblCurso);
-        lblCurso.setBounds(10, 150, 240, 20);
+        panelUtils1.add(jScrollPane);
+        jScrollPane.setBounds(0, 70, 450, 180);
 
-        lblNameDeveloped.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        lblNameDeveloped.setForeground(new java.awt.Color(255, 255, 255));
-        lblNameDeveloped.setText("Developed By Romina Marlene Mosqueira Rodriguez");
-        jDesktopAboutDialog.add(lblNameDeveloped);
-        lblNameDeveloped.setBounds(10, 100, 360, 20);
-
-        getContentPane().add(jDesktopAboutDialog);
-        jDesktopAboutDialog.setBounds(0, 0, 420, 370);
+        getContentPane().add(panelUtils1);
+        panelUtils1.setBounds(0, 0, 460, 380);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-     /**
-     * Event handler for the "Close" button.
-     * Closes the dialog when the button is clicked.
-     *
-     * @param evt The ActionEvent triggered by the button.
-     */
     private void btnCloseAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseAboutActionPerformed
-        dispose(); 
-        
+        // TODO add your handling code here:
     }//GEN-LAST:event_btnCloseAboutActionPerformed
 
      /**
@@ -145,11 +136,10 @@ public class AboutDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCloseAbout;
-    private javax.swing.JDesktopPane jDesktopAboutDialog;
+    private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JSeparator jSeparatorTitle;
-    private javax.swing.JLabel lblCurso;
-    private javax.swing.JLabel lblNameDeveloped;
-    private javax.swing.JLabel lblRecursos;
+    private javax.swing.JTextArea jtextAbout;
     private javax.swing.JLabel lblTitleAbout;
+    private mosqueira.pureStream.diseñoApp.PanelUtils panelUtils1;
     // End of variables declaration//GEN-END:variables
 }
