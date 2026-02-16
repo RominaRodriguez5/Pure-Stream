@@ -1,8 +1,10 @@
 package mosqueira.pureStream.Paneles;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import mosqueira.pureStream.ControladorInterno.IconUtils;
 import mosqueira.pureStream.MainFrame;
+import mosqueira.pureStream.diseñoApp.IconUtils;
+import mosqueira.pureStream.diseñoApp.PreferencesPanelLayout;
 
 /**
  *
@@ -27,16 +29,17 @@ public class PreferencesPanel extends javax.swing.JPanel {
     public PreferencesPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         initComponents();
+        
+        new PreferencesPanelLayout(this).apply();
+        lblAds.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         cargarPreferencias();
-        
-        
         btnSaveAndReturn.setIcon(IconUtils.load("/images/save.png", 20));
         btnSearchPath.setIcon(IconUtils.load("/images/search.png", 20));
         lblSelectPath.setIcon(IconUtils.load("/images/folder.png", 20));
         jtxtExecutable.setToolTipText("Path to yt-dlp executable");
         jchLimit.setToolTipText("Limit download speed (KB/s)");
         jchM3U.setToolTipText("Generate a playlist after downloads");
-        
+        jlblValue.setText(jSliderLimit.getValue() + " KB/s");
 
     }
 
@@ -51,6 +54,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
         jSliderLimit.setEnabled(mainFrame.isLimitarVelocidad());
         jSliderLimit.setValue(mainFrame.getLimiteVelocidad());
         jtxtExecutable.setText(mainFrame.getExecutablePath());
+        jlblValue.setText(jSliderLimit.getValue() + " KB/s");
     }
 
     /**
@@ -110,8 +114,8 @@ public class PreferencesPanel extends javax.swing.JPanel {
 
         setLayout(null);
 
-        jchM3U.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        jchM3U.setForeground(new java.awt.Color(0, 0, 0));
+        jchM3U.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        jchM3U.setForeground(new java.awt.Color(6, 6, 69));
         jchM3U.setText("Create .m3u playlist");
         jchM3U.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -119,16 +123,16 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jchM3U);
-        jchM3U.setBounds(130, 340, 150, 40);
+        jchM3U.setBounds(0, 0, 0, 0);
 
         lblAds.setFont(new java.awt.Font("Serif", 1, 24)); // NOI18N
-        lblAds.setForeground(new java.awt.Color(0, 0, 0));
+        lblAds.setForeground(new java.awt.Color(6, 6, 69));
         lblAds.setText("Additional options");
         add(lblAds);
-        lblAds.setBounds(290, 70, 240, 30);
+        lblAds.setBounds(0, 0, 781, 32);
 
-        jchLimit.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        jchLimit.setForeground(new java.awt.Color(0, 0, 0));
+        jchLimit.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        jchLimit.setForeground(new java.awt.Color(6, 6, 69));
         jchLimit.setText("Limit download speed");
         jchLimit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -136,16 +140,16 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jchLimit);
-        jchLimit.setBounds(400, 340, 230, 40);
+        jchLimit.setBounds(0, 695, 781, 28);
 
-        lblSelectPath.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        lblSelectPath.setForeground(new java.awt.Color(0, 0, 0));
+        lblSelectPath.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        lblSelectPath.setForeground(new java.awt.Color(6, 6, 69));
         lblSelectPath.setText("Select yt-dlp executable");
         add(lblSelectPath);
-        lblSelectPath.setBounds(80, 140, 160, 30);
+        lblSelectPath.setBounds(599, 32, 182, 663);
 
-        btnSaveAndReturn.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        btnSaveAndReturn.setForeground(new java.awt.Color(0, 0, 153));
+        btnSaveAndReturn.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        btnSaveAndReturn.setForeground(new java.awt.Color(6, 6, 69));
         btnSaveAndReturn.setText("Save and return");
         btnSaveAndReturn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -153,9 +157,9 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(btnSaveAndReturn);
-        btnSaveAndReturn.setBounds(270, 520, 160, 30);
+        btnSaveAndReturn.setBounds(0, 32, 153, 663);
         add(jSeparator1);
-        jSeparator1.setBounds(10, 250, 750, 10);
+        jSeparator1.setBounds(0, 0, 0, 0);
 
         jtxtExecutable.setBackground(new java.awt.Color(204, 204, 204));
         jtxtExecutable.setText("C:\\Program Files\\yt-dlp\\yt-dlp.exe");
@@ -165,10 +169,10 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jtxtExecutable);
-        jtxtExecutable.setBounds(250, 140, 340, 30);
+        jtxtExecutable.setBounds(0, 0, 0, 0);
 
-        btnSearchPath.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        btnSearchPath.setForeground(new java.awt.Color(0, 0, 153));
+        btnSearchPath.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        btnSearchPath.setForeground(new java.awt.Color(6, 6, 69));
         btnSearchPath.setText("Browse...");
         btnSearchPath.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -176,7 +180,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(btnSearchPath);
-        btnSearchPath.setBounds(600, 140, 130, 30);
+        btnSearchPath.setBounds(0, 0, 0, 0);
 
         jSliderLimit.setMajorTickSpacing(500);
         jSliderLimit.setMaximum(5000);
@@ -189,12 +193,12 @@ public class PreferencesPanel extends javax.swing.JPanel {
             }
         });
         add(jSliderLimit);
-        jSliderLimit.setBounds(380, 410, 280, 40);
+        jSliderLimit.setBounds(0, 0, 0, 0);
 
         jlblValue.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
         jlblValue.setForeground(new java.awt.Color(0, 0, 153));
         add(jlblValue);
-        jlblValue.setBounds(470, 380, 100, 30);
+        jlblValue.setBounds(153, 32, 446, 663);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -210,6 +214,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
     private void jchLimitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jchLimitActionPerformed
         mainFrame.setLimitarVelocidad(jchLimit.isSelected());
         jSliderLimit.setEnabled(jchLimit.isSelected());
+        jlblValue.setEnabled(jchLimit.isSelected());
     }//GEN-LAST:event_jchLimitActionPerformed
 
     /**
@@ -235,7 +240,9 @@ public class PreferencesPanel extends javax.swing.JPanel {
         }
 
         mainFrame.setExecutablePath(path);
-        mainFrame.showPanelPrincipal();
+//        mainFrame.showPanelPrincipal();
+        mainFrame.showMain();
+
     }//GEN-LAST:event_btnSaveAndReturnActionPerformed
 
     /**
@@ -264,7 +271,45 @@ public class PreferencesPanel extends javax.swing.JPanel {
     private void jtxtExecutableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtExecutableActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jtxtExecutableActionPerformed
+    public javax.swing.JLabel getLblAds() {
+        return lblAds;
+    }
 
+    public javax.swing.JLabel getLblSelectPath() {
+        return lblSelectPath;
+    }
+
+    public javax.swing.JTextField getTxtExecutable() {
+        return jtxtExecutable;
+    }
+
+    public javax.swing.JButton getBtnSearchPath() {
+        return btnSearchPath;
+    }
+
+    public javax.swing.JCheckBox getChkM3U() {
+        return jchM3U;
+    }
+
+    public javax.swing.JCheckBox getChkLimit() {
+        return jchLimit;
+    }
+
+    public javax.swing.JSlider getSliderLimit() {
+        return jSliderLimit;
+    }
+
+    public javax.swing.JLabel getLblValue() {
+        return jlblValue;
+    }
+
+    public javax.swing.JButton getBtnSaveAndReturn() {
+        return btnSaveAndReturn;
+    }
+
+    public javax.swing.JSeparator getSeparator() {
+        return jSeparator1;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSaveAndReturn;

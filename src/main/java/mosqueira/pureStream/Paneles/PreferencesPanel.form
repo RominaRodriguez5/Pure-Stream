@@ -21,10 +21,10 @@
     <Component class="javax.swing.JCheckBox" name="jchM3U">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Segoe UI Light" size="14" style="1"/>
+          <Font name="Serif" size="18" style="1"/>
         </Property>
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="0" green="0" red="0" type="rgb"/>
+          <Color blue="45" green="6" red="6" type="rgb"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Create .m3u playlist"/>
       </Properties>
@@ -33,7 +33,7 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="130" y="340" width="150" height="40"/>
+          <AbsoluteConstraints x="0" y="0" width="0" height="0"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -43,23 +43,23 @@
           <Font name="Serif" size="24" style="1"/>
         </Property>
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="0" green="0" red="0" type="rgb"/>
+          <Color blue="45" green="6" red="6" type="rgb"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Additional options"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="290" y="70" width="240" height="30"/>
+          <AbsoluteConstraints x="0" y="0" width="781" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
     <Component class="javax.swing.JCheckBox" name="jchLimit">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Segoe UI Light" size="14" style="1"/>
+          <Font name="Serif" size="18" style="1"/>
         </Property>
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="0" green="0" red="0" type="rgb"/>
+          <Color blue="45" green="6" red="6" type="rgb"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Limit download speed"/>
       </Properties>
@@ -68,33 +68,33 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="400" y="340" width="230" height="40"/>
+          <AbsoluteConstraints x="0" y="695" width="781" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
     <Component class="javax.swing.JLabel" name="lblSelectPath">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Segoe UI Light" size="14" style="1"/>
+          <Font name="Serif" size="18" style="1"/>
         </Property>
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="0" green="0" red="0" type="rgb"/>
+          <Color blue="45" green="6" red="6" type="rgb"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Select yt-dlp executable"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="80" y="140" width="160" height="30"/>
+          <AbsoluteConstraints x="599" y="32" width="-1" height="663"/>
         </Constraint>
       </Constraints>
     </Component>
     <Component class="javax.swing.JButton" name="btnSaveAndReturn">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Segoe UI Light" size="14" style="1"/>
+          <Font name="Serif" size="18" style="1"/>
         </Property>
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="99" green="0" red="0" type="rgb"/>
+          <Color blue="45" green="6" red="6" type="rgb"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Save and return"/>
       </Properties>
@@ -103,14 +103,14 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="270" y="520" width="160" height="30"/>
+          <AbsoluteConstraints x="0" y="32" width="-1" height="663"/>
         </Constraint>
       </Constraints>
     </Component>
     <Component class="javax.swing.JSeparator" name="jSeparator1">
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="10" y="250" width="750" height="10"/>
+          <AbsoluteConstraints x="0" y="0" width="-1" height="0"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -126,17 +126,17 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="250" y="140" width="340" height="30"/>
+          <AbsoluteConstraints x="0" y="0" width="0" height="0"/>
         </Constraint>
       </Constraints>
     </Component>
     <Component class="javax.swing.JButton" name="btnSearchPath">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Segoe UI Light" size="14" style="1"/>
+          <Font name="Serif" size="18" style="1"/>
         </Property>
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="99" green="0" red="0" type="rgb"/>
+          <Color blue="45" green="6" red="6" type="rgb"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Browse..."/>
       </Properties>
@@ -145,7 +145,7 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="600" y="140" width="130" height="30"/>
+          <AbsoluteConstraints x="0" y="0" width="0" height="0"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -162,7 +162,7 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="380" y="410" width="280" height="40"/>
+          <AbsoluteConstraints x="0" y="0" width="0" height="0"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -177,7 +177,7 @@
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="470" y="380" width="100" height="30"/>
+          <AbsoluteConstraints x="153" y="32" width="446" height="663"/>
         </Constraint>
       </Constraints>
     </Component>
