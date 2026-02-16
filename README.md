@@ -133,6 +133,133 @@ During the development of **PureStream**, the following videos and resources wer
 5. **GUI responsiveness during downloads:**  
    - Solved using `SwingWorker` for asynchronous background tasks.  
 
+## 🎨 UX & Interface Improvements
+
+### 🎭 Look & Feel Customization
+
+The application applies a unified visual style across all panels:
+
+- Consistent color palette  
+- Customized progress bar  
+- Harmonized fonts and component styling  
+- Improved visual coherence between Login, Main, Library and Preferences panels  
+
+This ensures a professional and modern appearance.
+
+---
+
+### 🖼 Images & Icons
+
+Icons are centralized in:
+
+`mosqueira.pureStream.DesignApp.IconUtils`
+
+Icons are used consistently in:
+
+- Navigation menus  
+- Action buttons (Download, Upload, Delete, Back, etc.)  
+- Preferences and configuration controls  
+
+This improves visual affordance and immediate action recognition.
+
+---
+
+### 🔤 Typography & Readability
+
+A clear font hierarchy is implemented:
+
+- Titles → Serif 24  
+- Labels and main buttons → Serif 18  
+- Logs and input fields → 14–16  
+
+Text contrast and spacing were adjusted to improve legibility and user comfort.
+
+---
+
+### 🧩 Component Distribution & Grouping
+
+Components are logically grouped by functionality instead of being randomly placed.
+
+#### MainPanel
+- URL section  
+- Format and quality selection  
+- Folder selection  
+- Log and progress area  
+- Action buttons  
+
+#### LibraryPanel
+- Tabs (Local / Network / Both)  
+- Media table  
+- Media list  
+- Filters  
+- Cloud action buttons  
+
+Tooltips reduce unnecessary dialogs and improve clarity.
+
+---
+
+### 📐 Layout Redesign & Resizable Structure
+
+Rigid `null` layouts were removed.
+
+Dedicated layout classes were introduced:
+
+- `MainPanelLayout`  
+- `LibraryPanelLayout`  
+- `PreferencesPanelLayout`  
+
+Layouts used:
+
+- `BorderLayout`  
+- `MigLayout`  
+
+Benefits:
+
+- Responsive resizing  
+- Better scalability  
+- Clearer structure  
+- Cleaner separation between layout logic and business logic  
+
+---
+
+### ⚠️ Error Handling & User Feedback
+
+The application provides clear and controlled feedback:
+
+- URL validation before download  
+- Folder validation  
+- Controlled enabling/disabling of buttons  
+- Clear error dialogs  
+- Recovery from serialization incompatibilities  
+- Controlled cloud actions based on current tab  
+
+During downloads:
+
+- WAIT cursor is displayed  
+- Progress bar updates in real time  
+- Buttons are temporarily disabled  
+- UI is re-enabled automatically after completion  
+
+---
+
+### ✨ Extra UX Improvements
+
+#### Affordance
+- Icon-based buttons  
+- Tooltips for all interactive elements  
+- Clickable play zone in media list  
+
+#### Feedback
+- Real-time download percentage  
+- Informative log messages  
+- Clear completion notifications  
+
+#### Restriction & Safety
+- Download button only enabled when inputs are valid  
+- Delete disabled when not applicable  
+- Cloud actions restricted depending on selected tab  
+
+
 ## 🔗 References
 - [yt-dlp documentation](https://github.com/yt-dlp/yt-dlp)  
 - [FFmpeg documentation](https://ffmpeg.org/documentation.html)  
