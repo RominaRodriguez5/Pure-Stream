@@ -15,7 +15,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>24</maven.compiler.release>
-        <exec.mainClass>mosqueira.purestream.MainFrame</exec.mainClass>
+        <exec.mainClass>mosqueira.pureStream.MainFrame</exec.mainClass>
     </properties>
     <dependencies>
         <dependency>
@@ -23,6 +23,12 @@
             <artifactId>MediaPollingClientComponent-1.0-SNAPSHOT</artifactId>
             <version>SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.miglayout</groupId>
+            <artifactId>miglayout-swing</artifactId>
+            <version>11.3</version>
+        </dependency>
+
     </dependencies>
     
 </project>
