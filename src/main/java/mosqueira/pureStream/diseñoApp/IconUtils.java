@@ -1,4 +1,4 @@
-package mosqueira.pureStream.ControladorInterno;
+package mosqueira.pureStream.diseñoApp;
 
 import java.awt.Image;
 import java.net.URL;
