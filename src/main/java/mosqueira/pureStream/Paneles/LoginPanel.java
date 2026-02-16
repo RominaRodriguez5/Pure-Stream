@@ -12,8 +12,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import mosqueira.pureStream.MainFrame;
+import mosqueira.pureStream.diseñoApp.IconUtils;
 import tools.jackson.databind.ObjectMapper;
-import mosqueira.pureStream.ControladorInterno.IconUtils;
 
 public class LoginPanel extends javax.swing.JPanel {
 
@@ -28,7 +28,8 @@ public class LoginPanel extends javax.swing.JPanel {
     public LoginPanel(MainFrame main) {
         this.main = main;
         jsonFile = new File(System.getProperty("user.home") + File.separator + "Downloads" + File.separator + "remember.json");
-        // Diseño sin NetBeans Designer
+        setOpaque(false);
+
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -47,7 +48,7 @@ public class LoginPanel extends javax.swing.JPanel {
         JLabel lblEmail = new JLabel();
         lblEmail.setIcon(IconUtils.load("/images/email.png", 20));
         lblEmail.setIconTextGap(10);
-        
+
         gbc.gridx = 0;
         gbc.gridy = 1;
         add(lblEmail, gbc);
@@ -69,21 +70,64 @@ public class LoginPanel extends javax.swing.JPanel {
         gbc.gridx = 1;
         gbc.gridy = 2;
         add(txtPassword, gbc);
+        final char defaultEcho = txtPassword.getEchoChar();
+
+        javax.swing.event.DocumentListener listener
+                = new javax.swing.event.DocumentListener() {
+            private void update() {
+                checkFields();
+            }
+
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                update();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                update();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                update();
+            }
+        };
+
+        txtEmail.getDocument().addDocumentListener(listener);
+        txtPassword.getDocument().addDocumentListener(listener);
+
+        JCheckBox chkShow = new JCheckBox("Show password");
+        chkShow.setFont(new java.awt.Font("Serif", java.awt.Font.BOLD, 14));
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        add(chkShow, gbc);
+
+        chkShow.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                txtPassword.setEchoChar(
+                        chkShow.isSelected() ? (char) 0 : defaultEcho
+                );
+            }
+
+        });
 
         // -------- REMEMBER ME --------
         chkRemember = new JCheckBox("Remember me");
-       
+        chkRemember.setFont(new java.awt.Font("Serif", java.awt.Font.BOLD, 14));
         chkRemember.setToolTipText("Keep session data on this device");
         gbc.gridx = 1;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         add(chkRemember, gbc);
 
-        // -------- LOGIN BUTTON --------
+        // -------- LOGIN BUTTON -------- 
         btnLogin = new JButton("Login");
+
         btnLogin.setIcon(IconUtils.load("/images/login.png", 20));
         btnLogin.setToolTipText("Sign in to start using PureStream");
         gbc.gridx = 1;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         add(btnLogin, gbc);
 
         // Acción del botón
@@ -93,31 +137,43 @@ public class LoginPanel extends javax.swing.JPanel {
                 Login();
             }
         });
-        // Cargar remember.json si existe
         loadRemember();
+        checkFields();
         main.getRootPane().setDefaultButton(btnLogin);
+    }
+
+    private void checkFields() {
+        String email = txtEmail.getText().trim();
+        String pass = new String(txtPassword.getPassword()).trim();
+
+        btnLogin.setEnabled(!email.isEmpty() && !pass.isEmpty());
     }
 
     private void Login() {
 
-        String email = txtEmail.getText();
-        String pass = new String(txtPassword.getPassword());
+        String email = txtEmail.getText().trim();
+        String pass = new String(txtPassword.getPassword()).trim();
 
         if (email.isEmpty() || pass.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill in all fields.");
+            JOptionPane.showMessageDialog(this,
+                    "Please fill in all fields.");
             return;
         }
 
-        try {
-            //Login usando solo el componente
-            String token = MainFrame.COMPONENT.login(email, pass);
-            main.setJwtToken(token);
+        btnLogin.setEnabled(false); // evitar doble click
+        setCursor(java.awt.Cursor.getPredefinedCursor(
+                java.awt.Cursor.WAIT_CURSOR));
 
-            //Activar polling
+        try {
+            String token = MainFrame.COMPONENT.login(email, pass);
+
+            setCursor(java.awt.Cursor.getDefaultCursor());  
+            btnLogin.setEnabled(true);                     
+
+            main.setJwtToken(token);
             MainFrame.COMPONENT.setToken(token);
             MainFrame.COMPONENT.setRunning(true);
 
-            //Cambiar a pantalla principal
             main.cargarPanelPrincipal();
 
             if (chkRemember.isSelected()) {
@@ -127,11 +183,15 @@ public class LoginPanel extends javax.swing.JPanel {
             }
 
         } catch (Exception ex) {
+            btnLogin.setEnabled(true);
+            setCursor(java.awt.Cursor.getDefaultCursor());
+
             JOptionPane.showMessageDialog(this,
-        "Login failed: " + ex.getMessage(),
-        "Error",
-        JOptionPane.ERROR_MESSAGE);
+                    "Login failed: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
+
     }
 
     public void tryAutoLogin() {
@@ -155,7 +215,7 @@ public class LoginPanel extends javax.swing.JPanel {
 
         } catch (Exception ex) {
             System.out.println("AutoLogin falló: " + ex.getMessage());
-            
+
         }
     }
 
