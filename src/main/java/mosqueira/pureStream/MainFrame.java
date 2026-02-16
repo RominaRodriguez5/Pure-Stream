@@ -16,8 +16,8 @@ import mosqueira.pureStream.Modelo.MediaTableModel;
 import mosqueira.pureStream.Paneles.LibraryPanel;
 import mosqueira.pureStream.Paneles.LoginPanel;
 import mosqueira.pureStream.Paneles.PreferencesPanel;
-import mosqueira.pureStream.diseñoApp.IconUtils;
-import mosqueira.pureStream.diseñoApp.PanelUtils;
+import mosqueira.pureStream.DesignApp.IconUtils;
+import mosqueira.pureStream.DesignApp.PanelUtils;
 import mosqueira.pureStream.Paneles.MainPanel;
 
 /**
@@ -111,7 +111,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void applyIcons() {
 
         javax.swing.JLabel lblMenuIcon = new javax.swing.JLabel(
-                mosqueira.pureStream.diseñoApp.IconUtils.load("/images/menu.png", 20)
+                mosqueira.pureStream.DesignApp.IconUtils.load("/images/menu.png", 20)
         );
         lblMenuIcon.setToolTipText("Menu");
         lblMenuIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 8, 0, 8));

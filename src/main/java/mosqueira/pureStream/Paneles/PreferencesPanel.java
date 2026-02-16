@@ -3,8 +3,8 @@ package mosqueira.pureStream.Paneles;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import mosqueira.pureStream.MainFrame;
-import mosqueira.pureStream.diseñoApp.IconUtils;
-import mosqueira.pureStream.diseñoApp.PreferencesPanelLayout;
+import mosqueira.pureStream.DesignApp.IconUtils;
+import mosqueira.pureStream.DesignApp.PreferencesPanelLayout;
 
 /**
  *

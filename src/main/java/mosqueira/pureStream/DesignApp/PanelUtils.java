@@ -1,5 +1,5 @@
 
-package mosqueira.pureStream.diseñoApp;
+package mosqueira.pureStream.DesignApp;
 
 import java.awt.Color;
 import java.awt.GradientPaint;

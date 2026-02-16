@@ -43,7 +43,7 @@ public class AboutDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelUtils1 = new mosqueira.pureStream.diseñoApp.PanelUtils();
+        panelUtils1 = new mosqueira.pureStream.DesignApp.PanelUtils();
         jSeparatorTitle = new javax.swing.JSeparator();
         btnCloseAbout = new javax.swing.JButton();
         lblTitleAbout = new javax.swing.JLabel();
@@ -140,6 +140,6 @@ public class AboutDialog extends javax.swing.JDialog {
     private javax.swing.JSeparator jSeparatorTitle;
     private javax.swing.JTextArea jtextAbout;
     private javax.swing.JLabel lblTitleAbout;
-    private mosqueira.pureStream.diseñoApp.PanelUtils panelUtils1;
+    private mosqueira.pureStream.DesignApp.PanelUtils panelUtils1;
     // End of variables declaration//GEN-END:variables
 }

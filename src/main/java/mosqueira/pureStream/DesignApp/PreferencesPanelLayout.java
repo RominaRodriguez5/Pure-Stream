@@ -1,4 +1,4 @@
-package mosqueira.pureStream.diseñoApp;
+package mosqueira.pureStream.DesignApp;
 
 import java.awt.BorderLayout;
 import javax.swing.JPanel;

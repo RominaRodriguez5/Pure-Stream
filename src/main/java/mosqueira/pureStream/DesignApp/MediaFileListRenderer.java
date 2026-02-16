@@ -1,4 +1,4 @@
-package mosqueira.pureStream.diseñoApp;
+package mosqueira.pureStream.DesignApp;
 
 import javax.swing.*;
 import java.awt.*;

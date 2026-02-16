@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import mosqueira.pureStream.MainFrame;
-import mosqueira.pureStream.diseñoApp.IconUtils;
+import mosqueira.pureStream.DesignApp.IconUtils;
 import tools.jackson.databind.ObjectMapper;
 
 public class LoginPanel extends javax.swing.JPanel {

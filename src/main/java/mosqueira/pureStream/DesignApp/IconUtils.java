@@ -1,4 +1,4 @@
-package mosqueira.pureStream.diseñoApp;
+package mosqueira.pureStream.DesignApp;
 
 import java.awt.Image;
 import java.net.URL;

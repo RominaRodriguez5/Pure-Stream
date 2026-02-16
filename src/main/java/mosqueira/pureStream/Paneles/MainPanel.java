@@ -10,8 +10,8 @@ import mosqueira.pureStream.ControladorInterno.DownloadTask;
 import mosqueira.pureStream.MainFrame;
 import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Modelo.MediaTableModel;
-import mosqueira.pureStream.diseñoApp.IconUtils;
-import mosqueira.pureStream.diseñoApp.MainPanelLayout;
+import mosqueira.pureStream.DesignApp.IconUtils;
+import mosqueira.pureStream.DesignApp.MainPanelLayout;
 
 /**
  * Main panel that handles URL input, download actions, and interaction with
