@@ -10,14 +10,19 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import mosqueira.pureStream.ControladorInterno.IconUtils;
 import mosqueira.pureStream.MainFrame;
+import mosqueira.pureStream.Modelo.FilterType;
 import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Modelo.MediaTableModel;
+import mosqueira.pureStream.diseñoApp.IconUtils;
+import mosqueira.pureStream.diseñoApp.LibraryPanelLayout;
+import mosqueira.pureStream.diseñoApp.MediaFileListRenderer;
 
 /**
  * LibraryPanel displays all downloaded media files (audio/video) and allows the
@@ -53,12 +58,38 @@ public class LibraryPanel extends javax.swing.JPanel {
         this.mainFrame = mainFrame;
         this.tableModel = tableModel;
         BIBLIOTECA_FILE = mainFrame.getRutaDescargas() + File.separator + "mediaLibrary.dat";
-
         initComponents();
+        btnDelete.setEnabled(false);
+        new LibraryPanelLayout(this).apply();
         setSize(800, 800);
-        jtabSources.addTab("Local", null);
-        jtabSources.addTab("Network", null);
-        jtabSources.addTab("Both", null);
+        setOpaque(false);
+        jtabSources.addTab("Local", new JPanel());
+        jtabSources.addTab("Network", new JPanel());
+        jtabSources.addTab("Both", new JPanel());
+        jListDownloads.setCellRenderer(new MediaFileListRenderer());
+        jListDownloads.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int index = jListDownloads.locationToIndex(e.getPoint());
+                if (index == -1) {
+                    return;
+                }
+
+                java.awt.Rectangle r = jListDownloads.getCellBounds(index, index);
+                if (r == null) {
+                    return;
+                }
+
+                int playZoneX = r.x + r.width - 40; // últimos 40px
+
+                if (e.getX() >= playZoneX) {
+                    MediaFile mf = jListDownloads.getModel().getElementAt(index);
+                    playMedia(mf);
+                }
+            }
+        });
+
+        conectarEventos();
 
         jTblDetails.setModel(tableModel);
         listModel = new DefaultListModel<>();
@@ -67,7 +98,6 @@ public class LibraryPanel extends javax.swing.JPanel {
         cargarBiblioteca();
 
         jTblDetails.setAutoCreateRowSorter(true);
-
         conectarEventos();
 
         tableModel.setMediaFiles(allMediaFiles);
@@ -77,7 +107,9 @@ public class LibraryPanel extends javax.swing.JPanel {
         for (MediaFile mf : allMediaFiles) {
             listModel.addElement(mf);
         }
-
+        jcbFiltrados.setModel(
+                new DefaultComboBoxModel<>(FilterType.values())
+        );
         jtabSources.addChangeListener(new javax.swing.event.ChangeListener() {
             @Override
             public void stateChanged(javax.swing.event.ChangeEvent e) {
@@ -94,11 +126,41 @@ public class LibraryPanel extends javax.swing.JPanel {
                     listaActual = botMedia;
                 }
 
-                // Update table
+                boolean isLocal = index == 0;
+                boolean isNetwork = index == 1;
+
+                btnDownloadFromCloud.setEnabled(!isLocal);
+                if (isLocal) {
+                    btnDownloadFromCloud.setToolTipText("Only available in Network/Both mode");
+                } else {
+                    btnDownloadFromCloud.setToolTipText("Download selected cloud file");
+                }
+
+                if (isNetwork) {
+                    btnDelete.setEnabled(false);
+                    btnDelete.setToolTipText("Cannot delete cloud files from disk");
+                } else {
+                    btnDelete.setEnabled(false);
+                    btnDelete.setToolTipText("Delete selected file");
+                }
+
+                jTblDetails.clearSelection();
+                jListDownloads.clearSelection();
+
+                if (isNetwork || index == 2) {
+                    try {
+                        loadNetworkMedia();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(LibraryPanel.this,
+                                "Cannot load cloud media:\n" + ex.getMessage(),
+                                "Network Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
                 tableModel.setMediaFiles(listaActual);
                 tableModel.fireTableDataChanged();
 
-                // Update JList 
                 listModel.clear();
                 for (MediaFile mf : listaActual) {
                     listModel.addElement(mf);
@@ -106,17 +168,55 @@ public class LibraryPanel extends javax.swing.JPanel {
             }
         });
 
-        btnSearch.setToolTipText("Search in the library");
+        jtxtSearch.setToolTipText("Search in the table library ");
         btnDelete.setToolTipText("Delete selected file");
         btnBack.setToolTipText("Return to main screen");
         btnUploadtoCloud.setToolTipText("Upload selected local file to cloud");
         btnDownloadFromCloud.setToolTipText("Download selected cloud file");
 
-        btnSearch.setIcon(IconUtils.load("/images/search.png", 20));
         btnDelete.setIcon(IconUtils.load("/images/delete.png", 20));
         btnBack.setIcon(IconUtils.load("/images/back.png", 20));
         btnUploadtoCloud.setIcon(IconUtils.load("/images/upload.png", 20));
         btnDownloadFromCloud.setIcon(IconUtils.load("/images/download.png", 20));
+
+    }
+
+    private void playMedia(MediaFile mf) {
+        if (mf == null) {
+            return;
+        }
+
+        File file = mf.getFile();
+
+        if (file == null || !file.exists()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "File does not exist on disk.\nDownload it first.",
+                    "File not found",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        try {
+            if (java.awt.Desktop.isDesktopSupported()) {
+                java.awt.Desktop.getDesktop().open(file);
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Desktop API not supported on this system.",
+                        "Playback error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Cannot open file:\n" + ex.getMessage(),
+                    "Playback error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     /**
@@ -146,6 +246,7 @@ public class LibraryPanel extends javax.swing.JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     int viewRow = jTblDetails.getSelectedRow();
+                    btnDelete.setEnabled(jTblDetails.getSelectedRow() != -1);
                     if (viewRow != -1) {
                         int modelRow = jTblDetails.convertRowIndexToModel(viewRow);
                         MediaFile mf = tableModel.getMediaFileAt(modelRow);
@@ -193,6 +294,10 @@ public class LibraryPanel extends javax.swing.JPanel {
             }
         } catch (IOException ex) {
             ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Cannot save library file.",
+                    "IO Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
 
     }
@@ -213,23 +318,37 @@ public class LibraryPanel extends javax.swing.JPanel {
             allMediaFiles.addAll(files);
             receiveFiles(allMediaFiles);
 
+        } catch (java.io.InvalidClassException ex) {
+            // biblioteca antigua incompatible → reset
+            allMediaFiles.clear();
+            f.delete();
+            receiveFiles(allMediaFiles);
+            JOptionPane.showMessageDialog(this,
+                    "Your saved library was from an older version and has been reset.",
+                    "Library reset",
+                    JOptionPane.INFORMATION_MESSAGE);
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
     }
 
     /**
      * Update view and internal list with provided files
      */
     public void receiveFiles(List<MediaFile> lista) {
-        // Update table
         tableModel.setMediaFiles(lista);
 
-        // Update list
         listModel.clear();
         for (MediaFile mf : lista) {
             listModel.addElement(mf);
         }
+
+        jTblDetails.clearSelection();
+        jListDownloads.clearSelection();
+        btnDelete.setEnabled(false);
+
     }
 
     /**
@@ -237,7 +356,7 @@ public class LibraryPanel extends javax.swing.JPanel {
      */
     private void filtrarLista() {
         String searchText = jtxtSearch.getText().toLowerCase().trim();
-        String filter = jcbFiltrados.getSelectedItem().toString();
+        FilterType filter = (FilterType) jcbFiltrados.getSelectedItem();
 
         List<MediaFile> sourceList;
 
@@ -251,19 +370,33 @@ public class LibraryPanel extends javax.swing.JPanel {
         }
 
         List<MediaFile> filtered = new ArrayList<>();
+
         for (MediaFile f : sourceList) {
 
-            // Filtro por texto
-            boolean matchesText = f.getFileName().toLowerCase().contains(searchText);
+            boolean matchesText = searchText.isEmpty()
+                    || f.getFileName().toLowerCase().contains(searchText);
+
             if (!matchesText) {
                 continue;
             }
-            boolean matchesType = true;
 
-            if (filter.equals("Video")) {
-                matchesType = f.getMimeType() != null && f.getMimeType().contains("video");
-            } else if (filter.equals("Audio")) {
-                matchesType = f.getMimeType() != null && f.getMimeType().contains("audio");
+            boolean matchesType;
+
+            switch (filter) {
+                case VIDEO:
+                    matchesType = f.getMimeType() != null
+                            && f.getMimeType().toLowerCase().contains("video");
+                    break;
+
+                case AUDIO:
+                    matchesType = f.getMimeType() != null
+                            && f.getMimeType().toLowerCase().contains("audio");
+                    break;
+
+                case ALL:
+                default:
+                    matchesType = true;
+                    break;
             }
 
             if (matchesType) {
@@ -281,20 +414,15 @@ public class LibraryPanel extends javax.swing.JPanel {
         List<Media> mediaFromNet = MainFrame.COMPONENT.getAllMedia(mainFrame.getJwtToken());
 
         for (Media m : mediaFromNet) {
-
             File fakeRemote = new File(m.mediaFileName);
             MediaFile mf = new MediaFile(fakeRemote, new Date());
-
             mf.setRemoteId(m.id);
             mf.setNetworkState("NETWORK");
-
             netWorkMedia.add(mf);
         }
 
         for (MediaFile local : allMediaFiles) {
-
             boolean existsRemote = false;
-
             for (MediaFile remote : netWorkMedia) {
                 if (remote.getFileName().equals(local.getFileName())) {
                     existsRemote = true;
@@ -306,21 +434,12 @@ public class LibraryPanel extends javax.swing.JPanel {
                 local.setNetworkState("BOTH");
                 botMedia.add(local);
             } else {
+
                 local.setNetworkState("LOCAL");
             }
         }
 
-        // 4) Mostrar LOCAL por defecto
-        if (jtabSources.getSelectedIndex() == 0) {
-            tableModel.setMediaFiles(allMediaFiles);
-            tableModel.fireTableDataChanged();
-
-            listModel.clear();
-            for (MediaFile mf : allMediaFiles) {
-                listModel.addElement(mf);
-            }
-
-        }
+        filtrarLista();
     }
 
     /**
@@ -334,7 +453,6 @@ public class LibraryPanel extends javax.swing.JPanel {
 
         jScrollTable = new javax.swing.JScrollPane();
         jTblDetails = new javax.swing.JTable();
-        btnSearch = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         jSeparatorListDownload = new javax.swing.JSeparator();
         jtxtSearch = new javax.swing.JTextField();
@@ -345,10 +463,12 @@ public class LibraryPanel extends javax.swing.JPanel {
         btnBack = new javax.swing.JButton();
         btnUploadtoCloud = new javax.swing.JButton();
         btnDownloadFromCloud = new javax.swing.JButton();
+        btnSearch = new javax.swing.JButton();
 
-        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Download details", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Serif", 1, 18), new java.awt.Color(0, 0, 153))); // NOI18N
-        setLayout(null);
+        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Download details", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Serif", 1, 18), new java.awt.Color(6, 6, 69))); // NOI18N
+        setLayout(new java.awt.BorderLayout());
 
+        jTblDetails.setFont(new java.awt.Font("Serif", 0, 18)); // NOI18N
         jTblDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -360,89 +480,84 @@ public class LibraryPanel extends javax.swing.JPanel {
 
             }
         ));
+        jTblDetails.setSelectionBackground(new java.awt.Color(0, 102, 153));
+        jTblDetails.setSelectionForeground(new java.awt.Color(0, 0, 0));
         jScrollTable.setViewportView(jTblDetails);
 
-        add(jScrollTable);
-        jScrollTable.setBounds(10, 70, 760, 290);
+        add(jScrollTable, java.awt.BorderLayout.CENTER);
 
-        btnSearch.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        btnSearch.setText("Search");
-        btnSearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSearchActionPerformed(evt);
-            }
-        });
-        add(btnSearch);
-        btnSearch.setBounds(160, 390, 110, 30);
-
-        btnDelete.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnDelete.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        btnDelete.setForeground(new java.awt.Color(6, 6, 69));
         btnDelete.setText("Delete");
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDeleteActionPerformed(evt);
             }
         });
-        add(btnDelete);
-        btnDelete.setBounds(580, 390, 110, 30);
+        add(btnDelete, java.awt.BorderLayout.PAGE_START);
 
-        jSeparatorListDownload.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Downloads list", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Serif", 1, 18), new java.awt.Color(0, 0, 153))); // NOI18N
-        add(jSeparatorListDownload);
-        jSeparatorListDownload.setBounds(10, 460, 790, 40);
+        jSeparatorListDownload.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Downloads list", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Serif", 1, 18), new java.awt.Color(6, 6, 69))); // NOI18N
+        add(jSeparatorListDownload, java.awt.BorderLayout.PAGE_END);
 
         jtxtSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jtxtSearchActionPerformed(evt);
             }
         });
-        add(jtxtSearch);
-        jtxtSearch.setBounds(300, 390, 240, 30);
+        add(jtxtSearch, java.awt.BorderLayout.LINE_END);
 
-        jcbFiltrados.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
-        jcbFiltrados.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "Video", "Audio" }));
+        jcbFiltrados.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        jcbFiltrados.setForeground(new java.awt.Color(6, 6, 69));
         jcbFiltrados.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jcbFiltradosActionPerformed(evt);
             }
         });
-        add(jcbFiltrados);
-        jcbFiltrados.setBounds(10, 390, 120, 26);
+        add(jcbFiltrados, java.awt.BorderLayout.LINE_START);
 
         jScrollPane1.setViewportView(jListDownloads);
 
-        add(jScrollPane1);
-        jScrollPane1.setBounds(10, 510, 480, 240);
-        add(jtabSources);
-        jtabSources.setBounds(10, 40, 760, 30);
+        add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        add(jtabSources, java.awt.BorderLayout.CENTER);
 
-        btnBack.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnBack.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        btnBack.setForeground(new java.awt.Color(6, 6, 69));
         btnBack.setText("Back");
         btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBackActionPerformed(evt);
             }
         });
-        add(btnBack);
-        btnBack.setBounds(500, 720, 190, 30);
+        add(btnBack, java.awt.BorderLayout.CENTER);
 
-        btnUploadtoCloud.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnUploadtoCloud.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        btnUploadtoCloud.setForeground(new java.awt.Color(6, 6, 69));
         btnUploadtoCloud.setText("Upload to Cloud");
         btnUploadtoCloud.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnUploadtoCloudActionPerformed(evt);
             }
         });
-        add(btnUploadtoCloud);
-        btnUploadtoCloud.setBounds(500, 620, 190, 30);
+        add(btnUploadtoCloud, java.awt.BorderLayout.CENTER);
 
-        btnDownloadFromCloud.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
+        btnDownloadFromCloud.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        btnDownloadFromCloud.setForeground(new java.awt.Color(6, 6, 69));
         btnDownloadFromCloud.setText("Download from cloud");
         btnDownloadFromCloud.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDownloadFromCloudActionPerformed(evt);
             }
         });
-        add(btnDownloadFromCloud);
-        btnDownloadFromCloud.setBounds(500, 530, 190, 30);
+        add(btnDownloadFromCloud, java.awt.BorderLayout.CENTER);
+
+        btnSearch.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        btnSearch.setText("Search");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+        add(btnSearch, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -465,7 +580,7 @@ public class LibraryPanel extends javax.swing.JPanel {
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         int selected = jTblDetails.getSelectedRow();
         if (selected == -1) {
-            JOptionPane.showMessageDialog(this, "Select a file first.");
+
             return;
         }
         selected = jTblDetails.convertRowIndexToModel(selected);
@@ -494,15 +609,10 @@ public class LibraryPanel extends javax.swing.JPanel {
         JOptionPane.showMessageDialog(this, "File deleted successfully.");
 
     }//GEN-LAST:event_btnDeleteActionPerformed
-    /**
-     * Triggers the search manually when pressing the Search button.
-     */
-    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        filtrarLista();
-    }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        mainFrame.showPanelPrincipal();
+
+        mainFrame.showMain();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnUploadtoCloudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUploadtoCloudActionPerformed
@@ -528,8 +638,6 @@ public class LibraryPanel extends javax.swing.JPanel {
                     null, // downloadedFromUrl
                     mainFrame.getJwtToken() // token JWT
             );
-
-            JOptionPane.showMessageDialog(this, "File uploaded successfully.");
 
             // Recargar datos de la nube
             loadNetworkMedia();
@@ -573,8 +681,6 @@ public class LibraryPanel extends javax.swing.JPanel {
 
             guardarBiblioteca();
 
-            JOptionPane.showMessageDialog(this, "File downloaded successfully.");
-
             loadNetworkMedia();
 
         } catch (Exception ex) {
@@ -583,7 +689,61 @@ public class LibraryPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnDownloadFromCloudActionPerformed
 
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        filtrarLista();
+    }//GEN-LAST:event_btnSearchActionPerformed
 
+    public javax.swing.JTabbedPane getTabs() {
+        return jtabSources;
+    }
+
+    public javax.swing.JScrollPane getScrollTable() {
+        return jScrollTable;
+    }
+
+    public javax.swing.JTable getTable() {
+        return jTblDetails;
+    }
+
+    public javax.swing.JScrollPane getScrollList() {
+        return jScrollPane1;
+    }
+
+    public javax.swing.JList<MediaFile> getListDownloads() {
+        return jListDownloads;
+    }
+
+    public javax.swing.JTextField getTxtSearch() {
+        return jtxtSearch;
+    }
+
+    public javax.swing.JComboBox<FilterType> getComboFilter() {
+        return jcbFiltrados;
+    }
+
+    public javax.swing.JButton getBtnBack() {
+        return btnBack;
+    }
+
+    public javax.swing.JButton getBtnUploadToCloud() {
+        return btnUploadtoCloud;
+    }
+
+    public javax.swing.JButton getBtnDownloadFromCloud() {
+        return btnDownloadFromCloud;
+    }
+
+    public javax.swing.JButton getBtnDelete() {
+        return btnDelete;
+    }
+
+    public javax.swing.JSeparator getSeparatorList() {
+        return jSeparatorListDownload;
+    }
+
+    public javax.swing.JButton getBtnSearch() {
+        return btnSearch;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
@@ -595,7 +755,7 @@ public class LibraryPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollTable;
     private javax.swing.JSeparator jSeparatorListDownload;
     private javax.swing.JTable jTblDetails;
-    private javax.swing.JComboBox<String> jcbFiltrados;
+    private javax.swing.JComboBox<FilterType> jcbFiltrados;
     private javax.swing.JTabbedPane jtabSources;
     private javax.swing.JTextField jtxtSearch;
     // End of variables declaration//GEN-END:variables
