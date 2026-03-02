@@ -27,10 +27,10 @@
     <Property name="useNullLayout" type="boolean" value="true"/>
   </Layout>
   <SubComponents>
-    <Container class="mosqueira.pureStream.dise&#xf1;oApp.PanelUtils" name="panelUtils1">
+    <Container class="javax.swing.JPanel" name="jPanelRepaint">
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="0" y="0" width="460" height="380"/>
+          <AbsoluteConstraints x="0" y="10" width="440" height="320"/>
         </Constraint>
       </Constraints>
 
@@ -89,7 +89,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
-            <Component class="javax.swing.JTextArea" name="jtextAbout">
+            <Component class="javax.swing.JTextArea" name="jtextAbout1">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="cc" green="cc" red="cc" type="rgb"/>

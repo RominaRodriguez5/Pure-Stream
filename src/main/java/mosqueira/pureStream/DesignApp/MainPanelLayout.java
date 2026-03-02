@@ -1,19 +1,40 @@
 package mosqueira.pureStream.DesignApp;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 import mosqueira.pureStream.Paneles.MainPanel;
 
+/**
+ * Applies the layout for {@link MainPanel} using MigLayout.
+ *
+ * <p>
+ * Top section: URL, format/quality, folder selection. Bottom section: play +
+ * download + open library. Center: log area.</p>
+ *
+ * @author Romina
+ * @version 1.0
+ */
 public class MainPanelLayout {
 
+    /**
+     * Reference to the main panel whose components are arranged and configured
+     * by this layout helper.
+     */
     private final MainPanel panel;
 
+    /**
+     * Creates a layout helper bound to the given main panel.
+     *
+     * @param panel main panel to arrange
+     */
     public MainPanelLayout(MainPanel panel) {
         this.panel = panel;
     }
 
+    /**
+     * Clears the panel and rebuilds its layout.
+     */
     public void apply() {
         panel.removeAll();
         panel.setLayout(new BorderLayout(10, 10));
@@ -25,7 +46,7 @@ public class MainPanelLayout {
         ));
         top.setOpaque(false);
 
-        // Row 0: URL (SIN botón Download aquí)
+        // Row 0: URL
         top.add(panel.getLblUrl());
         top.add(panel.getTxtUrl(), "span 2, growx");
 
@@ -42,7 +63,7 @@ public class MainPanelLayout {
         top.add(panel.getTxtFolder(), "growx");
         top.add(panel.getBtnBrowseFolder(), "wmin 140");
 
-        // Bottom actions (Download aquí)
+        // Bottom actions
         JPanel bottom = new JPanel(new MigLayout("insets 8, fillx", "[left]push[right]10[right]", "[]"));
         bottom.setOpaque(false);
 
@@ -57,5 +78,4 @@ public class MainPanelLayout {
         panel.revalidate();
         panel.repaint();
     }
-
 }

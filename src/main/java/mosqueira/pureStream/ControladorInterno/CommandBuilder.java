@@ -8,13 +8,50 @@ import mosqueira.pureStream.MainFrame;
 import mosqueira.pureStream.Paneles.PreferencesPanel;
 
 /**
- * Builds the yt-dlp command based on user preferences and selected options.
- * Returns a list of arguments that will be executed as a process.
+ * Builds the {@code yt-dlp} command based on the selected download options and
+ * user preferences.
+ *
+ * <p>
+ * This class generates a list of command-line arguments that can be executed
+ * using {@link ProcessBuilder}. It supports downloading as MP4 (video) with
+ * resolution constraints and as MP3 (audio) with different bitrate presets.</p>
+ *
+ * <p>
+ * <strong>Note:</strong> If required configuration is missing (e.g. executable
+ * path or download folder), this builder shows an error dialog and returns
+ * {@code null}.</p>
  *
  * @author Romina
+ * @version 1.0
  */
 public class CommandBuilder {
 
+    /**
+     * Utility class. This class is not meant to be instantiated.
+     */
+    private CommandBuilder() {
+        // Prevent instantiation
+    }
+
+    /**
+     * Builds the command arguments for {@code yt-dlp} according to the current
+     * UI selections.
+     *
+     * <p>
+     * The returned list is intended to be passed directly to
+     * {@link ProcessBuilder}.</p>
+     *
+     * @param url the media URL to download
+     * @param preferencesPanel preferences panel that provides executable path,
+     * download folder, speed limit configuration, and access to the
+     * {@link MainFrame}
+     * @param format desired output format (typically {@code "mp4"} or
+     * {@code "mp3"})
+     * @param quality quality selection (e.g. {@code "720p"} for video or
+     * {@code "192 kbps"} for audio)
+     * @return list of command-line arguments ready for {@link ProcessBuilder},
+     * or {@code null} if configuration is invalid
+     */
     public static List<String> buildCommand(
             String url,
             PreferencesPanel preferencesPanel,
@@ -27,9 +64,12 @@ public class CommandBuilder {
         // Path to yt-dlp executable
         String ytDlpPath = preferencesPanel.getExecutablePath();
         if (ytDlpPath == null || ytDlpPath.isEmpty()) {
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(
+                    null,
                     "Debes seleccionar la ruta de yt-dlp en Preferences.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
             return null;
         }
         cmd.add(ytDlpPath);
@@ -42,9 +82,12 @@ public class CommandBuilder {
         // Download directory
         String downloadPath = main.getRutaDescargas();
         if (downloadPath == null || downloadPath.isEmpty()) {
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(
+                    null,
                     "Debes seleccionar la carpeta de descargas.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
             return null;
         }
 
@@ -53,26 +96,26 @@ public class CommandBuilder {
 
             cmd.add("-f");
 
-            // Extract numeric height from quality (e.g., "720p" → "720")
+            // Extract numeric height from quality (e.g., "720p" -> "720")
             String height = quality.replaceAll("[^0-9]", "");
 
-            // Fallback format chain 
+            // Fallback format chain
             String fallback
                     = "bv*[height<=" + height + "][ext=mp4]+ba[ext=m4a]/"
                     + // prefer mp4+m4a
                     "bv*[height<=" + height + "]+ba/"
-                    + // cualquier vídeo + cualquier audio
-                    "best";  // fallback final
+                    + // any video + any audio
+                    "best";                                               // final fallback
 
             cmd.add(fallback);
 
             cmd.add("--merge-output-format");
             cmd.add("mp4");
+
         } else if (format.equalsIgnoreCase("mp3")) {
 
-            // Mejor flujo para mp3
             cmd.add("-f");
-            cmd.add("bestaudio/best");  // fallback automático
+            cmd.add("bestaudio/best");
 
             cmd.add("--extract-audio");
             cmd.add("--audio-format");

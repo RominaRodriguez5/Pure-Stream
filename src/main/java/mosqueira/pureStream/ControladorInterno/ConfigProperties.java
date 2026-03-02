@@ -1,4 +1,3 @@
-package mosqueira.pureStream.ControladorInterno;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,15 +6,24 @@ import java.util.Properties;
 /**
  * Utility class to load application properties from a configuration file.
  * Supports property placeholders like ${user.home}.
+ *
  * @author Romina
+ * @version 1.0
  */
-public class ConfigProperties {
+public final class ConfigProperties {
 
     private static final Properties props = new Properties();
 
+    /**
+     * Utility class. Not meant to be instantiated.
+     */
+    private ConfigProperties() {
+        // Prevent instantiation
+    }
+
     static {
-        // Load properties from /properties/application.properties at class load
-        try (InputStream input = ConfigProperties.class.getResourceAsStream("/properties/application.properties")) {
+        try (InputStream input =
+                     ConfigProperties.class.getResourceAsStream("/properties/application.properties")) {
             if (input != null) {
                 props.load(input);
             }
@@ -25,11 +33,11 @@ public class ConfigProperties {
     }
 
     /**
-     * Retrieves a property value by key. Replaces ${user.home} with the actual
-     * user's home directory if present.
+     * Retrieves a property value by key.
+     * Replaces ${user.home} with the actual user's home directory if present.
      *
      * @param key property key
-     * @return resolved property value or null if key not found
+     * @return resolved property value, or {@code null} if the key is not found
      */
     public static String get(String key) {
         String value = props.getProperty(key);

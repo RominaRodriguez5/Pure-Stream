@@ -1,37 +1,52 @@
 package mosqueira.pureStream.Dialogs;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import mosqueira.pureStream.DesignApp.PanelUtils;
 
 /**
- * This class represents the "About" dialog of the Pure Stream Downloader application.
- * It provides basic information about the developer, course, and resources used.
- * 
- * The dialog is modal and can be opened from the main interface.
- * It includes labels for author information, project title, and resources used,
- * as well as a close button to dismiss the dialog.
- * 
- * @author
- * Romina Marlene Mosqueira Rodríguez
+ * This class represents the "About" dialog of the Pure Stream Downloader
+ * application. It provides basic information about the developer, course, and
+ * resources used.
+ *
+ * The dialog is modal and can be opened from the main interface. It includes
+ * labels for author information, project title, and resources used, as well as
+ * a close button to dismiss the dialog.
+ *
+ * @author Romina Marlene Mosqueira Rodríguez
  */
 public class AboutDialog extends javax.swing.JDialog {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AboutDialog.class.getName());
- 
-    
+    private static final java.util.logging.Logger logger
+            = java.util.logging.Logger.getLogger(AboutDialog.class.getName());
+
     /**
-     * Constructor for the AboutDialog.
-     * Initializes the dialog, sets its title, size, and layout.
+     * Constructor for the AboutDialog. Initializes the dialog, sets its title,
+     * size, and layout.
      *
      * @param parent The parent frame that owns this dialog.
-     * @param modal  Specifies whether the dialog blocks user input to other windows.
+     * @param modal Specifies whether the dialog blocks user input to other
+     * windows.
      */
-    
     public AboutDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+
         setTitle("Acerca de");
         setSize(450, 350);
-       
-        
+        setLocationRelativeTo(parent);
+
+        jPanelRepaint.setOpaque(false);
+        jScrollPane.setOpaque(false);
+        jScrollPane.getViewport().setOpaque(false);
+
+        jtextAbout1.setOpaque(true);
+        jtextAbout1.setBackground(new Color(204, 204, 204));
+
+        PanelUtils bg = new PanelUtils();
+        bg.setLayout(new BorderLayout());
+        bg.add(jPanelRepaint, BorderLayout.CENTER);
+        setContentPane(bg);
     }
 
     /**
@@ -43,20 +58,20 @@ public class AboutDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelUtils1 = new mosqueira.pureStream.DesignApp.PanelUtils();
+        jPanelRepaint = new javax.swing.JPanel();
         jSeparatorTitle = new javax.swing.JSeparator();
         btnCloseAbout = new javax.swing.JButton();
         lblTitleAbout = new javax.swing.JLabel();
         jScrollPane = new javax.swing.JScrollPane();
-        jtextAbout = new javax.swing.JTextArea();
+        jtextAbout1 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("About");
         setModal(true);
         getContentPane().setLayout(null);
 
-        panelUtils1.setLayout(null);
-        panelUtils1.add(jSeparatorTitle);
+        jPanelRepaint.setLayout(null);
+        jPanelRepaint.add(jSeparatorTitle);
         jSeparatorTitle.setBounds(-2, 60, 450, 10);
 
         btnCloseAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 14)); // NOI18N
@@ -66,80 +81,43 @@ public class AboutDialog extends javax.swing.JDialog {
                 btnCloseAboutActionPerformed(evt);
             }
         });
-        panelUtils1.add(btnCloseAbout);
+        jPanelRepaint.add(btnCloseAbout);
         btnCloseAbout.setBounds(180, 260, 75, 27);
 
         lblTitleAbout.setFont(new java.awt.Font("Segoe UI Light", 1, 18)); // NOI18N
         lblTitleAbout.setForeground(new java.awt.Color(0, 0, 0));
         lblTitleAbout.setText("Pure Stream Downloader");
-        panelUtils1.add(lblTitleAbout);
+        jPanelRepaint.add(lblTitleAbout);
         lblTitleAbout.setBounds(100, 20, 230, 25);
 
-        jtextAbout.setBackground(new java.awt.Color(204, 204, 204));
-        jtextAbout.setColumns(20);
-        jtextAbout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jtextAbout.setForeground(new java.awt.Color(0, 0, 0));
-        jtextAbout.setRows(5);
-        jtextAbout.setText("Developed By Romina Marlene Mosqueira Rodriguez\n\nCurso: Desarrollo de interfaces\n\nRecursos:  yt-dlp, ffmpeg, videos del profesor y chatgpt etc.");
-        jScrollPane.setViewportView(jtextAbout);
+        jtextAbout1.setBackground(new java.awt.Color(204, 204, 204));
+        jtextAbout1.setColumns(20);
+        jtextAbout1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jtextAbout1.setForeground(new java.awt.Color(0, 0, 0));
+        jtextAbout1.setRows(5);
+        jtextAbout1.setText("Developed By Romina Marlene Mosqueira Rodriguez\n\nCurso: Desarrollo de interfaces\n\nRecursos:  yt-dlp, ffmpeg, videos del profesor y chatgpt etc.");
+        jScrollPane.setViewportView(jtextAbout1);
 
-        panelUtils1.add(jScrollPane);
+        jPanelRepaint.add(jScrollPane);
         jScrollPane.setBounds(0, 70, 450, 180);
 
-        getContentPane().add(panelUtils1);
-        panelUtils1.setBounds(0, 0, 460, 380);
+        getContentPane().add(jPanelRepaint);
+        jPanelRepaint.setBounds(0, 10, 440, 320);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCloseAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseAboutActionPerformed
-        // TODO add your handling code here:
+        dispose();
     }//GEN-LAST:event_btnCloseAboutActionPerformed
 
-     /**
-     * Main method to test the dialog independently.
-     * Launches the AboutDialog as a standalone window.
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                AboutDialog dialog = new AboutDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCloseAbout;
+    private javax.swing.JPanel jPanelRepaint;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JSeparator jSeparatorTitle;
-    private javax.swing.JTextArea jtextAbout;
+    private javax.swing.JTextArea jtextAbout1;
     private javax.swing.JLabel lblTitleAbout;
-    private mosqueira.pureStream.DesignApp.PanelUtils panelUtils1;
     // End of variables declaration//GEN-END:variables
 }

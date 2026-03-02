@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"mosqueira.pureStream"},{"l":"mosqueira.pureStream.ControladorInterno"},{"l":"mosqueira.pureStream.DesignApp"},{"l":"mosqueira.pureStream.Dialogs"},{"l":"mosqueira.pureStream.Modelo"},{"l":"mosqueira.pureStream.Paneles"}];updateSearchResults();

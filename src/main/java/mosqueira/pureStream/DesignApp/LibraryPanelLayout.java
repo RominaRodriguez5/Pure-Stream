@@ -6,14 +6,36 @@ import javax.swing.JSplitPane;
 import net.miginfocom.swing.MigLayout;
 import mosqueira.pureStream.Paneles.LibraryPanel;
 
+/**
+ * Applies a responsive layout to {@link LibraryPanel} using MigLayout and a
+ * split pane.
+ *
+ * <p>
+ * Top bar: actions + filters + search. Center: tabs + split (table/list).</p>
+ *
+ * @author Romina
+ * @version 1.0
+ */
 public class LibraryPanelLayout {
 
+    /**
+     * Reference to the library panel whose components are arranged and
+     * configured by this layout helper.
+     */
     private final LibraryPanel panel;
 
+    /**
+     * Creates a layout helper bound to the given panel.
+     *
+     * @param panel library panel whose components will be arranged
+     */
     public LibraryPanelLayout(LibraryPanel panel) {
         this.panel = panel;
     }
 
+    /**
+     * Clears the panel and rebuilds its layout.
+     */
     public void apply() {
         panel.removeAll();
         panel.setLayout(new BorderLayout(10, 10));
@@ -35,13 +57,12 @@ public class LibraryPanelLayout {
         top.add(panel.getTxtSearch(), "growx");
         top.add(panel.getBtnSearch(), "wmin 120");
 
-        // ===== CENTER: Tabs + split (tabla arriba, lista abajo) =====
         JSplitPane split = new JSplitPane(
                 JSplitPane.VERTICAL_SPLIT,
-                panel.getScrollTable(),  
-                panel.getScrollList()    
+                panel.getScrollTable(),
+                panel.getScrollList()
         );
-        split.setResizeWeight(0.75);      
+        split.setResizeWeight(0.75);
         split.setOneTouchExpandable(true);
 
         JPanel center = new JPanel(new BorderLayout(8, 8));

@@ -5,14 +5,35 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 import mosqueira.pureStream.Paneles.PreferencesPanel;
 
+/**
+ * Applies a responsive layout to {@link PreferencesPanel} using MigLayout.
+ *
+ * <p>Layout structure:</p>
+ * <ul>
+ *   <li><strong>Center</strong>: title, yt-dlp path selector, separator,
+ *       options (limit rate / create M3U), slider and value label.</li>
+ *   <li><strong>South</strong>: save/return button.</li>
+ * </ul>
+ *
+ * @author Romina
+ * @version 1.0
+ */
 public class PreferencesPanelLayout {
 
     private final PreferencesPanel panel;
 
+    /**
+     * Creates a layout helper bound to the given preferences panel.
+     *
+     * @param panel preferences panel whose components will be arranged
+     */
     public PreferencesPanelLayout(PreferencesPanel panel) {
         this.panel = panel;
     }
 
+    /**
+     * Clears the panel and rebuilds its layout.
+     */
     public void apply() {
         panel.removeAll();
         panel.setLayout(new BorderLayout(10, 10));
@@ -32,15 +53,12 @@ public class PreferencesPanelLayout {
 
         center.add(panel.getSeparator(), "span 3, growx, gaptop 20, gapbottom 20");
 
-        JPanel checks = new JPanel(
-                new MigLayout("insets 0, fillx", "[]push[]", "[]")
-        );
+        JPanel checks = new JPanel(new MigLayout("insets 0, fillx", "[]push[]", "[]"));
         checks.setOpaque(false);
         checks.add(panel.getChkLimit(), "left");
-        checks.add(panel.getChkM3U(),"right");
-        
+        checks.add(panel.getChkM3U(), "right");
 
-        center.add(checks, "span 3, growx, gapbottom 20"); // separación extra hacia el slider
+        center.add(checks, "span 3, growx, gapbottom 20");
 
         center.add(panel.getSliderLimit(), "span 3, growx, gaptop 15");
         center.add(panel.getLblValue(), "span 3, center, gaptop 10");
@@ -55,5 +73,4 @@ public class PreferencesPanelLayout {
         panel.revalidate();
         panel.repaint();
     }
-
 }

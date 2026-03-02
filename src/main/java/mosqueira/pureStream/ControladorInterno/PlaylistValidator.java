@@ -1,23 +1,34 @@
 package mosqueira.pureStream.ControladorInterno;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Utility class to validate M3U playlists and extract valid URLs.
- * 
+ * Utility class to validate M3U playlists and extract valid HTTP/HTTPS URLs.
+ *
  * @author Romina
+ * @version 1.0
  */
-public class PlaylistValidator {
+public final class PlaylistValidator {
+
+    /**
+     * Utility class. Not meant to be instantiated.
+     */
+    private PlaylistValidator() {
+        // Prevent instantiation
+    }
 
     /**
      * Reads an M3U file and returns a list of valid HTTP/HTTPS URLs.
      *
      * @param m3uFilePath full path to the .m3u file
-     * @return list of valid URLs
+     * @return list of valid URLs (empty if file not found or invalid)
      */
     public static List<String> validateM3U(String m3uFilePath) {
+
         List<String> urls = new ArrayList<>();
 
         File m3uFile = new File(m3uFilePath);

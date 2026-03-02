@@ -3,7 +3,6 @@ package mosqueira.pureStream.Paneles;
 import java.awt.Color;
 import java.io.File;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.plaf.basic.BasicProgressBarUI;
 import mosqueira.pureStream.ControladorInterno.DownloadTask;
@@ -21,15 +20,34 @@ import mosqueira.pureStream.DesignApp.MainPanelLayout;
  */
 public class MainPanel extends javax.swing.JPanel {
 
-    // Reference to the preferences panel where the user sets the download folder
+    /**
+     * Reference to the preferences panel.
+     * <p>
+     * Used to retrieve and update user configuration such as the download
+     * directory, executable paths and other application settings.
+     */
     private PreferencesPanel preferencesPanel;
 
-    // Stores the path of the last downloaded file
+    /**
+     * Absolute path of the last successfully downloaded media file.
+     * <p>
+     * This value is used to enable automatic playback functionality after a
+     * download operation completes.
+     */
     private String lastDownloadedFile;
 
-    // Reference to the main frame to switch between panels
+    /**
+     * Reference to the main application frame.
+     * <p>
+     * Allows this panel to request view transitions and interact with other
+     * main-level components of the application.
+     */
     private MainFrame mainFrame;
 
+    /**
+     * Progress bar component used to display the status of ongoing download
+     * operations executed asynchronously.
+     */
     private JProgressBar progressBar;
 
     /**
@@ -122,23 +140,38 @@ public class MainPanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Returns the main application frame that owns this panel.
+     *
+     * @return the parent {@link MainFrame}
+     */
     public MainFrame getMainFrame() {
         return mainFrame;
     }
 
+    /**
+     * Resets the progress bar to 0%.
+     */
     public void resetProgress() {
         progressBar.setValue(0);
         progressBar.setString("0%");
     }
 
+    /**
+     * Updates the progress bar value and displayed percentage.
+     *
+     * @param value progress value (0-100)
+     */
     public void setProgressValue(int value) {
         progressBar.setValue(value);
         progressBar.setString(value + "%");
     }
 
     /**
-     * Called when a file is successfully downloaded. Updates log and stores
-     * last downloaded file path.
+     * Notifies the panel that a media file has been downloaded and updates the
+     * UI.
+     *
+     * @param mf downloaded media file
      */
     public void notifyDownloaded(MediaFile mf) {
         lastDownloadedFile = mf.getFile().getAbsolutePath();
@@ -409,61 +442,129 @@ public class MainPanel extends javax.swing.JPanel {
 
     private void jtxtInsertUrlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtInsertUrlActionPerformed
         updateDownloadEnabled();
-        if (btnDownload.isEnabled())
+        if (btnDownload.isEnabled()) {
             btnDownload.doClick();
+        }
     }//GEN-LAST:event_jtxtInsertUrlActionPerformed
-
+    /**
+     * Returns the scroll pane that contains the download log output (and
+     * progress bar header).
+     *
+     * @return the scroll pane used to display the log area
+     */
     public javax.swing.JScrollPane getScrollLog() {
         return jScrollPane1;
     }
 
+    /**
+     * Returns the label associated with the URL input field.
+     *
+     * @return the URL label component
+     */
     public javax.swing.JLabel getLblUrl() {
         return lblUrl;
     }
 
+    /**
+     * Returns the text field where the user enters the media URL to download.
+     *
+     * @return the URL input text field
+     */
     public javax.swing.JTextField getTxtUrl() {
         return jtxtInsertUrl;
     }
 
+    /**
+     * Returns the button that starts the download process.
+     *
+     * @return the Download button
+     */
     public javax.swing.JButton getBtnDownload() {
         return btnDownload;
     }
 
+    /**
+     * Returns the label associated with the output format selector.
+     *
+     * @return the output format label
+     */
     public javax.swing.JLabel getLblFormat() {
         return lblFormatoSalida1;
     }
 
+    /**
+     * Returns the combo box used to select the output format (e.g. mp4 or mp3).
+     *
+     * @return the output format selector
+     */
     public javax.swing.JComboBox<String> getComboFormat() {
         return comboFormat;
     }
 
+    /**
+     * Returns the label associated with the quality selector.
+     *
+     * @return the quality label
+     */
     public javax.swing.JLabel getLblQuality() {
         return lblQuality;
     }
 
+    /**
+     * Returns the combo box used to select the output quality
+     * (resolution/bitrate).
+     *
+     * @return the quality selector
+     */
     public javax.swing.JComboBox<String> getComboQuality() {
         return comboQuality;
     }
 
+    /**
+     * Returns the label associated with the download folder field.
+     *
+     * @return the download folder label
+     */
     public javax.swing.JLabel getLblFolder() {
         return lblSelectFolderDownload;
     }
 
+    /**
+     * Returns the text field that contains the selected download folder path.
+     *
+     * @return the download folder path field
+     */
     public javax.swing.JTextField getTxtFolder() {
         return jtxtFolderDownload;
     }
 
+    /**
+     * Returns the button that opens the folder chooser dialog.
+     *
+     * @return the Browse Folder button
+     */
     public javax.swing.JButton getBtnBrowseFolder() {
         return btnSearchFolderDownload;
     }
 
+    /**
+     * Returns the button that plays the last downloaded file.
+     *
+     * @return the Play button
+     */
     public javax.swing.JButton getBtnPlay() {
         return btnReproducir;
     }
 
+    /**
+     * Returns the button that opens the library panel.
+     *
+     * @return the Open Library button
+     */
     public javax.swing.JButton getBtnOpenLibrary() {
         return btnOpenLibrary;
     }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDownload;
     private javax.swing.JButton btnOpenLibrary;

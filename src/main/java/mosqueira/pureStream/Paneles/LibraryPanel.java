@@ -25,34 +25,68 @@ import mosqueira.pureStream.DesignApp.LibraryPanelLayout;
 import mosqueira.pureStream.DesignApp.MediaFileListRenderer;
 
 /**
- * LibraryPanel displays all downloaded media files (audio/video) and allows the
- * user to search, filter, and delete them from the library.
+ * LibraryPanel displays downloaded media files and allows the user to: search,
+ * filter, delete local files, and synchronize with cloud media.
+ *
+ * <p>
+ * It provides both a detailed table view and a compact list view, and supports
+ * three sources: Local, Network, and Both.</p>
  *
  * @author Romina
- *
+ * @version 1.0
  */
 public class LibraryPanel extends javax.swing.JPanel {
 
-    // Name of the serialized library file
+    /**
+     * Name of the serialized file used to persist the media library.
+     */
     private static String BIBLIOTECA_FILE;
 
-    // Table model for detailed view
+    /**
+     * Table model used for the detailed JTable view of media files.
+     */
     private MediaTableModel tableModel;
 
-    // List model for compact list view
+    /**
+     * List model used for the compact JList representation of media files.
+     */
     private DefaultListModel<MediaFile> listModel;
 
-    // Full library of media files (unfiltered)
+    /**
+     * Complete collection of media files stored in the library
+     * before applying any filter.
+     */
     private List<MediaFile> allMediaFiles = new ArrayList<>();
 
-    // Reference to MainFrame for navigation
+    /**
+     * Reference to the main application frame.
+     * Used for navigation and panel switching.
+     */
     private MainFrame mainFrame;
-    // NETWORK LISTS
+
+    /**
+     * Collection of media files retrieved from network sources.
+     */
     private List<MediaFile> netWorkMedia = new ArrayList<>();
+
+    /**
+     * Collection of media files retrieved from bot or automated sources.
+     */
     private List<MediaFile> botMedia = new ArrayList<>();
 
     /**
-     * Constructor: initializes UI components and loads saved library.
+     * Builds the library panel and initializes UI models, listeners, and stored
+     * data.
+     *
+     * <p>
+     * This constructor wires JTable/JList selection synchronization, loads the
+     * serialized local library (if present), and prepares the source tabs
+     * (Local / Network / Both).</p>
+     *
+     * @param mainFrame reference to the main application frame (navigation +
+     * JWT token)
+     * @param tableModel shared table model used to render the media list in the
+     * JTable
      */
     public LibraryPanel(MainFrame mainFrame, MediaTableModel tableModel) {
         this.mainFrame = mainFrame;
@@ -260,7 +294,9 @@ public class LibraryPanel extends javax.swing.JPanel {
     }
 
     /**
-     * Add a new media file to library
+     * Adds a downloaded media file to the local library view.
+     *
+     * @param media media file to add
      */
     public void addMediaFile(MediaFile media) {
 
@@ -313,13 +349,24 @@ public class LibraryPanel extends javax.swing.JPanel {
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
 
-            List<MediaFile> files = (List<MediaFile>) ois.readObject();
+            Object obj = ois.readObject();
+
+            if (!(obj instanceof List<?> rawList)) {
+                allMediaFiles.clear();
+                receiveFiles(allMediaFiles);
+                return;
+            }
+
             allMediaFiles.clear();
-            allMediaFiles.addAll(files);
+            for (Object o : rawList) {
+                if (o instanceof MediaFile mf) {
+                    allMediaFiles.add(mf);
+                }
+            }
+
             receiveFiles(allMediaFiles);
 
         } catch (java.io.InvalidClassException ex) {
-            // biblioteca antigua incompatible → reset
             allMediaFiles.clear();
             f.delete();
             receiveFiles(allMediaFiles);
@@ -335,7 +382,9 @@ public class LibraryPanel extends javax.swing.JPanel {
     }
 
     /**
-     * Update view and internal list with provided files
+     * Receives a list of media files (usually from cloud) and updates the UI.
+     *
+     * @param lista list of media files to display
      */
     public void receiveFiles(List<MediaFile> lista) {
         tableModel.setMediaFiles(lista);
@@ -407,6 +456,17 @@ public class LibraryPanel extends javax.swing.JPanel {
         receiveFiles(filtered);
     }
 
+    /**
+     * Loads media metadata from the cloud service and refreshes the
+     * Network/Both lists.
+     *
+     * <p>
+     * This method calls the polling client using the current JWT token, maps
+     * remote media to {@link MediaFile} objects, and updates local items state
+     * as LOCAL / NETWORK / BOTH.</p>
+     *
+     * @throws Exception if the remote API call fails or returns invalid data
+     */
     public void loadNetworkMedia() throws Exception {
         netWorkMedia.clear();
         botMedia.clear();
@@ -632,14 +692,12 @@ public class LibraryPanel extends javax.swing.JPanel {
         }
 
         try {
-            // Subida simple
             MainFrame.COMPONENT.uploadFileMulti(
                     file,
                     null, // downloadedFromUrl
                     mainFrame.getJwtToken() // token JWT
             );
 
-            // Recargar datos de la nube
             loadNetworkMedia();
 
         } catch (Exception ex) {
@@ -693,54 +751,121 @@ public class LibraryPanel extends javax.swing.JPanel {
         filtrarLista();
     }//GEN-LAST:event_btnSearchActionPerformed
 
+    /**
+     * Returns the tab control used to switch the library source.
+     *
+     * @return tabs that switch the library source (Local / Network / Both)
+     */
     public javax.swing.JTabbedPane getTabs() {
         return jtabSources;
     }
 
+    /**
+     * Returns the scroll pane that contains the details table.
+     *
+     * @return scroll pane that contains the details table
+     */
     public javax.swing.JScrollPane getScrollTable() {
         return jScrollTable;
     }
 
+    /**
+     * Returns the table that shows the detailed list of media files.
+     *
+     * @return table that shows the detailed list of media files
+     */
     public javax.swing.JTable getTable() {
         return jTblDetails;
     }
 
+    /**
+     * Returns the scroll pane that contains the downloads list (JList).
+     *
+     * @return scroll pane that contains the downloads list
+     */
     public javax.swing.JScrollPane getScrollList() {
         return jScrollPane1;
     }
 
+    /**
+     * Returns the JList that shows the downloaded media files in compact view.
+     *
+     * @return list that shows the downloaded media files
+     */
     public javax.swing.JList<MediaFile> getListDownloads() {
         return jListDownloads;
     }
 
+    /**
+     * Returns the search text field used to filter the library.
+     *
+     * @return search text field used to filter the library
+     */
     public javax.swing.JTextField getTxtSearch() {
         return jtxtSearch;
     }
 
+    /**
+     * Returns the combo box used to select the filter type.
+     *
+     * @return combo box that selects the filter type (ALL / AUDIO / VIDEO)
+     */
     public javax.swing.JComboBox<FilterType> getComboFilter() {
         return jcbFiltrados;
     }
 
+    /**
+     * Returns the button that navigates back to the main screen.
+     *
+     * @return button that navigates back to the main screen
+     */
     public javax.swing.JButton getBtnBack() {
         return btnBack;
     }
 
+    /**
+     * Returns the button that uploads the selected local file to the cloud.
+     *
+     * @return button that uploads the selected local file to the cloud
+     */
     public javax.swing.JButton getBtnUploadToCloud() {
         return btnUploadtoCloud;
     }
 
+    /**
+     * Returns the button that downloads the selected cloud file to local disk.
+     *
+     * @return button that downloads the selected cloud file to local disk
+     */
     public javax.swing.JButton getBtnDownloadFromCloud() {
         return btnDownloadFromCloud;
     }
 
+    /**
+     * Returns the button that deletes the selected local file from disk and the
+     * library.
+     *
+     * @return button that deletes the selected local file
+     */
     public javax.swing.JButton getBtnDelete() {
         return btnDelete;
     }
 
+    /**
+     * Returns the separator/border component that titles the downloads list
+     * section.
+     *
+     * @return separator/border component for the downloads list section
+     */
     public javax.swing.JSeparator getSeparatorList() {
         return jSeparatorListDownload;
     }
 
+    /**
+     * Returns the button that executes the current search and filter.
+     *
+     * @return button that executes the current search and filter
+     */
     public javax.swing.JButton getBtnSearch() {
         return btnSearch;
     }

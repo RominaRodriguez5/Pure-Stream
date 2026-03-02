@@ -8,54 +8,77 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Represents a downloaded media file with its metadata. This class stores
- * information about a specific file, including its name, size, MIME type, path,
- * and download date. It is mainly used to populate tables or lists of
- * downloaded media within the PureStream application.
+ * Represents a downloaded media file and its metadata.
+ *
+ * <p>This class encapsulates information about a local file (name, MIME type,
+ * absolute path, size, and download date). It is mainly used to populate UI
+ * components such as tables and lists within the PureStream application.</p>
+ *
+ * <p>It also contains optional fields related to synchronization with a remote
+ * library (e.g. remote identifier, uploader, and network state).</p>
  *
  * @author Romina
- *
+ * @version 1.0
  */
 public class MediaFile implements Serializable {
 
-    private String uploadedBy;
     /**
-     * The name of the media file (e.g., video.mp4).
+     * Serialization identifier for compatibility.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Username (or identifier) of the user who uploaded the file to the remote library.
+     * This value may be {@code null} for local-only files.
+     */
+    private String uploadedBy;
+
+    /**
+     * The name of the media file (e.g., {@code "video.mp4"}).
      */
     private String fileName;
 
     /**
-     * The MIME type of the file (e.g., video/mp4, audio/mpeg).
+     * The MIME type of the file (e.g., {@code "video/mp4"}, {@code "audio/mpeg"}).
      */
     private String mimeType;
 
     /**
-     * The absolute file path on disk.
+     * Absolute file path on disk.
      */
     private String filePath;
 
     /**
-     * The file size in bytes.
+     * File size in bytes.
      */
     private long fileSizeBytes;
 
     /**
-     * The date when the file was downloaded or last modified.
+     * Date when the file was downloaded (or registered in the library).
      */
     private Date dateDownloaded;
 
-    private String networkState = "LOCAL";   // LOCAL, NETWORK, BOTH
+    /**
+     * Network status of the media file.
+     *
+     * <p>Typical values are: {@code "LOCAL"}, {@code "NETWORK"} or {@code "BOTH"}.</p>
+     */
+    private String networkState = "LOCAL";
 
+    /**
+     * Remote identifier of this media file (if it exists in the remote library).
+     * May be {@code null} when the file is local-only.
+     */
     private Integer remoteId = null;
 
     /**
-     * Constructs a new MediaFile object using the provided File.
-     * <p>
-     * It extracts metadata such as name, size, MIME type, and last modification
-     * date from the file system.
-     * </p>
+     * Creates a new {@code MediaFile} from a local {@link File} and a download date.
      *
-     * @param file the File object representing the media file.
+     * <p>This constructor extracts metadata such as name, size and MIME type from the
+     * file system. If the MIME type cannot be detected, it will be set to {@code "unknown"}.</p>
+     *
+     * @param file local file representing the media
+     * @param downloadDate date when the file was downloaded (or added to the library)
      */
     public MediaFile(File file, Date downloadDate) {
         this.fileName = file.getName();
@@ -75,49 +98,54 @@ public class MediaFile implements Serializable {
     }
 
     /**
-     * Gets the name of the file.
+     * Returns the media file name (e.g. {@code "video.mp4"}).
      *
-     * @return the file name.
+     * @return file name
      */
     public String getFileName() {
         return fileName;
     }
 
     /**
-     * Gets the MIME type of the file.
+     * Returns the detected MIME type of the file.
      *
-     * @return the MIME type string.
+     * @return MIME type, or {@code "unknown"} if it cannot be detected
      */
     public String getMimeType() {
         return mimeType;
     }
 
     /**
-     * Gets the absolute path of the file.
+     * Returns the file as a {@link File} instance using the stored absolute path.
      *
-     * @return the file path.
+     * @return local file reference
      */
     public File getFile() {
         return new File(filePath);
     }
 
+    /**
+     * Updates the absolute path of the file.
+     *
+     * @param newPath new absolute path
+     */
     public void setFilePath(String newPath) {
         this.filePath = newPath;
     }
 
     /**
-     * Gets the file size in bytes.
+     * Returns the file size in bytes.
      *
-     * @return the file size in bytes.
+     * @return file size in bytes
      */
     public long getFileSizeBytes() {
         return fileSizeBytes;
     }
 
     /**
-     * Gets the formatted date when the file was downloaded.
+     * Returns the download date formatted for display in the UI.
      *
-     * @return the formatted download date as a string.
+     * @return formatted date string (pattern {@code "dd/MM/yyyy HH:mm"})
      */
     public String getFormattedDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -125,64 +153,83 @@ public class MediaFile implements Serializable {
     }
 
     /**
-     * Converts the file size from bytes to megabytes.
+     * Returns the file size expressed in megabytes (MB).
      *
-     * @return the file size in megabytes.
+     * @return size in MB
      */
     public double getSizeInMB() {
         return fileSizeBytes / (1024.0 * 1024.0);
     }
 
     /**
-     * Gets the raw Date object for the download date.
+     * Returns the raw {@link Date} when the file was downloaded (or added).
      *
-     * @return the Date of download.
+     * @return download date
      */
     public Date getDateDownloaded() {
         return dateDownloaded;
     }
 
+    /**
+     * Returns the network state of this media file.
+     *
+     * @return network state (e.g. {@code "LOCAL"}, {@code "NETWORK"}, {@code "BOTH"})
+     */
     public String getNetworkState() {
         return networkState;
     }
 
+    /**
+     * Updates the network state of this media file.
+     *
+     * @param networkState new network state value
+     */
     public void setNetworkState(String networkState) {
         this.networkState = networkState;
     }
 
+    /**
+     * Returns the remote identifier, if the media file exists in the remote library.
+     *
+     * @return remote id, or {@code null} if not assigned
+     */
     public Integer getRemoteId() {
         return remoteId;
     }
 
+    /**
+     * Sets the remote identifier of this file.
+     *
+     * @param remoteId remote id to assign
+     */
     public void setRemoteId(Integer remoteId) {
         this.remoteId = remoteId;
     }
 
+    /**
+     * Returns the uploader identifier associated with this media file, if any.
+     *
+     * @return uploader id/name, or {@code null} if not set
+     */
     public String getUploadedBy() {
         return uploadedBy;
     }
 
     /**
-     * Returns a string representation of this MediaFile object, including its
-     * name and formatted size.
+     * Returns a user-friendly representation for list renderers.
      *
-     * @return a formatted string representing the media file.
+     * @return file name
      */
     @Override
     public String toString() {
-        return fileName;  // SOLO el nombre
+        return fileName;
     }
 
     /**
      * Checks equality based on the absolute file path.
      *
-     * <p>
-     * Two MediaFile objects are considered equal if they reference the same
-     * physical file on disk.
-     * </p>
-     *
      * @param obj object to compare
-     * @return true if both refer to the same file path
+     * @return {@code true} if both objects refer to the same file path
      */
     @Override
     public boolean equals(Object obj) {
@@ -198,10 +245,9 @@ public class MediaFile implements Serializable {
     }
 
     /**
-     * Generates a hash code using the file path, ensuring consistency with
-     * equals().
+     * Generates a hash code using the file path, consistent with {@link #equals(Object)}.
      *
-     * @return hash code for this MediaFile
+     * @return hash code for this media file
      */
     @Override
     public int hashCode() {

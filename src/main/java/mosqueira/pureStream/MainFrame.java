@@ -21,18 +21,27 @@ import mosqueira.pureStream.DesignApp.PanelUtils;
 import mosqueira.pureStream.Paneles.MainPanel;
 
 /**
- * MainFrame represents the main application window for PureStream. It controls
- * navigation between different panels (Main, Preferences, and Library),
- * initializes the menu bar, and handles key user actions such as exiting,
- * opening preferences, and showing information about the app.
+ * Main application window for PureStream.
  *
- * This class serves as the central hub of the graphical user interface.
+ * <p>
+ * This frame is responsible for:</p>
+ * <ul>
+ * <li>Initializing the main UI panels (login, main downloader, preferences,
+ * library).</li>
+ * <li>Managing navigation between panels inside the root container.</li>
+ * <li>Holding user preferences used by the download engine (yt-dlp path, speed
+ * limit, playlist creation).</li>
+ * <li>Coordinating cloud session state (JWT token, logged user) and media
+ * polling events.</li>
+ * </ul>
  *
- * @author Romina
+ * @author Lulas
+ * @version 1.0
  */
 public class MainFrame extends javax.swing.JFrame {
-
-    // Logger used for tracking general application events and errors
+    /**
+     * Logger used to record application events and exceptions.
+     */
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
 
     // Reference to the main download panel
@@ -46,39 +55,64 @@ public class MainFrame extends javax.swing.JFrame {
 
     private LoginPanel loginPanel;
 
-    // Default path for downloaded files
+    /**
+     * Default download folder path.
+     */
     private String rutaDescargas = System.getProperty("user.home") + File.separator + "Downloads";
 
-    // Shared data model used to synchronize the main panel and the library panel
+    /**
+     * Shared table model used by panels that display downloaded media.
+     */
     private MediaTableModel mediaTableModel;
 
-    // Cloud login data
-    private String jwtToken = null;
-
-    private Usuari loggedUser = null;
-
-    public static MediaPollingClientComponent COMPONENT;
-    // User preferences
-    private boolean crearM3U = false; // Whether to create an M3U playlist after downloads
-    private boolean limitarVelocidad; // Whether to limit download speed
-    private int limiteVelocidad = 0; // Speed limit in KB/s
-    private String executablePath = ""; // Path to the yt-dlp executable
-
-    private PanelUtils bg;
-
     /**
-     * Constructor that initializes the main frame, all panels, and the menu
-     * bar. It also sets up the general window configuration (title, size,
-     * position, etc.)
+     * JWT token of the current cloud session (null when not logged in).
+     */
+    private String jwtToken = null;
+    /**
+     * Logged user information returned by the cloud service (null when not
+     * logged in).
+     */
+    private Usuari loggedUser = null;
+    /**
+     * Media polling component used to synchronize with the remote library.
+     */
+    public static MediaPollingClientComponent COMPONENT;
+    /**
+     * If true, the application appends downloaded files to an M3U playlist.
+     */
+    private boolean crearM3U = false;
+    /**
+     * If true, download rate limiting is enabled.
+     */
+    private boolean limitarVelocidad;
+    /**
+     * Download speed limit in KB/s when rate limiting is enabled.
+     */
+    private int limiteVelocidad = 0;
+    /**
+     * Path to the yt-dlp executable configured by the user.
+     */
+    private String executablePath = "";
+    /** Background container that paints the gradient theme and wraps the root panel. */
+    private PanelUtils bg;
+    /**
+     * Creates the main application frame and initializes UI components.
+     *
+     * <p>
+     * This constructor:
+     * <ul>
+     * <li>Initializes Swing components and icons.</li>
+     * <li>Prepares the root container and background panel.</li>
+     * <li>Starts in the login panel and attempts auto-login.</li>
+     * </ul>
      */
     public MainFrame() {
         initComponents();
         applyIcons();
         IconUtils.applyFrameIcon(this, "/images/iconApp.png", 32);
         setSize(800, 900);
-
         setLocationRelativeTo(null);
-
         bg = new PanelUtils();
         bg.setLayout(new BorderLayout());
         bg.add(pnlRoot, BorderLayout.CENTER);
@@ -89,9 +123,13 @@ public class MainFrame extends javax.swing.JFrame {
         loginPanel = new LoginPanel(this);
         showPanel(loginPanel);
         loginPanel.tryAutoLogin();
-
     }
 
+    /**
+     * Replaces the content of the root container with the given panel.
+     *
+     * @param panel panel to display in the main window
+     */
     public void showPanel(JPanel panel) {
         pnlRoot.setOpaque(false);
         pnlRoot.removeAll();
@@ -100,10 +138,16 @@ public class MainFrame extends javax.swing.JFrame {
         pnlRoot.repaint();
     }
 
+    /**
+     * Displays the main download panel.
+     */
     public void showMain() {
         showPanel(mainPanel);
     }
 
+    /**
+     * Displays the preferences panel.
+     */
     public void showPreferences() {
         showPanel(preferencesPanel);
     }
@@ -131,6 +175,14 @@ public class MainFrame extends javax.swing.JFrame {
         mnuHelp.setToolTipText("About PureStream");
     }
 
+    /**
+     * Initializes the main panels and shared model after a successful login.
+     *
+     * <p>
+     * This method creates the {@link MediaTableModel} and the panels that
+     * depend on it, then registers a polling listener to refresh remote media
+     * when changes are detected.</p>
+     */
     public void cargarPanelPrincipal() {
         // Initialize shared model and all panels
         mediaTableModel = new MediaTableModel();
@@ -152,12 +204,13 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         showPanel(mainPanel);
-
     }
 
     /**
-     * Displays the library panel that shows all downloaded media files. This
-     * method updates the LibraryPanel before showing it.
+     * Displays the library panel containing downloaded and/or cloud media.
+     *
+     * <p>
+     * Before showing it, the method attempts to refresh remote media.</p>
      */
     public void showLibraryPanel() {
         panelLibrary.setOpaque(false);
@@ -172,6 +225,8 @@ public class MainFrame extends javax.swing.JFrame {
 
     /**
      * Sets the directory where downloaded files will be saved.
+     *
+     * @param ruta absolute folder path for downloads
      */
     public void setRutaDescargas(String ruta) {
         this.rutaDescargas = ruta;
@@ -179,45 +234,62 @@ public class MainFrame extends javax.swing.JFrame {
 
     /**
      * Returns the current download directory path.
+     *
+     * @return download folder path
      */
     public String getRutaDescargas() {
         return rutaDescargas;
     }
 
     /**
-     * Provides access to the LibraryPanel instance.
+     * Returns the library panel instance.
+     *
+     * @return library panel
      */
     public LibraryPanel getLibraryPanel() {
         return panelLibrary;
     }
 
+    /**
+     * Returns the preferences panel instance.
+     *
+     * @return preferences panel
+     */
     public PreferencesPanel getPreferencesPanel() {
         return preferencesPanel;
     }
 
     /**
      * Enables or disables automatic M3U playlist creation.
+     *
+     * @param crear true to create/update an M3U playlist after downloads
      */
     public void setCrearM3U(boolean crear) {
         this.crearM3U = crear;
     }
 
     /**
-     * Returns whether the app should create M3U playlists.
+     * Indicates whether the application creates M3U playlists after downloads.
+     *
+     * @return true if M3U playlist creation is enabled
      */
     public boolean isCrearM3U() {
         return crearM3U;
     }
 
     /**
-     * Returns whether download speed limiting is enabled.
+     * Indicates whether download speed limiting is enabled.
+     *
+     * @return true if download speed is limited
      */
     public boolean isLimitarVelocidad() {
         return limitarVelocidad;
     }
 
     /**
-     * Enables or disables speed limitation for downloads.
+     * Enables or disables download speed limitation.
+     *
+     * @param limitar true to enable rate limiting
      */
     public void setLimitarVelocidad(boolean limitar) {
         this.limitarVelocidad = limitar;
@@ -225,20 +297,26 @@ public class MainFrame extends javax.swing.JFrame {
 
     /**
      * Returns the current download speed limit in KB/s.
+     *
+     * @return speed limit in KB/s
      */
     public int getLimiteVelocidad() {
         return limiteVelocidad;
     }
 
     /**
-     * Sets the maximum allowed download speed (in KB/s).
+     * Sets the maximum allowed download speed in KB/s.
+     *
+     * @param limite speed limit in KB/s
      */
     public void setLimiteVelocidad(int limite) {
         this.limiteVelocidad = limite;
     }
 
     /**
-     * Sets the system path to the yt-dlp executable used for downloads.
+     * Sets the path to the yt-dlp executable used to perform downloads.
+     *
+     * @param path absolute path to the yt-dlp executable
      */
     public void setExecutablePath(String path) {
         this.executablePath = path;
@@ -246,29 +324,48 @@ public class MainFrame extends javax.swing.JFrame {
 
     /**
      * Returns the currently configured yt-dlp executable path.
+     *
+     * @return yt-dlp executable path
      */
     public String getExecutablePath() {
         return executablePath;
     }
 
+    /**
+     * Stores the JWT token for the current session.
+     *
+     * @param token JWT token returned by the cloud service
+     */
     public void setJwtToken(String token) {
         this.jwtToken = token;
     }
 
+    /**
+     * Sets the current logged user information.
+     *
+     * @param user logged user data
+     */
     public void setLoggedUser(Usuari user) {
         this.loggedUser = user;
     }
 
+    /**
+     * Returns the JWT token for the current session.
+     *
+     * @return JWT token, or {@code null} if not logged in
+     */
     public String getJwtToken() {
         return jwtToken;
     }
 
     /**
      * Notifies the application that a new media file has been downloaded.
-     * Updates the library panel and optionally appends the file to an M3U
-     * playlist.
      *
-     * @param media the downloaded MediaFile
+     * <p>
+     * The file is added to the library UI and, if enabled, appended to an M3U
+     * playlist in the download folder.</p>
+     *
+     * @param media downloaded media file
      */
     public void notifyDownloadedMedia(MediaFile media) {
 
@@ -471,10 +568,9 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_mniLogoutActionPerformed
 
     /**
-     * Main entry point of the application. Initializes the UI and sets the
-     * Nimbus Look and Feel if available.
+     * Main entry point.
      *
-     * @param args the command line arguments
+     * @param args command line arguments
      */
     public static void main(String args[]) {
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {

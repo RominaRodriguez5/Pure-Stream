@@ -17,7 +17,12 @@ import mosqueira.pureStream.DesignApp.PreferencesPanelLayout;
  */
 public class PreferencesPanel extends javax.swing.JPanel {
 
-    // Reference to the MainFrame to update global configuration
+    /**
+     * Reference to the main application frame.
+     * <p>
+     * Used to propagate configuration updates and trigger navigation or UI
+     * refresh when preferences are modified.
+     */
     private MainFrame mainFrame;
 
     /**
@@ -29,7 +34,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
     public PreferencesPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         initComponents();
-        
+
         new PreferencesPanelLayout(this).apply();
         lblAds.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         cargarPreferencias();
@@ -58,35 +63,47 @@ public class PreferencesPanel extends javax.swing.JPanel {
     }
 
     /**
-     * Returns the selected download directory path.
+     * Indicates whether M3U playlist creation is enabled.
+     *
+     * @return {@code true} if the application should create an M3U playlist;
+     * {@code false} otherwise
      */
     public boolean isCrearM3U() {
         return jchM3U.isSelected();
     }
 
     /**
-     * Returns the selected yt-dlp executable path.
+     * Returns the configured path to the yt-dlp executable.
+     *
+     * @return the yt-dlp executable path (may be empty if not configured)
      */
     public String getExecutablePath() {
         return jtxtExecutable.getText().trim();
     }
 
     /**
-     * Returns whether the user has enabled download speed limiting.
+     * Indicates whether download speed limiting is enabled.
+     *
+     * @return {@code true} if the download speed should be limited;
+     * {@code false} otherwise
      */
     public boolean isLimitarVelocidad() {
         return jchLimit.isSelected();
     }
 
     /**
-     * Returns the numeric value of the download speed limit (in KB/s).
+     * Returns the configured download speed limit in kilobytes per second.
+     *
+     * @return the speed limit value in KB/s
      */
     public int getLimiteVelocidad() {
         return jSliderLimit.getValue(); // en KB/s
     }
 
     /**
-     * Returns the reference to the MainFrame instance.
+     * Returns the main application frame that owns this preferences panel.
+     *
+     * @return the parent {@link MainFrame}
      */
     public MainFrame getMainFrame() {
         return mainFrame;
@@ -271,46 +288,95 @@ public class PreferencesPanel extends javax.swing.JPanel {
     private void jtxtExecutableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtExecutableActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jtxtExecutableActionPerformed
+    /**
+     * Returns the label that describes the advertisement-related settings.
+     *
+     * @return the ads label component
+     */
     public javax.swing.JLabel getLblAds() {
         return lblAds;
     }
 
+    /**
+     * Returns the label that indicates the executable path selection.
+     *
+     * @return the select path label component
+     */
     public javax.swing.JLabel getLblSelectPath() {
         return lblSelectPath;
     }
 
+    /**
+     * Returns the text field containing the configured yt-dlp executable path.
+     *
+     * @return the executable path text field
+     */
     public javax.swing.JTextField getTxtExecutable() {
         return jtxtExecutable;
     }
 
+    /**
+     * Returns the button used to search and select the executable path.
+     *
+     * @return the search path button
+     */
     public javax.swing.JButton getBtnSearchPath() {
         return btnSearchPath;
     }
 
+    /**
+     * Returns the checkbox that enables automatic M3U playlist creation.
+     *
+     * @return the M3U creation checkbox
+     */
     public javax.swing.JCheckBox getChkM3U() {
         return jchM3U;
     }
 
+    /**
+     * Returns the checkbox that enables download speed limitation.
+     *
+     * @return the speed limit checkbox
+     */
     public javax.swing.JCheckBox getChkLimit() {
         return jchLimit;
     }
 
+    /**
+     * Returns the slider used to define the maximum download speed.
+     *
+     * @return the speed limit slider
+     */
     public javax.swing.JSlider getSliderLimit() {
         return jSliderLimit;
     }
 
+    /**
+     * Returns the label that displays the current speed limit value.
+     *
+     * @return the speed value label
+     */
     public javax.swing.JLabel getLblValue() {
         return jlblValue;
     }
 
+    /**
+     * Returns the button that saves the preferences and navigates back.
+     *
+     * @return the save and return button
+     */
     public javax.swing.JButton getBtnSaveAndReturn() {
         return btnSaveAndReturn;
     }
 
+    /**
+     * Returns the separator component used to visually divide sections.
+     *
+     * @return the separator component
+     */
     public javax.swing.JSeparator getSeparator() {
         return jSeparator1;
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSaveAndReturn;
     private javax.swing.JButton btnSearchPath;
