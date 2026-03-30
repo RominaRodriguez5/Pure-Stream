@@ -270,7 +270,7 @@ public class LoginPanel extends javax.swing.JPanel {
 
             main.setJwtToken(token);
             MainFrame.COMPONENT.setToken(token);
-            MainFrame.COMPONENT.setRunning(true);
+           MainFrame.COMPONENT.setRunning(true);
 
             main.cargarPanelPrincipal();
 

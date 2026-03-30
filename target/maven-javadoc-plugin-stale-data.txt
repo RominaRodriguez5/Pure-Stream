@@ -1,0 +1,57 @@
+-J-Duser.language=
+-J-Duser.country=
+@options
+@packages
+-classpath
+'C:/Users/Lulas/.m2/repository/unknown/binary/MediaPollingClientComponent-1.0-SNAPSHOT/SNAPSHOT/MediaPollingClientComponent-1.0-SNAPSHOT-SNAPSHOT.jar;C:/Users/Lulas/.m2/repository/tools/jackson/core/jackson-databind/3.0.0/jackson-databind-3.0.0.jar;C:/Users/Lulas/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.20/jackson-annotations-2.20.jar;C:/Users/Lulas/.m2/repository/tools/jackson/core/jackson-core/3.0.0/jackson-core-3.0.0.jar;C:/Users/Lulas/.m2/repository/com/miglayout/miglayout-swing/11.3/miglayout-swing-11.3.jar;C:/Users/Lulas/.m2/repository/com/miglayout/miglayout-core/11.3/miglayout-core-11.3.jar'
+-encoding
+'UTF-8'
+-protected
+--release
+24
+-sourcepath
+'C:/Users/Lulas/Documents/NetBeansProjects/PureStream/src/main/java;C:/Users/Lulas/Documents/NetBeansProjects/PureStream/target/generated-sources/annotations'
+-author
+-bottom
+'Copyright &#169; 2026. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/Lulas/Documents/NetBeansProjects/PureStream/doc/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'PureStream 1.0.0 API'
+-use
+-version
+-windowtitle
+'PureStream 1.0.0 API'
+mosqueira.pureStream.ControladorInterno
+mosqueira.pureStream.DesignApp
+mosqueira.pureStream.Dialogs
+mosqueira.pureStream
+mosqueira.pureStream.Modelo
+mosqueira.pureStream.Paneles
+C:\Users\Lulas\.m2\repository\unknown\binary\MediaPollingClientComponent-1.0-SNAPSHOT\SNAPSHOT\MediaPollingClientComponent-1.0-SNAPSHOT-SNAPSHOT.jar = 1774707090011
+C:\Users\Lulas\.m2\repository\tools\jackson\core\jackson-databind\3.0.0\jackson-databind-3.0.0.jar = 1763647949002
+C:\Users\Lulas\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.20\jackson-annotations-2.20.jar = 1763647949073
+C:\Users\Lulas\.m2\repository\tools\jackson\core\jackson-core\3.0.0\jackson-core-3.0.0.jar = 1763647949175
+C:\Users\Lulas\.m2\repository\com\miglayout\miglayout-swing\11.3\miglayout-swing-11.3.jar = 1771205636468
+C:\Users\Lulas\.m2\repository\com\miglayout\miglayout-core\11.3\miglayout-core-11.3.jar = 1771205636546
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\src\main\java = 1764681694123
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\target\generated-sources\annotations = 1774883609353
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\allclasses-index.html = 1774883615091
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\allpackages-index.html = 1774883615093
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\element-list = 1774883614883
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\help-doc.html = 1774883615127
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\index-all.html = 1774883615119
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\index.html = 1774883615061
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\member-search-index.js = 1774883615096
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\module-search-index.js = 1774883615094
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\overview-summary.html = 1774883615124
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\overview-tree.html = 1774883615057
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\package-search-index.js = 1774883615095
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\search.html = 1774883615121
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\serialized-form.html = 1774883614976
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\tag-search-index.js = 1774883615096
+C:\Users\Lulas\Documents\NetBeansProjects\PureStream\doc\apidocs\type-search-index.js = 1774883615095

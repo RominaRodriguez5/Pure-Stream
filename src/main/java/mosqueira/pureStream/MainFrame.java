@@ -1,15 +1,19 @@
 package mosqueira.pureStream;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Path;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientEvent;
 import mosqueira.mediaPollingClientComponent.component.MediaPollingClientListener;
 import mosqueira.mediaPollingClientComponent.model.Usuari;
+import mosqueira.pureStream.ControladorInterno.AppPaths;
 import mosqueira.pureStream.Dialogs.AboutDialog;
 import mosqueira.pureStream.Modelo.MediaFile;
 import mosqueira.pureStream.Modelo.MediaTableModel;
@@ -39,6 +43,7 @@ import mosqueira.pureStream.Paneles.MainPanel;
  * @version 1.0
  */
 public class MainFrame extends javax.swing.JFrame {
+
     /**
      * Logger used to record application events and exceptions.
      */
@@ -94,8 +99,12 @@ public class MainFrame extends javax.swing.JFrame {
      * Path to the yt-dlp executable configured by the user.
      */
     private String executablePath = "";
-    /** Background container that paints the gradient theme and wraps the root panel. */
+    /**
+     * Background container that paints the gradient theme and wraps the root
+     * panel.
+     */
     private PanelUtils bg;
+
     /**
      * Creates the main application frame and initializes UI components.
      *
@@ -111,13 +120,13 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         applyIcons();
         IconUtils.applyFrameIcon(this, "/images/iconApp.png", 32);
-        setSize(800, 900);
+        setSize(1100, 1000);
         setLocationRelativeTo(null);
         bg = new PanelUtils();
         bg.setLayout(new BorderLayout());
         bg.add(pnlRoot, BorderLayout.CENTER);
-
         setContentPane(bg);
+        initializeBundledExecutables();
         COMPONENT = mediaComponent1;
         mediaComponent1.setVisible(false);
         loginPanel = new LoginPanel(this);
@@ -166,13 +175,16 @@ public class MainFrame extends javax.swing.JFrame {
         mniLogout.setIcon(IconUtils.load("/images/logout.png", 20));
         mniPreferences.setIcon(IconUtils.load("/images/edit.png", 20));
         mniAbout.setIcon(IconUtils.load("/images/about.png", 20));
-
+        mniApiDocs.setIcon(IconUtils.load("/images/folder.png", 20));
+        mniManual.setIcon(IconUtils.load("/images/manual.png", 20));
         // Tooltips
         mniExit.setToolTipText("Close the application");
         mniLogout.setToolTipText("Log out of the current session");
         mnuFile.setToolTipText("Close the application and Log out of the current session");
         mnuEdit.setToolTipText("Open application preferences");
         mnuHelp.setToolTipText("About PureStream");
+        mniApiDocs.setToolTipText("Open the API HTML documentation");
+        mniManual.setToolTipText("Open the user manual PDF");
     }
 
     /**
@@ -417,6 +429,8 @@ public class MainFrame extends javax.swing.JFrame {
         mniPreferences = new javax.swing.JMenuItem();
         mnuHelp = new javax.swing.JMenu();
         mniAbout = new javax.swing.JMenuItem();
+        mniApiDocs = new javax.swing.JMenuItem();
+        mniManual = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PureStream ");
@@ -486,6 +500,24 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         mnuHelp.add(mniAbout);
+
+        mniApiDocs.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
+        mniApiDocs.setText("API Docs");
+        mniApiDocs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniApiDocsActionPerformed(evt);
+            }
+        });
+        mnuHelp.add(mniApiDocs);
+
+        mniManual.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
+        mniManual.setText("User Manual");
+        mniManual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniManualActionPerformed(evt);
+            }
+        });
+        mnuHelp.add(mniManual);
 
         jmnMenu.add(mnuHelp);
 
@@ -567,6 +599,102 @@ public class MainFrame extends javax.swing.JFrame {
         showPanel(loginPanel);
     }//GEN-LAST:event_mniLogoutActionPerformed
 
+    public String findBundledYtDlpPath() {
+        Path path = AppPaths.findBundledYtDlp(MainFrame.class);
+        return path != null ? path.toString() : null;
+    }
+
+    public String getBundledToolsDirectory() {
+        Path toolsDir = AppPaths.getBundledToolsDirectory(MainFrame.class);
+        return toolsDir != null ? toolsDir.toString() : null;
+    }
+
+    public void initializeBundledExecutables() {
+        if (this.executablePath == null || this.executablePath.isBlank()) {
+            String bundledYtDlp = findBundledYtDlpPath();
+
+            System.out.println("Bundled yt-dlp resolved to: " + bundledYtDlp);
+
+            if (bundledYtDlp != null) {
+                this.executablePath = bundledYtDlp;
+            }
+        }
+    }
+
+
+    private void mniApiDocsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniApiDocsActionPerformed
+        Path apiIndex = AppPaths.findApiDocs();
+
+        if (apiIndex == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "API documentation is not installed or not available in the project.",
+                    "Documentation not found",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "This system does not support opening the browser automatically.",
+                    "Operation not supported",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        try {
+            Desktop.getDesktop().browse(apiIndex.toUri());
+        } catch (IOException ex) {
+            logger.log(java.util.logging.Level.SEVERE, "Error opening API docs", ex);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Could not open API documentation.",
+                    "Open error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+
+    }//GEN-LAST:event_mniApiDocsActionPerformed
+
+    private void mniManualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniManualActionPerformed
+        Path manualPdf = AppPaths.findUserManual();
+
+        if (manualPdf == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "User manual is not installed or not available in the project.",
+                    "Manual not found",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "This system does not support opening PDF files automatically.",
+                    "Operation not supported",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        try {
+            Desktop.getDesktop().open(manualPdf.toFile());
+        } catch (IOException ex) {
+            logger.log(java.util.logging.Level.SEVERE, "Error opening user manual", ex);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Could not open the user manual.",
+                    "Open error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }//GEN-LAST:event_mniManualActionPerformed
+
     /**
      * Main entry point.
      *
@@ -575,7 +703,7 @@ public class MainFrame extends javax.swing.JFrame {
     public static void main(String args[]) {
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             try {
-                File logFile = new File("crash.log");
+                File logFile = new File(System.getProperty("user.home"), "PureStream-crash.log");
                 try (PrintWriter out = new PrintWriter(new FileWriter(logFile, true))) {
                     out.println("==== APPLICATION CRASH ====");
                     out.println(new java.util.Date());
@@ -612,8 +740,10 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuBar jmnMenu;
     private mosqueira.mediaPollingClientComponent.component.MediaPollingClientComponent mediaComponent1;
     private javax.swing.JMenuItem mniAbout;
+    private javax.swing.JMenuItem mniApiDocs;
     private javax.swing.JMenuItem mniExit;
     private javax.swing.JMenuItem mniLogout;
+    private javax.swing.JMenuItem mniManual;
     private javax.swing.JMenuItem mniPreferences;
     private javax.swing.JMenu mnuEdit;
     private javax.swing.JMenu mnuFile;

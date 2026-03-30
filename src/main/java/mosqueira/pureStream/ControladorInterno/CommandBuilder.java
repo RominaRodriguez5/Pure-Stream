@@ -60,10 +60,15 @@ public class CommandBuilder {
     ) {
 
         List<String> cmd = new ArrayList<>();
+        MainFrame main = preferencesPanel.getMainFrame();
 
         // Path to yt-dlp executable
         String ytDlpPath = preferencesPanel.getExecutablePath();
         if (ytDlpPath == null || ytDlpPath.isEmpty()) {
+            main.initializeBundledExecutables();
+            ytDlpPath = main.getExecutablePath();
+        }
+        if (ytDlpPath == null || ytDlpPath.isBlank()) {
             JOptionPane.showMessageDialog(
                     null,
                     "Debes seleccionar la ruta de yt-dlp en Preferences.",
@@ -74,10 +79,15 @@ public class CommandBuilder {
         }
         cmd.add(ytDlpPath);
 
+        // Use bundled ffmpeg/ffprobe if available
+        String toolsDir = main.getBundledToolsDirectory();
+        if (toolsDir != null && !toolsDir.isBlank()) {
+            cmd.add("--ffmpeg-location");
+            cmd.add(toolsDir);
+        }
+
         // Restrict filenames to avoid special characters
         cmd.add("--restrict-filenames");
-
-        MainFrame main = preferencesPanel.getMainFrame();
 
         // Download directory
         String downloadPath = main.getRutaDescargas();

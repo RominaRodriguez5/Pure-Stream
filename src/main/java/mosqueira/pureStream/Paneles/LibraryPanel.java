@@ -38,11 +38,6 @@ import mosqueira.pureStream.DesignApp.MediaFileListRenderer;
 public class LibraryPanel extends javax.swing.JPanel {
 
     /**
-     * Name of the serialized file used to persist the media library.
-     */
-    private static String BIBLIOTECA_FILE;
-
-    /**
      * Table model used for the detailed JTable view of media files.
      */
     private MediaTableModel tableModel;
@@ -53,14 +48,14 @@ public class LibraryPanel extends javax.swing.JPanel {
     private DefaultListModel<MediaFile> listModel;
 
     /**
-     * Complete collection of media files stored in the library
-     * before applying any filter.
+     * Complete collection of media files stored in the library before applying
+     * any filter.
      */
     private List<MediaFile> allMediaFiles = new ArrayList<>();
 
     /**
-     * Reference to the main application frame.
-     * Used for navigation and panel switching.
+     * Reference to the main application frame. Used for navigation and panel
+     * switching.
      */
     private MainFrame mainFrame;
 
@@ -91,7 +86,7 @@ public class LibraryPanel extends javax.swing.JPanel {
     public LibraryPanel(MainFrame mainFrame, MediaTableModel tableModel) {
         this.mainFrame = mainFrame;
         this.tableModel = tableModel;
-        BIBLIOTECA_FILE = mainFrame.getRutaDescargas() + File.separator + "mediaLibrary.dat";
+
         initComponents();
         btnDelete.setEnabled(false);
         new LibraryPanelLayout(this).apply();
@@ -215,6 +210,10 @@ public class LibraryPanel extends javax.swing.JPanel {
 
     }
 
+    private File getBibliotecaFile() {
+        return new File(mainFrame.getRutaDescargas(), "mediaLibrary.dat");
+    }
+
     private void playMedia(MediaFile mf) {
         if (mf == null) {
             return;
@@ -318,31 +317,45 @@ public class LibraryPanel extends javax.swing.JPanel {
      * Saves the full media library via serialization.
      */
     private void guardarBiblioteca() {
-        try {
+        File f = getBibliotecaFile();
 
-            File f = new File(BIBLIOTECA_FILE);
+        try {
+            if (allMediaFiles == null || allMediaFiles.isEmpty()) {
+                if (f.exists() && !f.delete()) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Cannot delete empty library file.",
+                            "IO Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+                return;
+            }
+
             File parent = f.getParentFile();
             if (parent != null && !parent.exists()) {
                 parent.mkdirs();
             }
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(BIBLIOTECA_FILE))) {
+
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f))) {
                 oos.writeObject(allMediaFiles);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(
+                    this,
                     "Cannot save library file.",
                     "IO Error",
-                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
-
     }
 
     /**
      * Loads the serialized media library if the file exists.
      */
     private void cargarBiblioteca() {
-        File f = new File(BIBLIOTECA_FILE);
+        File f = getBibliotecaFile();
         if (!f.exists()) {
             return;
         }
@@ -370,15 +383,16 @@ public class LibraryPanel extends javax.swing.JPanel {
             allMediaFiles.clear();
             f.delete();
             receiveFiles(allMediaFiles);
-            JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(
+                    this,
                     "Your saved library was from an older version and has been reset.",
                     "Library reset",
-                    JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.INFORMATION_MESSAGE
+            );
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
     /**
@@ -699,7 +713,12 @@ public class LibraryPanel extends javax.swing.JPanel {
             );
 
             loadNetworkMedia();
-
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Upload completed successfully:\n" + file.getAbsolutePath(),
+                    "Upload completed",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
         } catch (Exception ex) {
 
             JOptionPane.showMessageDialog(this, "Upload failed:\n" + ex.getMessage());
@@ -740,6 +759,12 @@ public class LibraryPanel extends javax.swing.JPanel {
             guardarBiblioteca();
 
             loadNetworkMedia();
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Download completed successfully:\n" + destino.getAbsolutePath(),
+                    "Download completed",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
 
         } catch (Exception ex) {
             ex.printStackTrace();

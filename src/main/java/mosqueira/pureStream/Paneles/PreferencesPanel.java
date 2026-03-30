@@ -60,6 +60,16 @@ public class PreferencesPanel extends javax.swing.JPanel {
         jSliderLimit.setValue(mainFrame.getLimiteVelocidad());
         jtxtExecutable.setText(mainFrame.getExecutablePath());
         jlblValue.setText(jSliderLimit.getValue() + " KB/s");
+
+        String executablePath = mainFrame.getExecutablePath();
+
+        if (executablePath == null || executablePath.isBlank()) {
+            mainFrame.initializeBundledExecutables();
+            executablePath = mainFrame.getExecutablePath();
+        }
+
+        jtxtExecutable.setText(executablePath != null ? executablePath : "");
+
     }
 
     /**
@@ -179,7 +189,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
         jSeparator1.setBounds(0, 0, 0, 0);
 
         jtxtExecutable.setBackground(new java.awt.Color(204, 204, 204));
-        jtxtExecutable.setText("C:\\Program Files\\yt-dlp\\yt-dlp.exe");
+        jtxtExecutable.setText("\"\"");
         jtxtExecutable.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jtxtExecutableActionPerformed(evt);
@@ -239,12 +249,17 @@ public class PreferencesPanel extends javax.swing.JPanel {
      */
     private void btnSaveAndReturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveAndReturnActionPerformed
         String path = jtxtExecutable.getText().trim();
-        if (jtxtExecutable.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please select the yt-dlp executable.", "Missing executable",
+
+        if (path.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please select the yt-dlp executable.",
+                    "Missing executable",
                     JOptionPane.WARNING_MESSAGE
             );
             return;
         }
+
         java.io.File exe = new java.io.File(path);
         if (!exe.exists() || !exe.isFile()) {
             JOptionPane.showMessageDialog(
@@ -257,7 +272,6 @@ public class PreferencesPanel extends javax.swing.JPanel {
         }
 
         mainFrame.setExecutablePath(path);
-//        mainFrame.showPanelPrincipal();
         mainFrame.showMain();
 
     }//GEN-LAST:event_btnSaveAndReturnActionPerformed

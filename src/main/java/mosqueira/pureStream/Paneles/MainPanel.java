@@ -349,6 +349,29 @@ public class MainPanel extends javax.swing.JPanel {
                 comboQuality,
                 this
         );
+        String executablePath = preferencesPanel.getExecutablePath();
+
+        if (executablePath == null || executablePath.isBlank()) {
+            mainFrame.initializeBundledExecutables();
+            preferencesPanel.cargarPreferencias();
+            executablePath = preferencesPanel.getExecutablePath();
+        }
+
+        if (executablePath == null || executablePath.isBlank()) {
+            jTxtLog.append("yt-dlp executable not found. Open Preferences and select a valid executable.\n");
+
+            btnDownload.setText("Download");
+            setCursor(java.awt.Cursor.getDefaultCursor());
+
+            jtxtInsertUrl.setEnabled(true);
+            comboFormat.setEnabled(true);
+            comboQuality.setEnabled(true);
+            btnSearchFolderDownload.setEnabled(true);
+            jtxtFolderDownload.setEditable(true);
+
+            updateDownloadEnabled();
+            return;
+        }
 
         task.addPropertyChangeListener(event -> {
             if ("progress".equals(event.getPropertyName())) {

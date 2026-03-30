@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JComboBox;
@@ -86,36 +87,59 @@ public class DownloadTask extends SwingWorker<Void, String> {
     @Override
     protected Void doInBackground() throws Exception {
 
-        List<String> command = CommandBuilder.buildCommand(
-                url,
-                preferencesPanel,
-                format.getSelectedItem().toString(),
-                quality.getSelectedItem().toString()
-        );
+        var mainFrame = parentPanel.getMainFrame();
 
-        if (command == null) {
-            return null;
+    String executablePath = preferencesPanel.getExecutablePath();
+    if (executablePath == null || executablePath.isBlank()) {
+        mainFrame.initializeBundledExecutables();
+        executablePath = mainFrame.getExecutablePath();
+
+        if (executablePath != null && !executablePath.isBlank()) {
+            preferencesPanel.getTxtExecutable().setText(executablePath);
         }
+    }
 
-        ProcessBuilder pb = new ProcessBuilder(command);
-        pb.redirectErrorStream(true);
-
-        publish("__START__");
-
-        Process process = pb.start();
-
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                publish(line + "\n");
-                detectDownloadedFile(line);
-            }
-        }
-
-        process.waitFor();
+    if (executablePath == null || executablePath.isBlank()) {
+        publish("ERROR: yt-dlp executable not found.\n");
         return null;
+    }
+
+    File ytDlpExe = new File(executablePath);
+    if (!ytDlpExe.exists() || !ytDlpExe.isFile()) {
+        publish("ERROR: The configured yt-dlp executable does not exist.\n");
+        return null;
+    }
+
+    List<String> builtCommand = CommandBuilder.buildCommand(
+            url,
+            preferencesPanel,
+            format.getSelectedItem().toString(),
+            quality.getSelectedItem().toString()
+    );
+
+    if (builtCommand == null || builtCommand.isEmpty()) {
+        return null;
+    }
+
+    ProcessBuilder pb = new ProcessBuilder(builtCommand);
+    pb.redirectErrorStream(true);
+
+    publish("__START__");
+
+    Process process = pb.start();
+
+    try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            publish(line + "\n");
+            detectDownloadedFile(line);
+        }
+    }
+
+    process.waitFor();
+    return null;
     }
 
     /**
@@ -233,7 +257,7 @@ public class DownloadTask extends SwingWorker<Void, String> {
         MediaFile media = new MediaFile(file, new Date());
 
         parentPanel.notifyDownloaded(media);
-        parentPanel.getMainFrame().notifyDownloadedMedia(media);
+       
 
         logArea.append("Download completed: " + file.getName() + "\n");
         logArea.append("Saved in: " + file.getParent() + "\n");
